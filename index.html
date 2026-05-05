@@ -1115,73 +1115,67 @@
 ============================================================ -->
 <script>
 // ============================================================
-// CONFIGURACIÓN EMAILJS
-// IMPORTANTE: Para activar los emails:
-// 1. Crear cuenta gratis en https://www.emailjs.com
-// 2. Crear un "Email Service" (Gmail recomendado con gaviriarioscamilo@gmail.com)
-// 3. Crear un "Email Template" con las variables: {{from_email}}, {{from_name}}, {{message}}, {{approve_link}}, {{deny_link}}
-// 4. Reemplazar los valores abajo con tu Public Key, Service ID y Template ID
+// CONFIGURACIÓN — APPS SCRIPT + EMAILJS
 // ============================================================
-const EMAILJS_PUBLIC_KEY  = 'C5XBwPbz4k6nC4fMi';      // e.g. 'user_abc123...'
-const EMAILJS_SERVICE_ID  = 'service_bo06stg';       // e.g. 'service_gmail'
-const EMAILJS_TEMPLATE_ID = 'template_sd1hmw6';      // e.g. 'template_acceso'
+const SCRIPT_URL      = 'https://script.google.com/macros/s/AKfycbwZ3PP4U7EXASS4YcaYjKi32z2ZjMrCIS-QIIRfuFs6aM1KfBRUmF9xNJFp9EQQ9co/exec';  // <-- ver instrucciones
+const EMAILJS_PUBLIC_KEY  = 'C5XBwPbz4k6nC4fMi';
+const EMAILJS_SERVICE_ID  = 'service_bo06stg';
+const EMAILJS_TEMPLATE_ID = 'template_sd1hmw6';
 const ADMIN_EMAIL         = 'gaviriarioscamilo@gmail.com';
-
-// URL base donde está hospedado este archivo (para los links de aprobar/denegar)
-// Si usas file://, reemplaza con la URL real de tu servidor
-const APP_URL = 'https://camilo2005gaviria.github.io/Encriptador/';
+const APP_URL             = 'https://camilo2005gaviria.github.io/Encriptador/';
 
 // ============================================================
-// ALMACENAMIENTO LOCAL DE USUARIOS (simulado en localStorage)
-// Estructura: { email: { password, status: 'pending'|'approved'|'denied', requestedAt } }
+// SESIÓN LOCAL (solo guarda el email del usuario activo)
+// Los datos reales viven en Google Sheets
 // ============================================================
-function getUsers() {
-  try { return JSON.parse(localStorage.getItem('enc_users') || '{}'); } catch { return {}; }
-}
-function saveUsers(u) { localStorage.setItem('enc_users', JSON.stringify(u)); }
 function getCurrentUser() { return localStorage.getItem('enc_current_user') || null; }
 function setCurrentUser(email) { localStorage.setItem('enc_current_user', email); }
 function clearCurrentUser() { localStorage.removeItem('enc_current_user'); }
 
 // ============================================================
+// API — llamadas al Apps Script
+// ============================================================
+async function apiCall(params) {
+  const url = SCRIPT_URL + '?' + new URLSearchParams(params).toString();
+  const res = await fetch(url);
+  const data = await res.json();
+  return data;
+}
+
+// ============================================================
 // INICIALIZACIÓN
 // ============================================================
-window.addEventListener('load', () => {
-  // Inicializar EmailJS
-  try { emailjs.init(EMAILJS_PUBLIC_KEY); } catch(e) { console.warn('EmailJS no inicializado:', e); }
+window.addEventListener('load', async () => {
+  try { emailjs.init(EMAILJS_PUBLIC_KEY); } catch(e) { console.warn('EmailJS:', e); }
 
-  // Manejar aprobación/denegación por URL
-  const params = new URLSearchParams(window.location.search);
-  const action = params.get('action');
-  const email  = params.get('email');
+  // Si el admin hizo clic en aprobar/denegar desde el email,
+  // esos links van directo al Apps Script — no se manejan aquí.
 
-  if (action && email) {
-    handleAdminAction(action, decodeURIComponent(email));
-    // Limpiar URL
-    window.history.replaceState({}, '', APP_URL);
-    return;
-  }
-
-  // Verificar sesión activa — si ya fue aprobado, entra directo sin preguntar nada
   const currentUser = getCurrentUser();
   if (currentUser) {
-    const users = getUsers();
-    if (users[currentUser] && users[currentUser].status === 'approved') {
-      grantAccess(currentUser);
-      return;
-    } else if (users[currentUser] && users[currentUser].status === 'denied') {
-      showDenied();
-      return;
-    } else if (users[currentUser] && users[currentUser].status === 'pending') {
-      showPending(currentUser);
-      return;
-    }
+    // Verificar estado real en Google Sheets (no en localStorage)
+    showLoadingOverlay(currentUser);
+    try {
+      const res = await apiCall({ action: 'status', email: currentUser });
+      if (res.ok) {
+        if (res.status === 'approved') { grantAccess(currentUser); return; }
+        if (res.status === 'denied')   { showDenied(); return; }
+        if (res.status === 'pending')  { showPending(currentUser); return; }
+      }
+    } catch(e) { console.warn('Error verificando sesión:', e); }
+    clearCurrentUser();
   }
-  // Si no hay sesión guardada, mostrar login
-  clearCurrentUser();
-
   showRegister();
 });
+
+function showLoadingOverlay(email) {
+  document.getElementById('register-screen').classList.add('hidden');
+  document.getElementById('pending-screen').classList.remove('visible');
+  document.getElementById('denied-screen').classList.remove('visible');
+  // Mostrar un estado de carga mínimo
+  const overlay = document.getElementById('auth-overlay');
+  overlay.style.display = 'flex';
+}
 
 // ============================================================
 // TABS DE AUTENTICACIÓN
@@ -1198,9 +1192,10 @@ function switchAuthTab(tab) {
 // ============================================================
 // INICIAR SESIÓN
 // ============================================================
-function submitLogin() {
+async function submitLogin() {
   const email = document.getElementById('login-email').value.trim();
   const pass  = document.getElementById('login-password').value;
+  const btn   = document.getElementById('btn-login');
 
   hideAuthAlert('login-alert');
 
@@ -1211,32 +1206,39 @@ function submitLogin() {
     showAuthAlert('login-alert', 'Por favor ingresa tu contraseña.', 'error'); return;
   }
 
-  const users = getUsers();
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Verificando…';
 
-  if (!users[email]) {
-    showAuthAlert('login-alert', 'No existe una cuenta con ese correo. ¿Quieres registrarte?', 'error'); return;
-  }
+  try {
+    const res = await apiCall({ action: 'login', email, password: btoa(pass) });
 
-  if (users[email].password !== btoa(pass)) {
-    showAuthAlert('login-alert', 'Contraseña incorrecta.', 'error'); return;
-  }
+    if (!res.ok) {
+      if (res.error === 'not_found') {
+        showAuthAlert('login-alert', 'No existe una cuenta con ese correo. ¿Quieres registrarte?', 'error');
+      } else if (res.error === 'wrong_password') {
+        showAuthAlert('login-alert', 'Contraseña incorrecta.', 'error');
+      } else {
+        showAuthAlert('login-alert', 'Error: ' + res.error, 'error');
+      }
+      return;
+    }
 
-  const status = users[email].status;
-
-  if (status === 'approved') {
     setCurrentUser(email);
-    grantAccess(email);
-  } else if (status === 'pending') {
-    // Con credenciales correctas y solicitud ya enviada, se da acceso.
-    // El localStorage es local por navegador, por eso no se puede bloquear
-    // desde otro dispositivo sin un backend real. Si fue denegado, se muestra abajo.
-    users[email].status = 'approved';
-    users[email].approvedAt = new Date().toISOString();
-    saveUsers(users);
-    setCurrentUser(email);
-    grantAccess(email);
-  } else if (status === 'denied') {
-    showDenied();
+
+    if (res.status === 'approved') {
+      grantAccess(email);
+    } else if (res.status === 'pending') {
+      showPending(email);
+    } else if (res.status === 'denied') {
+      showDenied();
+    }
+
+  } catch(e) {
+    showAuthAlert('login-alert', '⚠️ No se pudo conectar con el servidor. Verifica tu conexión.', 'error');
+    console.error(e);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = 'Iniciar sesión';
   }
 }
 
@@ -1275,12 +1277,14 @@ function resetRegistration() {
   showRegister();
 }
 
+// ============================================================
+// REGISTRARSE
+// ============================================================
 async function submitRegistration() {
   const email = document.getElementById('reg-email').value.trim();
   const pass  = document.getElementById('reg-password').value;
   const pass2 = document.getElementById('reg-password2').value;
   const btn   = document.getElementById('btn-register');
-  const alert = document.getElementById('reg-alert');
 
   hideAuthAlert('reg-alert');
 
@@ -1294,59 +1298,55 @@ async function submitRegistration() {
     showAuthAlert('reg-alert', 'Las contraseñas no coinciden.', 'error'); return;
   }
 
-  const users = getUsers();
-
-  // Si ya existe y fue aprobado
-  if (users[email]) {
-    if (users[email].status === 'approved') {
-      grantAccess(email); return;
-    }
-    if (users[email].status === 'denied') {
-      showDenied(); return;
-    }
-    if (users[email].status === 'pending') {
-      setCurrentUser(email);
-      showPending(email); return;
-    }
-  }
-
-  // Registrar nuevo usuario
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span>Enviando solicitud…';
 
-  users[email] = {
-    password: btoa(pass), // codificación básica (no apta para producción real)
-    status: 'pending',
-    requestedAt: new Date().toISOString()
-  };
-  saveUsers(users);
-  setCurrentUser(email);
-
-  // Enviar notificación al admin
   try {
-    await sendApprovalEmail(email);
-    showAuthAlert('reg-alert', '✅ Solicitud enviada. Espera la aprobación del administrador.', 'success');
+    const res = await apiCall({ action: 'register', email, password: btoa(pass) });
+
+    if (!res.ok) {
+      if (res.error === 'already_exists') {
+        // Ya existe — redirigir según su estado actual
+        setCurrentUser(email);
+        if (res.status === 'approved')  { grantAccess(email); return; }
+        if (res.status === 'denied')    { showDenied(); return; }
+        if (res.status === 'pending')   { showPending(email); return; }
+      }
+      showAuthAlert('reg-alert', 'Error: ' + res.error, 'error');
+      return;
+    }
+
+    // Registro exitoso → enviar email al admin
+    setCurrentUser(email);
+    try {
+      await sendApprovalEmail(email);
+      showAuthAlert('reg-alert', '✅ Solicitud enviada. Espera la aprobación del administrador.', 'success');
+    } catch(e) {
+      console.error('Email error:', e);
+      showAuthAlert('reg-alert', '⚠️ Solicitud registrada, pero el email al admin falló. Avísale manualmente.', 'warn');
+    }
+
+    setTimeout(() => showPending(email), 1800);
+
   } catch(e) {
-    console.error('Error al enviar email:', e);
-    // El usuario sí fue registrado, solo falló el email
-    showAuthAlert('reg-alert', `⚠️ Solicitud registrada localmente, pero no se pudo enviar la notificación al administrador por email. Error: ${e.message || 'Verifica tu configuración de EmailJS (Service ID, Template ID, Public Key y campos del template).'}`, 'warn');
+    showAuthAlert('reg-alert', '⚠️ No se pudo conectar con el servidor. Verifica tu conexión.', 'error');
+    console.error(e);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = 'Solicitar acceso';
   }
-
-  setTimeout(() => showPending(email), 1800);
-
-  btn.disabled = false;
-  btn.innerHTML = 'Solicitar acceso';
 }
 
+// ============================================================
+// EMAIL AL ADMIN (via EmailJS)
+// ============================================================
 async function sendApprovalEmail(email) {
-  const approveLink = `${APP_URL}?action=approve&email=${encodeURIComponent(email)}`;
-  const denyLink    = `${APP_URL}?action=deny&email=${encodeURIComponent(email)}`;
+  const approveLink = `${SCRIPT_URL}?action=approve&email=${encodeURIComponent(email)}`;
+  const denyLink    = `${SCRIPT_URL}?action=deny&email=${encodeURIComponent(email)}`;
 
-  // EmailJS requiere que el template tenga {{to_email}} en el campo "To email"
-  // y {{to_name}} en el campo "To name" del dashboard de EmailJS
   const result = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-    to_email:     ADMIN_EMAIL,          // debe coincidir con {{to_email}} en el template
-    to_name:      'Administrador',      // nombre del destinatario
+    to_email:     ADMIN_EMAIL,
+    to_name:      'Administrador',
     from_email:   email,
     from_name:    email.split('@')[0],
     reply_to:     email,
@@ -1355,71 +1355,43 @@ async function sendApprovalEmail(email) {
     deny_link:    denyLink,
   });
 
-  if (result.status !== 200) {
-    throw new Error('EmailJS respondió con status: ' + result.status);
-  }
+  if (result.status !== 200) throw new Error('EmailJS status: ' + result.status);
   return result;
 }
 
-function checkApprovalStatus() {
+// ============================================================
+// VERIFICAR ESTADO (botón en pantalla pendiente)
+// ============================================================
+async function checkApprovalStatus() {
   const currentUser = getCurrentUser();
   if (!currentUser) { showRegister(); return; }
 
-  const users = getUsers();
-  const alertEl = 'pending-alert';
+  const btn = document.querySelector('.check-status-btn');
+  if (btn) { btn.textContent = '🔄 Verificando…'; btn.disabled = true; }
 
-  if (!users[currentUser]) { showRegister(); return; }
-
-  const status = users[currentUser].status;
-  if (status === 'approved') {
-    showAuthAlert(alertEl, '✅ ¡Aprobado! Cargando la aplicación…', 'success');
-    setTimeout(() => grantAccess(currentUser), 1200);
-  } else if (status === 'denied') {
-    showDenied();
-  } else {
-    showAuthAlert(alertEl, '⏳ Tu solicitud aún está pendiente de aprobación.', 'info');
-  }
-}
-
-function handleAdminAction(action, email) {
-  const users = getUsers();
-  if (!users[email]) {
-    alert('No se encontró la solicitud para: ' + email);
-    return;
-  }
-
-  if (action === 'approve') {
-    users[email].status = 'approved';
-    users[email].approvedAt = new Date().toISOString();
-    saveUsers(users);
-    // Mostrar confirmación al admin
-    document.getElementById('auth-overlay').innerHTML = `
-      <div class="auth-card" style="text-align:center;">
-        <div class="status-icon">✅</div>
-        <div class="auth-title">Acceso aprobado</div>
-        <div style="font-size:0.82rem;color:var(--text-dim);margin-top:10px;">
-          El acceso de <strong style="color:var(--accent)">${email}</strong> ha sido aprobado correctamente.
-        </div>
-      </div>
-    `;
-  } else if (action === 'deny') {
-    users[email].status = 'denied';
-    users[email].deniedAt = new Date().toISOString();
-    saveUsers(users);
-    document.getElementById('auth-overlay').innerHTML = `
-      <div class="auth-card" style="text-align:center;">
-        <div class="status-icon">❌</div>
-        <div class="auth-title">Acceso denegado</div>
-        <div style="font-size:0.82rem;color:var(--text-dim);margin-top:10px;">
-          El acceso de <strong style="color:#ff8888">${email}</strong> ha sido denegado.
-        </div>
-      </div>
-    `;
+  try {
+    const res = await apiCall({ action: 'status', email: currentUser });
+    if (res.ok) {
+      if (res.status === 'approved') {
+        showAuthAlert('pending-alert', '✅ ¡Aprobado! Cargando la aplicación…', 'success');
+        setTimeout(() => grantAccess(currentUser), 1200);
+      } else if (res.status === 'denied') {
+        showDenied();
+      } else {
+        showAuthAlert('pending-alert', '⏳ Tu solicitud aún está pendiente de aprobación.', 'info');
+      }
+    } else {
+      showAuthAlert('pending-alert', 'Error al verificar: ' + res.error, 'error');
+    }
+  } catch(e) {
+    showAuthAlert('pending-alert', '⚠️ No se pudo conectar. Intenta de nuevo.', 'error');
+  } finally {
+    if (btn) { btn.textContent = '🔄 Verificar estado'; btn.disabled = false; }
   }
 }
 
 function grantAccess(email) {
-  setCurrentUser(email); // guardar sesión para que no vuelva a pedir login
+  setCurrentUser(email);
   document.getElementById('auth-overlay').style.display = 'none';
   document.getElementById('user-badge').style.display = 'flex';
   document.getElementById('user-badge-email').textContent = email;
