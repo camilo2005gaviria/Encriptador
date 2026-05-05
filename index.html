@@ -1129,7 +1129,7 @@ const ADMIN_EMAIL         = 'gaviriarioscamilo@gmail.com';
 
 // URL base donde está hospedado este archivo (para los links de aprobar/denegar)
 // Si usas file://, reemplaza con la URL real de tu servidor
-const APP_URL = window.location.href.split('?')[0];
+const APP_URL = 'https://camilo2005gaviria.github.io/Encriptador/';
 
 // ============================================================
 // ALMACENAMIENTO LOCAL DE USUARIOS (simulado en localStorage)
@@ -1162,7 +1162,7 @@ window.addEventListener('load', () => {
     return;
   }
 
-  // Verificar sesión activa
+  // Verificar sesión activa — si ya fue aprobado, entra directo sin preguntar nada
   const currentUser = getCurrentUser();
   if (currentUser) {
     const users = getUsers();
@@ -1172,11 +1172,13 @@ window.addEventListener('load', () => {
     } else if (users[currentUser] && users[currentUser].status === 'denied') {
       showDenied();
       return;
-    } else if (users[currentUser]) {
+    } else if (users[currentUser] && users[currentUser].status === 'pending') {
       showPending(currentUser);
       return;
     }
   }
+  // Si no hay sesión guardada, mostrar login
+  clearCurrentUser();
 
   showRegister();
 });
@@ -1401,6 +1403,7 @@ function handleAdminAction(action, email) {
 }
 
 function grantAccess(email) {
+  setCurrentUser(email); // guardar sesión para que no vuelva a pedir login
   document.getElementById('auth-overlay').style.display = 'none';
   document.getElementById('user-badge').style.display = 'flex';
   document.getElementById('user-badge-email').textContent = email;
