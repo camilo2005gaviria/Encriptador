@@ -1117,7 +1117,7 @@
 // ============================================================
 // CONFIGURACIÓN — APPS SCRIPT + EMAILJS
 // ============================================================
-const SCRIPT_URL      = 'https://script.google.com/macros/s/AKfycbwZ3PP4U7EXASS4YcaYjKi32z2ZjMrCIS-QIIRfuFs6aM1KfBRUmF9xNJFp9EQQ9co/exec';  // <-- ver instrucciones
+const SCRIPT_URL      = 'https://script.google.com/macros/s/AKfycbwGVHUu4wzCCb6yc0Gsn5VK-vSE-h8kDi6rmOrOVDjEE6Aoz_5DaqFqcWAKJZPjmoE/exec';  // <-- ver instrucciones
 const EMAILJS_PUBLIC_KEY  = 'C5XBwPbz4k6nC4fMi';
 const EMAILJS_SERVICE_ID  = 'service_bo06stg';
 const EMAILJS_TEMPLATE_ID = 'template_sd1hmw6';
@@ -1316,15 +1316,9 @@ async function submitRegistration() {
       return;
     }
 
-    // Registro exitoso → enviar email al admin
+    // Registro exitoso — el Apps Script ya envió el email al admin automáticamente
     setCurrentUser(email);
-    try {
-      await sendApprovalEmail(email);
-      showAuthAlert('reg-alert', '✅ Solicitud enviada. Espera la aprobación del administrador.', 'success');
-    } catch(e) {
-      console.error('Email error:', e);
-      showAuthAlert('reg-alert', '⚠️ Solicitud registrada, pero el email al admin falló. Avísale manualmente.', 'warn');
-    }
+    showAuthAlert('reg-alert', '✅ Solicitud enviada. El administrador recibirá un email y te notificará cuando sea aceptada.', 'success');
 
     setTimeout(() => showPending(email), 1800);
 
