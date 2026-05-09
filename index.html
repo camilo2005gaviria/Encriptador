@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Encriptador de Soportes — Res. 2284</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/forge/1.3.1/forge.min.js"></script>
-<!-- EmailJS para enviar notificaciones sin backend -->
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Syne:wght@400;600;700;800&display=swap');
 
@@ -1164,7 +1164,7 @@
             onkeydown="if(event.key==='Enter')submitRegistration()" />
         </div>
         <button class="auth-btn" id="btn-register" onclick="submitRegistration()">
-          Solicitar acceso
+          Crear cuenta y continuar
         </button>
         <div class="auth-alert" id="reg-alert"></div>
       </div>
@@ -1180,8 +1180,6 @@
         Recibirás acceso una vez que sea aceptada.
       </div>
       <div id="pending-email-display" style="font-size:0.78rem;color:var(--accent);margin-bottom:16px;"></div>
-      <button class="check-status-btn" onclick="checkApprovalStatus()">🔄 Verificar estado</button>
-      <br><br>
       <button class="check-status-btn" style="color:var(--text-dim);" onclick="resetRegistration()">← Volver</button>
       <div class="auth-alert" id="pending-alert"></div>
     </div>
@@ -1202,20 +1200,20 @@
       <div class="payment-header">
         <div class="status-icon">💳</div>
         <div class="payment-title">Elige tu Plan</div>
-        <div class="payment-sub">Tu acceso fue aprobado — selecciona un plan para continuar</div>
+        <div class="payment-sub">Selecciona un plan para activar tu acceso</div>
       </div>
 
       <div class="plans-grid">
-        <!-- Plan Básico -->
-        <div class="plan-card" id="plan-basic" onclick="selectPlan('basic')">
+        <!-- Plan Mensual -->
+        <div class="plan-card" id="plan-monthly" onclick="selectPlan('monthly')">
           <div class="plan-radio"><div class="plan-radio-dot"></div></div>
           <div class="plan-info">
-            <div class="plan-name">Plan Básico</div>
-            <div class="plan-desc">Hasta 100 archivos encriptados</div>
+            <div class="plan-name">Plan Mensual</div>
+            <div class="plan-desc">Archivos ilimitados · Se renueva cada mes exacto</div>
           </div>
           <div class="plan-price">
             <div class="plan-amount">$25.000</div>
-            <div class="plan-period">COP · único pago</div>
+            <div class="plan-period">COP · mensual</div>
           </div>
         </div>
 
@@ -1224,7 +1222,7 @@
           <div class="plan-radio"><div class="plan-radio-dot"></div></div>
           <div class="plan-info">
             <div class="plan-name">Plan Profesional <span class="plan-badge badge-popular">Popular</span></div>
-            <div class="plan-desc">Hasta 1.000 archivos encriptados</div>
+            <div class="plan-desc">Hasta 1.000 archivos encriptados · Pago único</div>
           </div>
           <div class="plan-price">
             <div class="plan-amount">$250.000</div>
@@ -1237,7 +1235,7 @@
           <div class="plan-radio"><div class="plan-radio-dot"></div></div>
           <div class="plan-info">
             <div class="plan-name">Plan Anual Ilimitado <span class="plan-badge badge-best">Mejor valor</span></div>
-            <div class="plan-desc">Archivos ilimitados durante 12 meses</div>
+            <div class="plan-desc">Archivos ilimitados · Se renueva cada año exacto</div>
           </div>
           <div class="plan-price">
             <div class="plan-amount">$2.650.000</div>
@@ -1445,25 +1443,14 @@
 ============================================================ -->
 <script>
 // ============================================================
-// CONFIGURACIÓN EMAILJS
-// IMPORTANTE: Para activar los emails:
-// 1. Crear cuenta gratis en https://www.emailjs.com
-// 2. Crear un "Email Service" (Gmail recomendado con gaviriarioscamilo@gmail.com)
-// 3. Crear un "Email Template" con las variables: {{from_email}}, {{from_name}}, {{message}}, {{approve_link}}, {{deny_link}}
-// 4. Reemplazar los valores abajo con tu Public Key, Service ID y Template ID
+// CONFIGURACIÓN
 // ============================================================
-const EMAILJS_PUBLIC_KEY  = 'C5XBwPbz4k6nC4fMi';      // e.g. 'user_abc123...'
-const EMAILJS_SERVICE_ID  = 'service_bo06stg';       // e.g. 'service_gmail'
-const EMAILJS_TEMPLATE_ID = 'template_sd1hmw6';      // e.g. 'template_acceso'
-const ADMIN_EMAIL         = 'gaviriarioscamilo@gmail.com';
-
-// URL base donde está hospedado este archivo (para los links de aprobar/denegar)
-// Si usas file://, reemplaza con la URL real de tu servidor
-const APP_URL = 'https://camilo2005gaviria.github.io/Encriptador/';
+const ADMIN_EMAIL = 'gaviriarioscamilo@gmail.com';
+const APP_URL     = 'https://camilo2005gaviria.github.io/Encriptador/';
 
 // ============================================================
-// ALMACENAMIENTO LOCAL DE USUARIOS (simulado en localStorage)
-// Estructura: { email: { password, status: 'pending'|'approved'|'denied', requestedAt } }
+// ALMACENAMIENTO LOCAL DE USUARIOS
+// Estructura: { email: { password, plan, planActivatedAt, wompiRef } }
 // ============================================================
 function getUsers() {
   try { return JSON.parse(localStorage.getItem('enc_users') || '{}'); } catch { return {}; }
@@ -1474,45 +1461,74 @@ function setCurrentUser(email) { localStorage.setItem('enc_current_user', email)
 function clearCurrentUser() { localStorage.removeItem('enc_current_user'); }
 
 // ============================================================
+// VERIFICAR SI EL PLAN ESTÁ VIGENTE
+// ============================================================
+function isPlanActive(userData) {
+  if (!userData || !userData.plan || !userData.planActivatedAt) return false;
+
+  const activatedAt = new Date(userData.planActivatedAt);
+  const now = new Date();
+
+  if (userData.plan === 'monthly') {
+    // Vence exactamente 1 mes después de la activación (mismo día del mes)
+    const expiry = new Date(activatedAt);
+    expiry.setMonth(expiry.getMonth() + 1);
+    return now < expiry;
+  }
+
+  if (userData.plan === 'annual') {
+    // Vence exactamente 1 año después de la activación
+    const expiry = new Date(activatedAt);
+    expiry.setFullYear(expiry.getFullYear() + 1);
+    return now < expiry;
+  }
+
+  // Plan Profesional (pago único): no vence
+  if (userData.plan === 'pro') return true;
+
+  return false;
+}
+
+function getPlanExpiryText(userData) {
+  if (!userData || !userData.planActivatedAt) return '';
+  const activatedAt = new Date(userData.planActivatedAt);
+
+  if (userData.plan === 'monthly') {
+    const expiry = new Date(activatedAt);
+    expiry.setMonth(expiry.getMonth() + 1);
+    return 'Vence: ' + expiry.toLocaleDateString('es-CO');
+  }
+  if (userData.plan === 'annual') {
+    const expiry = new Date(activatedAt);
+    expiry.setFullYear(expiry.getFullYear() + 1);
+    return 'Vence: ' + expiry.toLocaleDateString('es-CO');
+  }
+  return 'Acceso permanente';
+}
+
+// ============================================================
 // INICIALIZACIÓN
 // ============================================================
 window.addEventListener('load', () => {
-  // Inicializar EmailJS
-  try { emailjs.init(EMAILJS_PUBLIC_KEY); } catch(e) { console.warn('EmailJS no inicializado:', e); }
-
-  // Manejar aprobación/denegación por URL
-  const params = new URLSearchParams(window.location.search);
-  const action = params.get('action');
-  const email  = params.get('email');
-
-  if (action && email) {
-    handleAdminAction(action, decodeURIComponent(email));
-    // Limpiar URL
-    window.history.replaceState({}, '', APP_URL);
-    return;
-  }
-
   // Verificar retorno desde Wompi (pago completado)
   if (checkWompiReturn()) return;
 
-  // Verificar sesión activa — si ya fue aprobado, entra directo sin preguntar nada
   const currentUser = getCurrentUser();
   if (currentUser) {
     const users = getUsers();
-    if (users[currentUser] && users[currentUser].status === 'approved') {
-      grantAccess(currentUser);
-      return;
-    } else if (users[currentUser] && users[currentUser].status === 'denied') {
-      showDenied();
-      return;
-    } else if (users[currentUser] && users[currentUser].status === 'pending') {
-      showPending(currentUser);
-      return;
+    if (users[currentUser]) {
+      if (isPlanActive(users[currentUser])) {
+        grantAccess(currentUser);
+        return;
+      } else {
+        // Plan vencido o sin plan → pedir pago
+        showPaymentScreen();
+        return;
+      }
     }
   }
-  // Si no hay sesión guardada, mostrar login
+  // Sin sesión → mostrar login
   clearCurrentUser();
-
   showRegister();
 });
 
@@ -1554,16 +1570,12 @@ function submitLogin() {
     showAuthAlert('login-alert', 'Contraseña incorrecta.', 'error'); return;
   }
 
-  const status = users[email].status;
+  setCurrentUser(email);
 
-  if (status === 'approved') {
-    setCurrentUser(email);
+  if (isPlanActive(users[email])) {
     grantAccess(email);
-  } else if (status === 'pending') {
-    setCurrentUser(email);
-    showPending(email);
-  } else if (status === 'denied') {
-    showDenied();
+  } else {
+    showPaymentScreen();
   }
 }
 
@@ -1576,14 +1588,6 @@ function showRegister() {
   document.getElementById('denied-screen').classList.remove('visible');
   document.getElementById('payment-screen').classList.remove('visible');
   switchAuthTab('login');
-}
-
-function showPending(email) {
-  document.getElementById('register-screen').classList.add('hidden');
-  document.getElementById('pending-screen').classList.add('visible');
-  document.getElementById('denied-screen').classList.remove('visible');
-  document.getElementById('payment-screen').classList.remove('visible');
-  document.getElementById('pending-email-display').textContent = '📧 ' + email;
 }
 
 function showDenied() {
@@ -1605,12 +1609,10 @@ function resetRegistration() {
   showRegister();
 }
 
-async function submitRegistration() {
+function submitRegistration() {
   const email = document.getElementById('reg-email').value.trim();
   const pass  = document.getElementById('reg-password').value;
   const pass2 = document.getElementById('reg-password2').value;
-  const btn   = document.getElementById('btn-register');
-  const alert = document.getElementById('reg-alert');
 
   hideAuthAlert('reg-alert');
 
@@ -1626,130 +1628,40 @@ async function submitRegistration() {
 
   const users = getUsers();
 
-  // Si ya existe y fue aprobado
   if (users[email]) {
-    if (users[email].status === 'approved') {
-      grantAccess(email); return;
+    // Ya existe — hacer login normal
+    if (users[email].password !== btoa(pass)) {
+      showAuthAlert('reg-alert', 'Ya existe una cuenta con ese correo. Usa la pestaña Iniciar Sesión.', 'error'); return;
     }
-    if (users[email].status === 'denied') {
-      showDenied(); return;
+    setCurrentUser(email);
+    if (isPlanActive(users[email])) {
+      grantAccess(email);
+    } else {
+      showPaymentScreen();
     }
-    if (users[email].status === 'pending') {
-      setCurrentUser(email);
-      showPending(email); return;
-    }
+    return;
   }
 
-  // Registrar nuevo usuario
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span>Enviando solicitud…';
-
+  // Registrar nuevo usuario — va directo a pago, sin esperar aprobación
   users[email] = {
-    password: btoa(pass), // codificación básica (no apta para producción real)
-    status: 'pending',
-    requestedAt: new Date().toISOString()
+    password: btoa(pass),
+    registeredAt: new Date().toISOString()
   };
   saveUsers(users);
   setCurrentUser(email);
 
-  // Enviar notificación al admin
-  try {
-    await sendApprovalEmail(email);
-    showAuthAlert('reg-alert', '✅ Solicitud enviada. Espera la aprobación del administrador.', 'success');
-  } catch(e) {
-    console.warn('Error al enviar email:', e);
-    showAuthAlert('reg-alert', '⚠️ Solicitud registrada, pero no se pudo enviar la notificación por email. Configura EmailJS para activar notificaciones.', 'warn');
-  }
-
-  setTimeout(() => showPending(email), 1800);
-
-  btn.disabled = false;
-  btn.innerHTML = 'Solicitar acceso';
-}
-
-async function sendApprovalEmail(email) {
-  const approveLink = `${APP_URL}?action=approve&email=${encodeURIComponent(email)}`;
-  const denyLink    = `${APP_URL}?action=deny&email=${encodeURIComponent(email)}`;
-
-  await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-    to_email:     ADMIN_EMAIL,
-    from_email:   email,
-    from_name:    email.split('@')[0],
-    message:      `El usuario ${email} ha solicitado acceso al Encriptador de Soportes (Res. 2284) el ${new Date().toLocaleString('es-CO')}.`,
-    approve_link: approveLink,
-    deny_link:    denyLink,
-  });
-}
-
-function checkApprovalStatus() {
-  const currentUser = getCurrentUser();
-  if (!currentUser) { showRegister(); return; }
-
-  const users = getUsers();
-  const alertEl = 'pending-alert';
-
-  if (!users[currentUser]) { showRegister(); return; }
-
-  const status = users[currentUser].status;
-  if (status === 'approved') {
-    showAuthAlert(alertEl, '✅ ¡Aprobado! Cargando la aplicación…', 'success');
-    setTimeout(() => grantAccess(currentUser), 1200);
-  } else if (status === 'denied') {
-    showDenied();
-  } else {
-    showAuthAlert(alertEl, '⏳ Tu solicitud aún está pendiente de aprobación.', 'info');
-  }
-}
-
-function handleAdminAction(action, email) {
-  const users = getUsers();
-  if (!users[email]) {
-    alert('No se encontró la solicitud para: ' + email);
-    return;
-  }
-
-  if (action === 'approve') {
-    users[email].status = 'approved';
-    users[email].approvedAt = new Date().toISOString();
-    saveUsers(users);
-    // Mostrar confirmación al admin
-    document.getElementById('auth-overlay').innerHTML = `
-      <div class="auth-card" style="text-align:center;">
-        <div class="status-icon">✅</div>
-        <div class="auth-title">Acceso aprobado</div>
-        <div style="font-size:0.82rem;color:var(--text-dim);margin-top:10px;">
-          El acceso de <strong style="color:var(--accent)">${email}</strong> ha sido aprobado correctamente.
-        </div>
-      </div>
-    `;
-  } else if (action === 'deny') {
-    users[email].status = 'denied';
-    users[email].deniedAt = new Date().toISOString();
-    saveUsers(users);
-    document.getElementById('auth-overlay').innerHTML = `
-      <div class="auth-card" style="text-align:center;">
-        <div class="status-icon">❌</div>
-        <div class="auth-title">Acceso denegado</div>
-        <div style="font-size:0.82rem;color:var(--text-dim);margin-top:10px;">
-          El acceso de <strong style="color:#ff8888">${email}</strong> ha sido denegado.
-        </div>
-      </div>
-    `;
-  }
+  showPaymentScreen();
 }
 
 function grantAccess(email) {
   const users = getUsers();
-  if (users[email] && users[email].plan) {
-    setCurrentUser(email);
-    document.getElementById('auth-overlay').style.display = 'none';
-    document.getElementById('user-badge').style.display = 'flex';
-    document.getElementById('user-badge-email').textContent = email;
-    document.getElementById('user-badge-plan').textContent = PLANS[users[email].plan]?.name || '';
-  } else {
-    setCurrentUser(email);
-    showPaymentScreen();
-  }
+  setCurrentUser(email);
+  document.getElementById('auth-overlay').style.display = 'none';
+  document.getElementById('user-badge').style.display = 'flex';
+  document.getElementById('user-badge-email').textContent = email;
+  const planName = PLANS[users[email]?.plan]?.name || '';
+  const expiry   = getPlanExpiryText(users[email]);
+  document.getElementById('user-badge-plan').textContent = planName + (expiry ? ' · ' + expiry : '');
 }
 
 function logout() {
@@ -1764,9 +1676,9 @@ let selectedPlan = null;
 let selectedMethod = null;
 
 const PLANS = {
-  basic:  { name: 'Plan Básico',            price: '$25.000 COP',      limit: '100 archivos' },
-  pro:    { name: 'Plan Profesional',        price: '$250.000 COP',     limit: '1.000 archivos' },
-  annual: { name: 'Plan Anual Ilimitado',    price: '$2.650.000 COP',   limit: 'Ilimitado por 12 meses' },
+  monthly: { name: 'Plan Mensual',            price: '$25.000 COP',      limit: 'Ilimitado / mes',          period: 'mensual' },
+  pro:     { name: 'Plan Profesional',        price: '$250.000 COP',     limit: '1.000 archivos',           period: 'único pago' },
+  annual:  { name: 'Plan Anual Ilimitado',    price: '$2.650.000 COP',   limit: 'Ilimitado por 12 meses',   period: 'anual' },
 };
 
 const PAYMENT_INFO = {
@@ -1790,11 +1702,22 @@ function showPaymentScreen() {
   document.getElementById('payment-screen').classList.add('visible');
   selectedPlan = null;
   selectedMethod = null;
+
+  // Si el plan vencido era mensual o anual, mostrar aviso
+  const email = getCurrentUser();
+  if (email) {
+    const users = getUsers();
+    const u = users[email];
+    if (u && u.plan && !isPlanActive(u)) {
+      const sub = document.querySelector('.payment-sub');
+      if (sub) sub.textContent = '⚠️ Tu suscripción venció — renueva tu plan para continuar';
+    }
+  }
 }
 
 function selectPlan(planKey) {
   selectedPlan = planKey;
-  ['basic','pro','annual'].forEach(k => {
+  ['monthly','pro','annual'].forEach(k => {
     document.getElementById('plan-' + k).classList.toggle('selected', k === planKey);
   });
   document.getElementById('payment-methods-section').classList.add('visible');
@@ -1803,7 +1726,7 @@ function selectPlan(planKey) {
 
 function renderWompiButton(planKey) {
   const WOMPI_KEY = 'pub_test_xApJsGwbj0HaJi3WUXNetwUtAjCWBcRK';
-  const AMOUNTS = { basic: 2500000, pro: 25000000, annual: 265000000 }; // en centavos
+  const AMOUNTS = { monthly: 2500000, pro: 25000000, annual: 265000000 }; // en centavos
   const email = getCurrentUser() || '';
   const ref = 'NODECRYPT-' + planKey.toUpperCase() + '-' + Date.now();
   const amount = AMOUNTS[planKey];
@@ -1865,7 +1788,9 @@ function checkWompiReturn() {
   document.getElementById('auth-overlay').style.display = 'none';
   document.getElementById('user-badge').style.display = 'flex';
   document.getElementById('user-badge-email').textContent = pendingEmail;
-  document.getElementById('user-badge-plan').textContent = PLANS[pendingPlan]?.name || '';
+  const planName = PLANS[pendingPlan]?.name || '';
+  const expiry   = getPlanExpiryText(users[pendingEmail]);
+  document.getElementById('user-badge-plan').textContent = planName + (expiry ? ' · ' + expiry : '');
   return true;
 }
 
