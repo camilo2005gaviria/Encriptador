@@ -54,9 +54,11 @@
     background: rgba(10,14,20,0.97);
     z-index: 1000;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     backdrop-filter: blur(8px);
+    overflow-y: auto;
+    padding: 32px 16px 48px;
   }
 
   .auth-card {
@@ -68,6 +70,7 @@
     max-width: 420px;
     position: relative;
     box-shadow: 0 0 80px rgba(0,212,170,0.08);
+    margin: auto 0;
   }
 
   .auth-logo {
@@ -397,21 +400,24 @@
   .plan-price {
     text-align: right;
     flex-shrink: 0;
+    min-width: 110px;
   }
 
   .plan-amount {
     font-family: 'Syne', sans-serif;
-    font-size: 1.05rem;
+    font-size: 0.95rem;
     font-weight: 800;
     color: #fff;
-    line-height: 1.1;
+    line-height: 1.2;
+    white-space: nowrap;
   }
 
   .plan-period {
-    font-size: 0.62rem;
+    font-size: 0.6rem;
     color: var(--text-dim);
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.8px;
+    white-space: nowrap;
   }
 
   /* Métodos de pago */
@@ -1081,6 +1087,13 @@
   .info-box code { background: rgba(0,153,255,0.1); padding: 1px 5px; border-radius: 3px; color: var(--accent2); font-family: 'DM Mono', monospace; }
 
   .sep { height: 1px; background: var(--border); margin: 20px 0; }
+
+  @media (max-width: 480px) {
+    .auth-card { padding: 28px 20px; }
+    .plan-card { padding: 14px 12px; gap: 10px; }
+    .plan-amount { font-size: 0.85rem; }
+    .plan-name { font-size: 0.82rem; }
+  }
 
   /* Spinner */
   .spinner {
