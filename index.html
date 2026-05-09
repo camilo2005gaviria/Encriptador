@@ -1222,7 +1222,7 @@
           <div class="plan-radio"><div class="plan-radio-dot"></div></div>
           <div class="plan-info">
             <div class="plan-name">Plan Mensual</div>
-            <div class="plan-desc">Archivos ilimitados · Se renueva cada mes exacto</div>
+            <div class="plan-desc">Hasta 100 archivos · Se renueva cada mes exacto</div>
           </div>
           <div class="plan-price">
             <div class="plan-amount">$25.000</div>
@@ -1257,12 +1257,12 @@
         </div>
       </div>
 
-      <!-- Botón Wompi -->
+      <!-- Botón de Pago -->
       <div class="payment-methods-section" id="payment-methods-section">
         <div class="payment-methods-label">Pago seguro con Wompi</div>
         <p style="font-size:0.72rem;color:var(--text-dim);margin-bottom:14px;line-height:1.6;">
-          Acepta tarjetas debito/credito, PSE, Nequi y efectivo.<br>
-          Al hacer clic seras redirigido a la pasarela segura de Bancolombia.
+          Acepta tarjetas débito/crédito, PSE, Nequi y efectivo.<br>
+          Al hacer clic serás redirigido a la pasarela segura de Bancolombia.
         </p>
         <div id="wompi-btn-container"></div>
         <div id="payment-alert" class="auth-alert" style="margin-top:12px;"></div>
@@ -1739,33 +1739,45 @@ function selectPlan(planKey) {
 
 function renderWompiButton(planKey) {
   const WOMPI_KEY = 'pub_test_xApJsGwbj0HaJi3WUXNetwUtAjCWBcRK';
-  const AMOUNTS = { monthly: 2500000, pro: 25000000, annual: 265000000 }; // en centavos
-  const email = getCurrentUser() || '';
-  const ref = 'NODECRYPT-' + planKey.toUpperCase() + '-' + Date.now();
-  const amount = AMOUNTS[planKey];
+  const AMOUNTS = { monthly: 2500000, pro: 25000000, annual: 265000000 };
+  const LABELS  = {
+    monthly: 'Plan Mensual — $25.000 COP',
+    pro:     'Plan Profesional — $250.000 COP',
+    annual:  'Plan Anual — $2.650.000 COP'
+  };
+  const email   = getCurrentUser() || '';
+  const ref     = 'NODECRYPT-' + planKey.toUpperCase() + '-' + Date.now();
+  const amount  = AMOUNTS[planKey];
+  const redirectUrl = window.location.href.split('?')[0] + '?wompi_ref=' + ref;
 
-  // Guardar ref en localStorage para verificar al volver
-  localStorage.setItem('wompi_pending_ref', ref);
-  localStorage.setItem('wompi_pending_plan', planKey);
+  localStorage.setItem('wompi_pending_ref',   ref);
+  localStorage.setItem('wompi_pending_plan',  planKey);
   localStorage.setItem('wompi_pending_email', email);
 
-  const redirectUrl = encodeURIComponent(window.location.href.split('?')[0] + '?wompi_ref=' + ref);
+  // URL directa al checkout de Wompi — siempre funciona sin depender del widget
+  const wompiUrl = 'https://checkout.wompi.co/p/?' +
+    'public-key='           + encodeURIComponent(WOMPI_KEY) +
+    '&currency=COP' +
+    '&amount-in-cents='     + amount +
+    '&reference='           + encodeURIComponent(ref) +
+    '&redirect-url='        + encodeURIComponent(redirectUrl) +
+    '&customer-data:email=' + encodeURIComponent(email);
 
   const container = document.getElementById('wompi-btn-container');
-  container.innerHTML = `
-    <script src="https://checkout.wompi.co/widget.js"
-      data-render="button"
-      data-public-key="${WOMPI_KEY}"
-      data-currency="COP"
-      data-amount-in-cents="${amount}"
-      data-reference="${ref}"
-      data-customer-data:email="${email}"
-      data-redirect-url="${decodeURIComponent(redirectUrl)}"
-    ><\/script>
-    <p style="font-size:0.65rem;color:var(--text-dim);margin-top:10px;text-align:center;">
-      Pago procesado por Wompi · Bancolombia · 100% seguro
-    </p>
-  `;
+  container.innerHTML = '';
+
+  const btn = document.createElement('a');
+  btn.href = wompiUrl;
+  btn.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px;border-radius:10px;text-decoration:none;background:linear-gradient(135deg,#00d4aa,#0099ff);color:#000;font-family:Syne,sans-serif;font-size:0.88rem;font-weight:700;letter-spacing:0.5px;cursor:pointer;box-sizing:border-box;text-transform:uppercase;';
+  btn.textContent = '💳 Pagar ahora · ' + LABELS[planKey];
+  btn.onmouseover = () => { btn.style.boxShadow = '0 8px 30px rgba(0,212,170,0.4)'; btn.style.transform = 'translateY(-1px)'; };
+  btn.onmouseout  = () => { btn.style.boxShadow = 'none'; btn.style.transform = 'none'; };
+  container.appendChild(btn);
+
+  const note = document.createElement('p');
+  note.style.cssText = 'font-size:0.65rem;color:var(--text-dim);margin-top:10px;text-align:center;';
+  note.textContent = 'Pago procesado por Wompi \u00b7 Bancolombia \u00b7 100% seguro';
+  container.appendChild(note);
 }
 
 // Verificar si hay un pago Wompi pendiente al cargar la página
