@@ -6,7 +6,6 @@
 <title>Encriptador de Soportes — Res. 2284</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/forge/1.3.1/forge.min.js"></script>
 
-
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Syne:wght@400;600;700;800&display=swap');
 
@@ -86,7 +85,6 @@
     box-shadow: 0 0 30px rgba(0,212,170,0.3);
   }
 
-  /* Tabs de auth */
   .auth-tabs {
     display: flex;
     background: var(--bg);
@@ -138,9 +136,7 @@
     margin-bottom: 24px;
   }
 
-  .auth-field {
-    margin-bottom: 16px;
-  }
+  .auth-field { margin-bottom: 16px; }
 
   .auth-field label {
     display: block;
@@ -187,20 +183,13 @@
   .auth-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 30px rgba(0,212,170,0.35); }
   .auth-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
 
-  .auth-alert {
-    padding: 10px 14px;
-    border-radius: 8px;
-    font-size: 0.76rem;
-    margin-top: 14px;
-    display: none;
-  }
+  .auth-alert { padding: 10px 14px; border-radius: 8px; font-size: 0.76rem; margin-top: 14px; display: none; }
   .auth-alert.visible { display: flex; align-items: flex-start; gap: 8px; }
-  .auth-alert.error { background: rgba(255,68,68,0.1); border: 1px solid rgba(255,68,68,0.3); color: #ff8888; }
-  .auth-alert.success { background: rgba(0,230,118,0.08); border: 1px solid rgba(0,230,118,0.25); color: #00e676; }
-  .auth-alert.info { background: rgba(0,153,255,0.08); border: 1px solid rgba(0,153,255,0.2); color: #66bbff; }
-  .auth-alert.warn { background: rgba(255,107,53,0.1); border: 1px solid rgba(255,107,53,0.3); color: #ffaa77; }
+  .auth-alert.error  { background: rgba(255,68,68,0.1);   border: 1px solid rgba(255,68,68,0.3);   color: #ff8888; }
+  .auth-alert.success{ background: rgba(0,230,118,0.08);  border: 1px solid rgba(0,230,118,0.25);  color: #00e676; }
+  .auth-alert.info   { background: rgba(0,153,255,0.08);  border: 1px solid rgba(0,153,255,0.2);   color: #66bbff; }
+  .auth-alert.warn   { background: rgba(255,107,53,0.1);  border: 1px solid rgba(255,107,53,0.3);  color: #ffaa77; }
 
-  /* Estado pendiente */
   #pending-screen, #denied-screen { display: none; text-align: center; }
   #pending-screen.visible, #denied-screen.visible { display: block; }
   #register-screen { display: block; }
@@ -216,16 +205,10 @@
     margin-bottom: 10px;
   }
 
-  .status-desc {
-    font-size: 0.8rem;
-    color: var(--text-dim);
-    line-height: 1.7;
-    margin-bottom: 20px;
-  }
+  .status-desc { font-size: 0.8rem; color: var(--text-dim); line-height: 1.7; margin-bottom: 20px; }
 
   .pulse-dot {
-    width: 10px;
-    height: 10px;
+    width: 10px; height: 10px;
     background: var(--warn);
     border-radius: 50%;
     display: inline-block;
@@ -259,10 +242,7 @@
   #payment-screen { display: none; text-align: left; }
   #payment-screen.visible { display: block; }
 
-  .payment-header {
-    text-align: center;
-    margin-bottom: 28px;
-  }
+  .payment-header { text-align: center; margin-bottom: 28px; }
 
   .payment-title {
     font-family: 'Syne', sans-serif;
@@ -279,12 +259,7 @@
     text-transform: uppercase;
   }
 
-  .plans-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-bottom: 20px;
-  }
+  .plans-grid { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
 
   .plan-card {
     background: var(--bg);
@@ -299,70 +274,26 @@
     gap: 14px;
   }
 
-  .plan-card:hover {
-    border-color: var(--accent);
-    background: rgba(0,212,170,0.04);
-  }
-
-  .plan-card.selected {
-    border-color: var(--accent);
-    background: rgba(0,212,170,0.07);
-    box-shadow: 0 0 20px rgba(0,212,170,0.12);
-  }
-
-  .plan-card.popular {
-    border-color: rgba(0,153,255,0.5);
-  }
-
-  .plan-card.popular:hover, .plan-card.popular.selected {
-    border-color: var(--accent2);
-    background: rgba(0,153,255,0.07);
-    box-shadow: 0 0 20px rgba(0,153,255,0.15);
-  }
-
-  .plan-card.annual {
-    border-color: rgba(255,107,53,0.4);
-  }
-  .plan-card.annual:hover, .plan-card.annual.selected {
-    border-color: var(--warn);
-    background: rgba(255,107,53,0.07);
-    box-shadow: 0 0 20px rgba(255,107,53,0.15);
-  }
+  .plan-card:hover { border-color: var(--accent); background: rgba(0,212,170,0.04); }
+  .plan-card.selected { border-color: var(--accent); background: rgba(0,212,170,0.07); box-shadow: 0 0 20px rgba(0,212,170,0.12); }
+  .plan-card.popular { border-color: rgba(0,153,255,0.5); }
+  .plan-card.popular:hover, .plan-card.popular.selected { border-color: var(--accent2); background: rgba(0,153,255,0.07); box-shadow: 0 0 20px rgba(0,153,255,0.15); }
+  .plan-card.annual { border-color: rgba(255,107,53,0.4); }
+  .plan-card.annual:hover, .plan-card.annual.selected { border-color: var(--warn); background: rgba(255,107,53,0.07); box-shadow: 0 0 20px rgba(255,107,53,0.15); }
 
   .plan-radio {
-    width: 18px;
-    height: 18px;
+    width: 18px; height: 18px;
     border-radius: 50%;
     border: 2px solid var(--border);
     flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     transition: all 0.2s;
   }
+  .plan-card.selected .plan-radio { border-color: var(--accent); background: var(--accent); }
+  .plan-card.popular.selected .plan-radio { border-color: var(--accent2); background: var(--accent2); }
+  .plan-card.annual.selected .plan-radio { border-color: var(--warn); background: var(--warn); }
 
-  .plan-card.selected .plan-radio {
-    border-color: var(--accent);
-    background: var(--accent);
-  }
-
-  .plan-card.popular.selected .plan-radio {
-    border-color: var(--accent2);
-    background: var(--accent2);
-  }
-
-  .plan-card.annual.selected .plan-radio {
-    border-color: var(--warn);
-    background: var(--warn);
-  }
-
-  .plan-radio-dot {
-    width: 6px;
-    height: 6px;
-    background: #000;
-    border-radius: 50%;
-    display: none;
-  }
+  .plan-radio-dot { width: 6px; height: 6px; background: #000; border-radius: 50%; display: none; }
   .plan-card.selected .plan-radio-dot { display: block; }
 
   .plan-info { flex: 1; }
@@ -372,9 +303,7 @@
     font-size: 0.9rem;
     font-weight: 700;
     color: #fff;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    display: flex; align-items: center; gap: 8px;
     margin-bottom: 3px;
   }
 
@@ -391,17 +320,9 @@
   .badge-popular { background: rgba(0,153,255,0.15); color: #66bbff; }
   .badge-best { background: rgba(255,107,53,0.15); color: #ffaa77; }
 
-  .plan-desc {
-    font-size: 0.72rem;
-    color: var(--text-dim);
-    line-height: 1.5;
-  }
+  .plan-desc { font-size: 0.72rem; color: var(--text-dim); line-height: 1.5; }
 
-  .plan-price {
-    text-align: right;
-    flex-shrink: 0;
-    min-width: 110px;
-  }
+  .plan-price { text-align: right; flex-shrink: 0; min-width: 110px; }
 
   .plan-amount {
     font-family: 'Syne', sans-serif;
@@ -420,11 +341,7 @@
     white-space: nowrap;
   }
 
-  /* Métodos de pago */
-  .payment-methods-section {
-    display: none;
-    margin-bottom: 18px;
-  }
+  .payment-methods-section { display: none; margin-bottom: 18px; }
   .payment-methods-section.visible { display: block; }
 
   .payment-methods-label {
@@ -442,67 +359,7 @@
     margin-bottom: 12px;
   }
 
-  .payment-method-btn {
-    padding: 10px 8px;
-    background: var(--bg);
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
-    cursor: pointer;
-    text-align: center;
-    transition: all 0.2s;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.65rem;
-    color: var(--text-dim);
-    line-height: 1.4;
-  }
-
-  .payment-method-btn:hover {
-    border-color: var(--accent);
-    color: var(--text);
-  }
-
-  .payment-method-btn.selected {
-    border-color: var(--accent);
-    background: rgba(0,212,170,0.08);
-    color: var(--accent);
-  }
-
-  .payment-method-icon { font-size: 1.3rem; display: block; margin-bottom: 3px; }
-
-  .payment-info-box {
-    display: none;
-    background: rgba(0,212,170,0.05);
-    border: 1px solid rgba(0,212,170,0.2);
-    border-radius: 8px;
-    padding: 12px 14px;
-    font-size: 0.74rem;
-    color: var(--text);
-    line-height: 1.6;
-    margin-bottom: 14px;
-  }
-  .payment-info-box.visible { display: block; }
-
-  .payment-info-box strong { color: var(--accent); }
-
-  .payment-confirm-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 14px;
-    font-size: 0.73rem;
-    color: var(--text-dim);
-    cursor: pointer;
-  }
-
-  .payment-confirm-row input[type=checkbox] {
-    width: 16px;
-    height: 16px;
-    accent-color: var(--accent);
-    cursor: pointer;
-    flex-shrink: 0;
-  }
-
-  .btn-pay {
+  
     width: 100%;
     padding: 14px;
     background: linear-gradient(135deg, var(--accent), var(--accent2));
@@ -522,7 +379,7 @@
   .btn-pay:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
 
   /* ============================================================
-     FLOATING KEY PANEL (pestaña flotante de clave de desencriptación)
+     FLOATING KEY PANEL
   ============================================================ */
   #key-float {
     position: fixed;
@@ -578,15 +435,9 @@
   }
 
   .key-float-close {
-    background: none;
-    border: none;
-    color: var(--text-dim);
-    cursor: pointer;
-    font-size: 1.1rem;
-    padding: 4px;
-    border-radius: 4px;
-    transition: color 0.2s;
-    line-height: 1;
+    background: none; border: none; color: var(--text-dim);
+    cursor: pointer; font-size: 1.1rem; padding: 4px;
+    border-radius: 4px; transition: color 0.2s; line-height: 1;
   }
   .key-float-close:hover { color: var(--error); }
 
@@ -631,8 +482,7 @@
   .key-float-actions { display: flex; gap: 8px; }
 
   .key-float-copy {
-    flex: 1;
-    padding: 9px;
+    flex: 1; padding: 9px;
     background: rgba(0,212,170,0.1);
     border: 1px solid rgba(0,212,170,0.3);
     border-radius: 7px;
@@ -645,23 +495,13 @@
   .key-float-copy:hover { background: rgba(0,212,170,0.18); }
 
   .key-float-dl {
-    flex: 1;
-    padding: 9px;
+    flex: 1; padding: 9px;
     background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border: none;
-    border-radius: 7px;
-    color: #000;
-    font-family: 'Syne', sans-serif;
-    font-size: 0.75rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-decoration: none;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
+    border: none; border-radius: 7px; color: #000;
+    font-family: 'Syne', sans-serif; font-size: 0.75rem; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+    text-decoration: none; text-align: center;
+    display: flex; align-items: center; justify-content: center; gap: 4px;
   }
   .key-float-dl:hover { box-shadow: 0 4px 16px rgba(0,212,170,0.3); }
 
@@ -686,15 +526,11 @@
   }
 
   .logo-mark {
-    width: 48px;
-    height: 48px;
+    width: 48px; height: 48px;
     background: linear-gradient(135deg, var(--accent), var(--accent2));
     border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
     box-shadow: 0 0 30px rgba(0,212,170,0.3);
   }
 
@@ -718,7 +554,6 @@
     margin-bottom: 4px;
   }
 
-  /* Usuario logueado badge */
   .user-badge {
     display: flex;
     align-items: center;
@@ -733,25 +568,60 @@
     flex-shrink: 0;
   }
 
-  .user-badge-dot {
-    width: 7px;
-    height: 7px;
-    background: var(--success);
-    border-radius: 50%;
-  }
+  .user-badge-dot { width: 7px; height: 7px; background: var(--success); border-radius: 50%; }
 
   .logout-btn {
-    background: none;
-    border: none;
-    color: var(--text-dim);
-    font-size: 0.68rem;
-    cursor: pointer;
-    padding: 2px 6px;
-    border-radius: 4px;
-    transition: color 0.2s;
+    background: none; border: none; color: var(--text-dim);
+    font-size: 0.68rem; cursor: pointer; padding: 2px 6px;
+    border-radius: 4px; transition: color 0.2s;
     font-family: 'DM Mono', monospace;
   }
   .logout-btn:hover { color: var(--error); }
+
+  /* Contador de cifrados */
+  .usage-bar-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 28px;
+    display: none;
+  }
+  .usage-bar-wrap.visible { display: block; }
+
+  .usage-bar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .usage-bar-label { font-size: 0.68rem; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-dim); }
+  .usage-bar-count { font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700; color: var(--text); }
+  .usage-bar-count.warn { color: var(--warn); }
+  .usage-bar-count.full { color: var(--error); }
+
+  .usage-bar-track {
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .usage-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width 0.4s ease;
+  }
+  .usage-bar-fill.warn { background: linear-gradient(90deg, var(--warn), #ff4400); }
+  .usage-bar-fill.full { background: var(--error); }
+
+  .usage-bar-expiry {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    margin-top: 6px;
+  }
 
   /* Tabs */
   .tabs {
@@ -765,18 +635,10 @@
   }
 
   .tab {
-    flex: 1;
-    padding: 10px 16px;
-    border: none;
-    border-radius: 7px;
-    background: transparent;
-    color: var(--text-dim);
-    font-family: 'DM Mono', monospace;
-    font-size: 0.8rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    letter-spacing: 1px;
-    text-transform: uppercase;
+    flex: 1; padding: 10px 16px; border: none; border-radius: 7px;
+    background: transparent; color: var(--text-dim);
+    font-family: 'DM Mono', monospace; font-size: 0.8rem;
+    cursor: pointer; transition: all 0.2s; letter-spacing: 1px; text-transform: uppercase;
   }
 
   .tab.active {
@@ -790,50 +652,35 @@
   .panel { display: none; }
   .panel.active { display: block; }
 
-  .label {
-    font-size: 0.7rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    margin-bottom: 10px;
-  }
+  .label { font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 10px; }
 
   .key-section { margin-bottom: 28px; }
 
   textarea {
-    width: 100%;
-    min-height: 80px;
+    width: 100%; min-height: 80px;
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: 8px;
     color: var(--text);
     font-family: 'DM Mono', monospace;
     font-size: 0.72rem;
-    padding: 14px;
-    resize: vertical;
-    outline: none;
-    transition: border-color 0.2s;
-    line-height: 1.5;
+    padding: 14px; resize: vertical; outline: none;
+    transition: border-color 0.2s; line-height: 1.5;
   }
 
   textarea:focus { border-color: var(--accent); }
   textarea::placeholder { color: var(--text-dim); }
 
   .preset-btn {
-    margin-top: 8px;
-    padding: 6px 14px;
+    margin-top: 8px; padding: 6px 14px;
     background: rgba(0,212,170,0.08);
     border: 1px solid rgba(0,212,170,0.2);
-    border-radius: 6px;
-    color: var(--accent);
-    font-family: 'DM Mono', monospace;
-    font-size: 0.72rem;
-    cursor: pointer;
-    transition: all 0.2s;
+    border-radius: 6px; color: var(--accent);
+    font-family: 'DM Mono', monospace; font-size: 0.72rem;
+    cursor: pointer; transition: all 0.2s;
   }
   .preset-btn:hover { background: rgba(0,212,170,0.15); }
 
-  /* Generador de clave */
   .key-gen-box {
     background: rgba(0,212,170,0.04);
     border: 1px solid rgba(0,212,170,0.2);
@@ -842,147 +689,54 @@
     margin-bottom: 28px;
   }
 
-  .key-gen-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
-  }
+  .key-gen-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 
-  .key-gen-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: var(--accent);
-  }
+  .key-gen-title { font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 700; color: var(--accent); }
 
   .key-gen-badge {
-    font-size: 0.6rem;
-    letter-spacing: 1.5px;
-    background: rgba(0,212,170,0.15);
-    color: var(--accent);
-    padding: 3px 8px;
-    border-radius: 4px;
-    text-transform: uppercase;
+    font-size: 0.6rem; letter-spacing: 1.5px;
+    background: rgba(0,212,170,0.15); color: var(--accent);
+    padding: 3px 8px; border-radius: 4px; text-transform: uppercase;
   }
 
-  .key-gen-desc {
-    font-size: 0.73rem;
-    color: var(--text-dim);
-    margin-bottom: 14px;
-    line-height: 1.6;
-  }
+  .key-gen-desc { font-size: 0.73rem; color: var(--text-dim); margin-bottom: 14px; line-height: 1.6; }
 
   .btn-gen-key {
     padding: 9px 20px;
     background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border: none;
-    border-radius: 8px;
-    color: #000;
-    font-family: 'Syne', sans-serif;
-    font-size: 0.78rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-    letter-spacing: 0.5px;
+    border: none; border-radius: 8px; color: #000;
+    font-family: 'Syne', sans-serif; font-size: 0.78rem; font-weight: 700;
+    cursor: pointer; transition: all 0.2s; letter-spacing: 0.5px;
   }
   .btn-gen-key:hover { box-shadow: 0 4px 20px rgba(0,212,170,0.35); }
   .btn-gen-key:disabled { opacity: 0.5; cursor: not-allowed; }
 
-  .key-status {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 10px;
-    font-size: 0.72rem;
-    color: var(--success);
-    display: none;
-  }
+  .key-status { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 0.72rem; color: var(--success); display: none; }
   .key-status.visible { display: flex; }
 
-  /* Drop zone */
   .drop-zone {
     border: 2px dashed var(--border);
-    border-radius: 12px;
-    padding: 48px 24px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.25s;
-    position: relative;
-    margin-bottom: 28px;
+    border-radius: 12px; padding: 48px 24px; text-align: center;
+    cursor: pointer; transition: all 0.25s; position: relative; margin-bottom: 28px;
   }
 
-  .drop-zone:hover, .drop-zone.drag-over {
-    border-color: var(--accent);
-    background: rgba(0,212,170,0.04);
-  }
-
-  .drop-zone input[type="file"] {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    cursor: pointer;
-    width: 100%;
-    height: 100%;
-  }
-
+  .drop-zone:hover, .drop-zone.drag-over { border-color: var(--accent); background: rgba(0,212,170,0.04); }
+  .drop-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
   .drop-icon { font-size: 2.5rem; margin-bottom: 12px; display: block; }
-
-  .drop-zone h3 {
-    font-family: 'Syne', sans-serif;
-    font-size: 1rem;
-    color: #fff;
-    margin-bottom: 6px;
-  }
-
+  .drop-zone h3 { font-family: 'Syne', sans-serif; font-size: 1rem; color: #fff; margin-bottom: 6px; }
   .drop-zone p { font-size: 0.75rem; color: var(--text-dim); }
   .drop-zone.has-file { border-color: var(--accent); background: rgba(0,212,170,0.06); }
 
-  .file-info {
-    display: none;
-    align-items: center;
-    gap: 12px;
-    padding: 14px 18px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    margin-bottom: 28px;
-    font-size: 0.78rem;
-  }
+  .file-info { display: none; align-items: center; gap: 12px; padding: 14px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 28px; font-size: 0.78rem; }
   .file-info.visible { display: flex; }
 
-  .file-icon {
-    width: 36px;
-    height: 36px;
-    background: rgba(0,212,170,0.1);
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    flex-shrink: 0;
-  }
-
+  .file-icon { width: 36px; height: 36px; background: rgba(0,212,170,0.1); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
   .file-name { font-weight: 500; color: #fff; }
   .file-size { color: var(--text-dim); font-size: 0.72rem; }
 
-  .multi-drop {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 28px;
-  }
+  .multi-drop { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
 
-  .mini-drop {
-    border: 2px dashed var(--border);
-    border-radius: 10px;
-    padding: 24px 16px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.25s;
-    position: relative;
-  }
-
+  .mini-drop { border: 2px dashed var(--border); border-radius: 10px; padding: 24px 16px; text-align: center; cursor: pointer; transition: all 0.25s; position: relative; }
   .mini-drop:hover { border-color: var(--accent); background: rgba(0,212,170,0.04); }
   .mini-drop.has-file { border-color: var(--accent); background: rgba(0,212,170,0.06); }
   .mini-drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
@@ -991,19 +745,11 @@
   .mini-drop .fname { font-size: 0.72rem; color: var(--text); margin-top: 6px; word-break: break-all; }
 
   .btn-main {
-    width: 100%;
-    padding: 16px;
+    width: 100%; padding: 16px;
     background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border: none;
-    border-radius: 10px;
-    color: #000;
-    font-family: 'Syne', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 700;
-    letter-spacing: 1px;
-    cursor: pointer;
-    transition: all 0.25s;
-    text-transform: uppercase;
+    border: none; border-radius: 10px; color: #000;
+    font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700;
+    letter-spacing: 1px; cursor: pointer; transition: all 0.25s; text-transform: uppercase;
   }
 
   .btn-main:disabled { opacity: 0.4; cursor: not-allowed; }
@@ -1013,76 +759,29 @@
   .progress-wrap { display: none; margin-top: 20px; }
   .progress-wrap.visible { display: block; }
 
-  .progress-bar {
-    height: 4px;
-    background: var(--border);
-    border-radius: 2px;
-    overflow: hidden;
-    margin-bottom: 10px;
-  }
-
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    width: 0%;
-    transition: width 0.3s;
-    border-radius: 2px;
-  }
-
+  .progress-bar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; margin-bottom: 10px; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); width: 0%; transition: width 0.3s; border-radius: 2px; }
   .progress-label { font-size: 0.72rem; color: var(--text-dim); }
 
   .results { display: none; margin-top: 24px; }
   .results.visible { display: block; }
 
-  .result-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 18px 20px;
-    margin-bottom: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-  }
-
+  .result-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
   .result-card.success { border-color: rgba(0,230,118,0.3); background: rgba(0,230,118,0.04); }
 
   .result-info .result-name { font-size: 0.85rem; color: #fff; font-weight: 500; margin-bottom: 3px; }
   .result-info .result-desc { font-size: 0.72rem; color: var(--text-dim); }
 
-  .btn-download {
-    padding: 8px 18px;
-    background: rgba(0,212,170,0.1);
-    border: 1px solid rgba(0,212,170,0.3);
-    border-radius: 6px;
-    color: var(--accent);
-    font-family: 'DM Mono', monospace;
-    font-size: 0.75rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    white-space: nowrap;
-    flex-shrink: 0;
-    text-decoration: none;
-  }
+  .btn-download { padding: 8px 18px; background: rgba(0,212,170,0.1); border: 1px solid rgba(0,212,170,0.3); border-radius: 6px; color: var(--accent); font-family: 'DM Mono', monospace; font-size: 0.75rem; cursor: pointer; transition: all 0.2s; white-space: nowrap; flex-shrink: 0; text-decoration: none; }
   .btn-download:hover { background: rgba(0,212,170,0.2); }
 
   .alert { display: none; padding: 12px 16px; border-radius: 8px; font-size: 0.78rem; margin-bottom: 20px; }
   .alert.visible { display: flex; align-items: flex-start; gap: 10px; }
-  .alert.error { background: rgba(255,68,68,0.1); border: 1px solid rgba(255,68,68,0.3); color: #ff8888; }
-  .alert.success { background: rgba(0,230,118,0.08); border: 1px solid rgba(0,230,118,0.25); color: #00e676; }
-  .alert.info { background: rgba(0,153,255,0.08); border: 1px solid rgba(0,153,255,0.2); color: #66bbff; }
+  .alert.error  { background: rgba(255,68,68,0.1);  border: 1px solid rgba(255,68,68,0.3);  color: #ff8888; }
+  .alert.success{ background: rgba(0,230,118,0.08); border: 1px solid rgba(0,230,118,0.25); color: #00e676; }
+  .alert.info   { background: rgba(0,153,255,0.08); border: 1px solid rgba(0,153,255,0.2);  color: #66bbff; }
 
-  .info-box {
-    background: rgba(0,153,255,0.05);
-    border: 1px solid rgba(0,153,255,0.15);
-    border-radius: 8px;
-    padding: 14px 16px;
-    font-size: 0.76rem;
-    color: var(--text-dim);
-    margin-bottom: 24px;
-    line-height: 1.7;
-  }
+  .info-box { background: rgba(0,153,255,0.05); border: 1px solid rgba(0,153,255,0.15); border-radius: 8px; padding: 14px 16px; font-size: 0.76rem; color: var(--text-dim); margin-bottom: 24px; line-height: 1.7; }
   .info-box strong { color: var(--text); }
   .info-box code { background: rgba(0,153,255,0.1); padding: 1px 5px; border-radius: 3px; color: var(--accent2); font-family: 'DM Mono', monospace; }
 
@@ -1095,32 +794,14 @@
     .plan-name { font-size: 0.82rem; }
   }
 
-  /* Spinner */
   .spinner {
-    display: inline-block;
-    width: 14px;
-    height: 14px;
-    border: 2px solid rgba(0,0,0,0.3);
-    border-top-color: #000;
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    vertical-align: middle;
-    margin-right: 6px;
+    display: inline-block; width: 14px; height: 14px;
+    border: 2px solid rgba(0,0,0,0.3); border-top-color: #000;
+    border-radius: 50%; animation: spin 0.7s linear infinite;
+    vertical-align: middle; margin-right: 6px;
   }
 
   @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* Instrucción de setup */
-  .setup-note {
-    font-size: 0.7rem;
-    color: var(--text-dim);
-    line-height: 1.6;
-    margin-top: 20px;
-    padding: 12px 14px;
-    background: rgba(255,107,53,0.05);
-    border: 1px solid rgba(255,107,53,0.15);
-    border-radius: 8px;
-  }
 </style>
 </head>
 <body>
@@ -1131,19 +812,16 @@
 <div id="auth-overlay">
   <div class="auth-card">
 
-    <!-- Pantalla Login / Registro (con tabs) -->
     <div id="register-screen">
       <div class="auth-logo">🔐</div>
       <div class="auth-title">Encriptador de Soportes</div>
       <div class="auth-sub">Res. 2284 · Camilo Rios Gaviria</div>
 
-      <!-- Tabs -->
       <div class="auth-tabs">
         <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">🔑 Iniciar sesión</button>
         <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">📝 Registrarse</button>
       </div>
 
-      <!-- FORMULARIO: Iniciar sesión -->
       <div id="form-login">
         <div class="auth-field">
           <label>Correo electrónico</label>
@@ -1155,13 +833,10 @@
           <input type="password" id="login-password" placeholder="Tu contraseña"
             onkeydown="if(event.key==='Enter')submitLogin()" />
         </div>
-        <button class="auth-btn" id="btn-login" onclick="submitLogin()">
-          Iniciar sesión
-        </button>
+        <button class="auth-btn" id="btn-login" onclick="submitLogin()">Iniciar sesión</button>
         <div class="auth-alert" id="login-alert"></div>
       </div>
 
-      <!-- FORMULARIO: Registrarse -->
       <div id="form-register" style="display:none;">
         <div class="auth-field">
           <label>Correo electrónico</label>
@@ -1176,34 +851,16 @@
           <input type="password" id="reg-password2" placeholder="Repite la contraseña"
             onkeydown="if(event.key==='Enter')submitRegistration()" />
         </div>
-        <button class="auth-btn" id="btn-register" onclick="submitRegistration()">
-          Crear cuenta y continuar
-        </button>
+        <button class="auth-btn" id="btn-register" onclick="submitRegistration()">Crear cuenta y continuar</button>
         <div class="auth-alert" id="reg-alert"></div>
       </div>
     </div>
 
-    <!-- Pantalla pendiente -->
-    <div id="pending-screen">
-      <div class="status-icon">⏳</div>
-      <div class="status-title">Solicitud enviada</div>
-      <div class="status-desc">
-        Tu solicitud fue enviada al administrador.<br>
-        <span class="pulse-dot"></span>Esperando aprobación…<br><br>
-        Recibirás acceso una vez que sea aceptada.
-      </div>
-      <div id="pending-email-display" style="font-size:0.78rem;color:var(--accent);margin-bottom:16px;"></div>
-      <button class="check-status-btn" style="color:var(--text-dim);" onclick="resetRegistration()">← Volver</button>
-      <div class="auth-alert" id="pending-alert"></div>
-    </div>
-
-    <!-- Pantalla denegada -->
     <div id="denied-screen">
       <div class="status-icon">❌</div>
       <div class="status-title">Acceso denegado</div>
       <div class="status-desc">
-        Tu solicitud fue denegada por el administrador.<br>
-        Contacta a <strong>gaviriarioscamilo@gmail.com</strong> para más información.
+        Tu solicitud fue denegada. Contacta a <strong>gaviriarioscamilo@gmail.com</strong> para más información.
       </div>
       <button class="check-status-btn" style="color:var(--text-dim);" onclick="resetRegistration()">← Volver al registro</button>
     </div>
@@ -1213,16 +870,16 @@
       <div class="payment-header">
         <div class="status-icon">💳</div>
         <div class="payment-title">Elige tu Plan</div>
-        <div class="payment-sub">Selecciona un plan para activar tu acceso</div>
+        <div class="payment-sub" id="payment-sub-text">Selecciona un plan para activar tu acceso</div>
       </div>
 
       <div class="plans-grid">
-        <!-- Plan Mensual -->
+        <!-- Plan Básico -->
         <div class="plan-card" id="plan-monthly" onclick="selectPlan('monthly')">
           <div class="plan-radio"><div class="plan-radio-dot"></div></div>
           <div class="plan-info">
-            <div class="plan-name">Plan Mensual</div>
-            <div class="plan-desc">Hasta 100 archivos · Se renueva cada mes exacto</div>
+            <div class="plan-name">Plan Básico</div>
+            <div class="plan-desc">Hasta <strong style="color:var(--text)">100 cifrados</strong> por mes. Se renueva cada 30 días.</div>
           </div>
           <div class="plan-price">
             <div class="plan-amount">$25.000</div>
@@ -1235,11 +892,11 @@
           <div class="plan-radio"><div class="plan-radio-dot"></div></div>
           <div class="plan-info">
             <div class="plan-name">Plan Profesional <span class="plan-badge badge-popular">Popular</span></div>
-            <div class="plan-desc">Hasta 1.000 archivos encriptados · Pago único</div>
+            <div class="plan-desc">Hasta <strong style="color:var(--text)">1.000 cifrados</strong> por mes. Se renueva cada 30 días.</div>
           </div>
           <div class="plan-price">
             <div class="plan-amount">$250.000</div>
-            <div class="plan-period">COP · único pago</div>
+            <div class="plan-period">COP · mensual</div>
           </div>
         </div>
 
@@ -1248,7 +905,7 @@
           <div class="plan-radio"><div class="plan-radio-dot"></div></div>
           <div class="plan-info">
             <div class="plan-name">Plan Anual Ilimitado <span class="plan-badge badge-best">Mejor valor</span></div>
-            <div class="plan-desc">Archivos ilimitados · Se renueva cada año exacto</div>
+            <div class="plan-desc"><strong style="color:var(--text)">Cifrados ilimitados</strong> por 12 meses. Pago único anual.</div>
           </div>
           <div class="plan-price">
             <div class="plan-amount">$2.650.000</div>
@@ -1257,11 +914,11 @@
         </div>
       </div>
 
-      <!-- Botón de Pago -->
+      <!-- Botón de Pago Wompi -->
       <div class="payment-methods-section" id="payment-methods-section">
         <div class="payment-methods-label">Pago seguro con Wompi</div>
         <p style="font-size:0.72rem;color:var(--text-dim);margin-bottom:14px;line-height:1.6;">
-          Acepta tarjetas débito/crédito, PSE, Nequi y efectivo.<br>
+          Acepta tarjetas débito/crédito, PSE, Nequi.<br>
           Al hacer clic serás redirigido a la pasarela segura de Bancolombia.
         </p>
         <div id="wompi-btn-container"></div>
@@ -1269,8 +926,8 @@
       </div>
     </div>
 
-  </div><!-- /.auth-card -->
-</div><!-- /#auth-overlay -->
+  </div>
+</div>
 
 <!-- ============================================================
      PESTAÑA FLOTANTE — CLAVE DE DESENCRIPTACIÓN
@@ -1319,6 +976,18 @@
     </div>
   </header>
 
+  <!-- Barra de uso de cifrados -->
+  <div class="usage-bar-wrap" id="usage-bar-wrap">
+    <div class="usage-bar-header">
+      <span class="usage-bar-label">Cifrados usados este período</span>
+      <span class="usage-bar-count" id="usage-count-label">0 / 100</span>
+    </div>
+    <div class="usage-bar-track">
+      <div class="usage-bar-fill" id="usage-bar-fill" style="width:0%"></div>
+    </div>
+    <div class="usage-bar-expiry" id="usage-bar-expiry"></div>
+  </div>
+
   <div class="tabs">
     <button class="tab active" onclick="switchTab('enc')">🔒 Encriptar</button>
     <button class="tab" onclick="switchTab('dec')">🔓 Desencriptar</button>
@@ -1331,7 +1000,6 @@
       <strong>Metodología híbrida:</strong> El archivo se cifra con AES-256-CBC (clave aleatoria), luego esa clave se cifra con RSA usando la <strong>llave pública</strong>. Se generan dos archivos: <code>.enc</code> (contenido cifrado) y <code>.enc.key</code> (clave AES cifrada).
     </div>
 
-    <!-- Generador de clave RSA única -->
     <div class="key-gen-box">
       <div class="key-gen-header">
         <span class="key-gen-title">🔑 Par de claves RSA — Generación automática</span>
@@ -1345,7 +1013,7 @@
     </div>
 
     <div class="key-section" style="display:none;" id="pub-key-section">
-      <div class="label">Clave Pública RSA activa (generada automáticamente)</div>
+      <div class="label">Clave Pública RSA activa</div>
       <textarea id="pub-key" placeholder="<RSAKeyValue>..." readonly style="opacity:0.6;"></textarea>
       <button class="preset-btn" onclick="loadProductionKey()">📋 Cargar clave Salud Total (Res. 2284)</button>
     </div>
@@ -1451,102 +1119,210 @@
 
 </div>
 
-<!-- ============================================================
-     SCRIPT PRINCIPAL
-============================================================ -->
 <script>
 // ============================================================
 // CONFIGURACIÓN
 // ============================================================
 const ADMIN_EMAIL = 'gaviriarioscamilo@gmail.com';
-const APP_URL     = 'https://camilo2005gaviria.github.io/Encriptador/';
 
 // ============================================================
-// ALMACENAMIENTO LOCAL DE USUARIOS
-// Estructura: { email: { password, plan, planActivatedAt, wompiRef } }
+// DEFINICIÓN DE PLANES
+// Todos los planes tienen fecha de vencimiento al completarse el período.
+// El límite null = ilimitado.
 // ============================================================
-function getUsers() {
-  try { return JSON.parse(localStorage.getItem('enc_users') || '{}'); } catch { return {}; }
-}
-function saveUsers(u) { localStorage.setItem('enc_users', JSON.stringify(u)); }
+const PLANS = {
+  monthly: {
+    name:       'Plan Básico',
+    price:      '$25.000 COP',
+    periodDays: 30,          // vence a los 30 días
+    limit:      100,         // máx 100 cifrados por período
+    limitLabel: '100 cifrados / mes',
+    periodLabel:'mensual'
+  },
+  pro: {
+    name:       'Plan Profesional',
+    price:      '$250.000 COP',
+    periodDays: 30,          // vence a los 30 días
+    limit:      1000,        // máx 1.000 cifrados por período
+    limitLabel: '1.000 cifrados / mes',
+    periodLabel:'mensual'
+  },
+  annual: {
+    name:       'Plan Anual Ilimitado',
+    price:      '$2.650.000 COP',
+    periodDays: 365,         // vence a los 365 días
+    limit:      null,        // ilimitado
+    limitLabel: 'Ilimitado',
+    periodLabel:'anual'
+  }
+};
+
+// ============================================================
+// ALMACENAMIENTO LOCAL
+// Estructura usuario:
+// { password, plan, planActivatedAt, encryptCount, countPeriodStart, wompiRef }
+// ============================================================
+function getUsers()    { try { return JSON.parse(localStorage.getItem('enc_users') || '{}'); } catch { return {}; } }
+function saveUsers(u)  { localStorage.setItem('enc_users', JSON.stringify(u)); }
 function getCurrentUser() { return localStorage.getItem('enc_current_user') || null; }
 function setCurrentUser(email) { localStorage.setItem('enc_current_user', email); }
-function clearCurrentUser() { localStorage.removeItem('enc_current_user'); }
+function clearCurrentUser()    { localStorage.removeItem('enc_current_user'); }
 
 // ============================================================
-// VERIFICAR SI EL PLAN ESTÁ VIGENTE
+// LÓGICA DE PLANES: VENCIMIENTO Y LÍMITE DE CIFRADOS
 // ============================================================
+
+/**
+ * Retorna true si el plan del usuario está vigente (no vencido).
+ * Todos los planes vencen al cumplirse su periodDays desde planActivatedAt.
+ */
 function isPlanActive(userData) {
   if (!userData || !userData.plan || !userData.planActivatedAt) return false;
+  const plan = PLANS[userData.plan];
+  if (!plan) return false;
 
   const activatedAt = new Date(userData.planActivatedAt);
-  const now = new Date();
-
-  if (userData.plan === 'monthly') {
-    // Vence exactamente 1 mes después de la activación (mismo día del mes)
-    const expiry = new Date(activatedAt);
-    expiry.setMonth(expiry.getMonth() + 1);
-    return now < expiry;
-  }
-
-  if (userData.plan === 'annual') {
-    // Vence exactamente 1 año después de la activación
-    const expiry = new Date(activatedAt);
-    expiry.setFullYear(expiry.getFullYear() + 1);
-    return now < expiry;
-  }
-
-  // Plan Profesional (pago único): no vence
-  if (userData.plan === 'pro') return true;
-
-  return false;
+  const expiry = new Date(activatedAt.getTime() + plan.periodDays * 24 * 60 * 60 * 1000);
+  return new Date() < expiry;
 }
 
-function getPlanExpiryText(userData) {
-  if (!userData || !userData.planActivatedAt) return '';
+/**
+ * Retorna la fecha de vencimiento del plan actual.
+ */
+function getPlanExpiry(userData) {
+  if (!userData || !userData.plan || !userData.planActivatedAt) return null;
+  const plan = PLANS[userData.plan];
+  if (!plan) return null;
   const activatedAt = new Date(userData.planActivatedAt);
+  return new Date(activatedAt.getTime() + plan.periodDays * 24 * 60 * 60 * 1000);
+}
 
-  if (userData.plan === 'monthly') {
-    const expiry = new Date(activatedAt);
-    expiry.setMonth(expiry.getMonth() + 1);
-    return 'Vence: ' + expiry.toLocaleDateString('es-CO');
+/**
+ * Texto legible de vencimiento.
+ */
+function getPlanExpiryText(userData) {
+  const expiry = getPlanExpiry(userData);
+  if (!expiry) return '';
+  return 'Vence: ' + expiry.toLocaleDateString('es-CO');
+}
+
+/**
+ * Retorna cuántos cifrados le quedan al usuario en el período actual.
+ * null = ilimitado.
+ */
+function getRemainingEncryptions(userData) {
+  const plan = PLANS[userData.plan];
+  if (!plan) return 0;
+  if (plan.limit === null) return null; // ilimitado
+
+  const used = userData.encryptCount || 0;
+  return Math.max(0, plan.limit - used);
+}
+
+/**
+ * Registra un cifrado. Retorna true si fue exitoso, false si el límite fue alcanzado.
+ */
+function registerEncryption(email) {
+  const users = getUsers();
+  const u = users[email];
+  if (!u) return false;
+
+  const plan = PLANS[u.plan];
+  if (!plan) return false;
+
+  // Plan ilimitado
+  if (plan.limit === null) {
+    u.encryptCount = (u.encryptCount || 0) + 1;
+    saveUsers(users);
+    return true;
   }
-  if (userData.plan === 'annual') {
-    const expiry = new Date(activatedAt);
-    expiry.setFullYear(expiry.getFullYear() + 1);
-    return 'Vence: ' + expiry.toLocaleDateString('es-CO');
+
+  const used = u.encryptCount || 0;
+  if (used >= plan.limit) return false;
+
+  u.encryptCount = used + 1;
+  saveUsers(users);
+  return true;
+}
+
+// ============================================================
+// BARRA DE USO
+// ============================================================
+function updateUsageBar() {
+  const email = getCurrentUser();
+  if (!email) return;
+  const users = getUsers();
+  const u = users[email];
+  if (!u || !u.plan) return;
+
+  const plan = PLANS[u.plan];
+  if (!plan) return;
+
+  const wrap = document.getElementById('usage-bar-wrap');
+  wrap.classList.add('visible');
+
+  const expiry  = getPlanExpiry(u);
+  const used    = u.encryptCount || 0;
+  const isUnlim = plan.limit === null;
+
+  const countLabel = document.getElementById('usage-count-label');
+  const fillEl     = document.getElementById('usage-bar-fill');
+  const expiryEl   = document.getElementById('usage-bar-expiry');
+
+  if (isUnlim) {
+    countLabel.textContent = used + ' / Ilimitados';
+    countLabel.className   = 'usage-bar-count';
+    fillEl.style.width     = '0%';
+    fillEl.className       = 'usage-bar-fill';
+  } else {
+    const pct = Math.min(100, (used / plan.limit) * 100);
+    countLabel.textContent = used + ' / ' + plan.limit;
+    fillEl.style.width     = pct + '%';
+
+    if (pct >= 100) {
+      countLabel.className = 'usage-bar-count full';
+      fillEl.className     = 'usage-bar-fill full';
+    } else if (pct >= 80) {
+      countLabel.className = 'usage-bar-count warn';
+      fillEl.className     = 'usage-bar-fill warn';
+    } else {
+      countLabel.className = 'usage-bar-count';
+      fillEl.className     = 'usage-bar-fill';
+    }
   }
-  return 'Acceso permanente';
+
+  if (expiry) {
+    const daysLeft = Math.ceil((expiry - new Date()) / (1000 * 60 * 60 * 24));
+    expiryEl.textContent = 'Vence: ' + expiry.toLocaleDateString('es-CO') + ' (' + daysLeft + ' días restantes) · ' + plan.name;
+  }
 }
 
 // ============================================================
 // INICIALIZACIÓN
 // ============================================================
 window.addEventListener('load', () => {
-  // Verificar retorno desde Wompi (pago completado)
   if (checkWompiReturn()) return;
 
-  const currentUser = getCurrentUser();
-  if (currentUser) {
+  const email = getCurrentUser();
+  if (email) {
     const users = getUsers();
-    if (users[currentUser]) {
-      if (isPlanActive(users[currentUser])) {
-        grantAccess(currentUser);
+    if (users[email]) {
+      if (isPlanActive(users[email])) {
+        grantAccess(email);
         return;
       } else {
-        // Plan vencido o sin plan → pedir pago
-        showPaymentScreen();
+        // Plan vencido
+        showPaymentScreen(true);
         return;
       }
     }
   }
-  // Sin sesión → mostrar login
   clearCurrentUser();
   showRegister();
 });
 
 // ============================================================
-// TABS DE AUTENTICACIÓN
+// AUTH TABS
 // ============================================================
 function switchAuthTab(tab) {
   document.getElementById('tab-login').classList.toggle('active', tab === 'login');
@@ -1558,175 +1334,122 @@ function switchAuthTab(tab) {
 }
 
 // ============================================================
-// INICIAR SESIÓN
+// LOGIN
 // ============================================================
 function submitLogin() {
   const email = document.getElementById('login-email').value.trim();
   const pass  = document.getElementById('login-password').value;
-
   hideAuthAlert('login-alert');
 
-  if (!email || !email.includes('@')) {
-    showAuthAlert('login-alert', 'Por favor ingresa un correo válido.', 'error'); return;
-  }
-  if (!pass) {
-    showAuthAlert('login-alert', 'Por favor ingresa tu contraseña.', 'error'); return;
-  }
+  if (!email || !email.includes('@')) { showAuthAlert('login-alert', 'Por favor ingresa un correo válido.', 'error'); return; }
+  if (!pass)                          { showAuthAlert('login-alert', 'Por favor ingresa tu contraseña.', 'error'); return; }
 
   const users = getUsers();
 
-  if (!users[email]) {
-    showAuthAlert('login-alert', 'No existe una cuenta con ese correo. ¿Quieres registrarte?', 'error'); return;
-  }
-
-  if (users[email].password !== btoa(pass)) {
-    showAuthAlert('login-alert', 'Contraseña incorrecta.', 'error'); return;
-  }
+  if (!users[email]) { showAuthAlert('login-alert', 'No existe una cuenta con ese correo. ¿Quieres registrarte?', 'error'); return; }
+  if (users[email].password !== btoa(pass)) { showAuthAlert('login-alert', 'Contraseña incorrecta.', 'error'); return; }
 
   setCurrentUser(email);
 
   if (isPlanActive(users[email])) {
     grantAccess(email);
   } else {
-    showPaymentScreen();
+    // Cuenta existente con plan vencido
+    showPaymentScreen(true);
   }
 }
 
 // ============================================================
-// FLUJO DE AUTENTICACIÓN
+// REGISTRO
+// ============================================================
+function submitRegistration() {
+  const email = document.getElementById('reg-email').value.trim();
+  const pass  = document.getElementById('reg-password').value;
+  const pass2 = document.getElementById('reg-password2').value;
+  hideAuthAlert('reg-alert');
+
+  if (!email || !email.includes('@')) { showAuthAlert('reg-alert', 'Por favor ingresa un correo válido.', 'error'); return; }
+  if (pass.length < 6)               { showAuthAlert('reg-alert', 'La contraseña debe tener al menos 6 caracteres.', 'error'); return; }
+  if (pass !== pass2)                { showAuthAlert('reg-alert', 'Las contraseñas no coinciden.', 'error'); return; }
+
+  const users = getUsers();
+
+  if (users[email]) {
+    if (users[email].password !== btoa(pass)) { showAuthAlert('reg-alert', 'Ya existe una cuenta con ese correo. Usa Iniciar Sesión.', 'error'); return; }
+    setCurrentUser(email);
+    if (isPlanActive(users[email])) {
+      grantAccess(email);
+    } else {
+      // Cuenta existente con plan vencido
+      showPaymentScreen(true);
+    }
+    return;
+  }
+
+  // Usuario nuevo — bienvenida
+  users[email] = { password: btoa(pass), registeredAt: new Date().toISOString() };
+  saveUsers(users);
+  setCurrentUser(email);
+  showPaymentScreen(false);
+}
+
+// ============================================================
+// FLUJO DE PANTALLAS
 // ============================================================
 function showRegister() {
   document.getElementById('register-screen').classList.remove('hidden');
-  document.getElementById('pending-screen').classList.remove('visible');
   document.getElementById('denied-screen').classList.remove('visible');
   document.getElementById('payment-screen').classList.remove('visible');
   switchAuthTab('login');
 }
 
-function showDenied() {
+function showPaymentScreen(planVencido = false) {
   document.getElementById('register-screen').classList.add('hidden');
-  document.getElementById('pending-screen').classList.remove('visible');
-  document.getElementById('denied-screen').classList.add('visible');
-  document.getElementById('payment-screen').classList.remove('visible');
+  document.getElementById('denied-screen').classList.remove('visible');
+  document.getElementById('payment-screen').classList.add('visible');
+  selectedPlan = null;
+  document.getElementById('payment-methods-section').classList.remove('visible');
+
+  const sub = document.getElementById('payment-sub-text');
+  if (planVencido) {
+    sub.textContent = '⚠️ Tu suscripción venció — renueva tu plan para continuar';
+    sub.style.color = 'var(--warn)';
+  } else {
+    sub.textContent = '🎉 Bienvenido a la familia — elige el plan que deseas para continuar';
+    sub.style.color = 'var(--success)';
+  }
 }
 
 function resetRegistration() {
   clearCurrentUser();
-  document.getElementById('reg-email').value = '';
-  document.getElementById('reg-password').value = '';
-  document.getElementById('reg-password2').value = '';
-  document.getElementById('login-email').value = '';
-  document.getElementById('login-password').value = '';
+  ['reg-email','reg-password','reg-password2','login-email','login-password'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
   hideAuthAlert('login-alert');
   hideAuthAlert('reg-alert');
   showRegister();
-}
-
-function submitRegistration() {
-  const email = document.getElementById('reg-email').value.trim();
-  const pass  = document.getElementById('reg-password').value;
-  const pass2 = document.getElementById('reg-password2').value;
-
-  hideAuthAlert('reg-alert');
-
-  if (!email || !email.includes('@')) {
-    showAuthAlert('reg-alert', 'Por favor ingresa un correo válido.', 'error'); return;
-  }
-  if (pass.length < 6) {
-    showAuthAlert('reg-alert', 'La contraseña debe tener al menos 6 caracteres.', 'error'); return;
-  }
-  if (pass !== pass2) {
-    showAuthAlert('reg-alert', 'Las contraseñas no coinciden.', 'error'); return;
-  }
-
-  const users = getUsers();
-
-  if (users[email]) {
-    // Ya existe — hacer login normal
-    if (users[email].password !== btoa(pass)) {
-      showAuthAlert('reg-alert', 'Ya existe una cuenta con ese correo. Usa la pestaña Iniciar Sesión.', 'error'); return;
-    }
-    setCurrentUser(email);
-    if (isPlanActive(users[email])) {
-      grantAccess(email);
-    } else {
-      showPaymentScreen();
-    }
-    return;
-  }
-
-  // Registrar nuevo usuario — va directo a pago, sin esperar aprobación
-  users[email] = {
-    password: btoa(pass),
-    registeredAt: new Date().toISOString()
-  };
-  saveUsers(users);
-  setCurrentUser(email);
-
-  showPaymentScreen();
 }
 
 function grantAccess(email) {
   const users = getUsers();
   setCurrentUser(email);
   document.getElementById('auth-overlay').style.display = 'none';
-  document.getElementById('user-badge').style.display = 'flex';
+  document.getElementById('user-badge').style.display   = 'flex';
   document.getElementById('user-badge-email').textContent = email;
-  const planName = PLANS[users[email]?.plan]?.name || '';
-  const expiry   = getPlanExpiryText(users[email]);
-  document.getElementById('user-badge-plan').textContent = planName + (expiry ? ' · ' + expiry : '');
+  const u = users[email];
+  const planInfo = PLANS[u?.plan];
+  const expiryText = getPlanExpiryText(u);
+  document.getElementById('user-badge-plan').textContent =
+    (planInfo?.name || '') + (expiryText ? ' · ' + expiryText : '');
+  updateUsageBar();
 }
 
-function logout() {
-  clearCurrentUser();
-  location.reload();
-}
+function logout() { clearCurrentUser(); location.reload(); }
 
 // ============================================================
-// PANTALLA Y LÓGICA DE PLANES DE PAGO
+// SELECCIÓN DE PLAN Y WOMPI
 // ============================================================
 let selectedPlan = null;
-let selectedMethod = null;
-
-const PLANS = {
-  monthly: { name: 'Plan Mensual',            price: '$25.000 COP',      limit: 'Ilimitado / mes',          period: 'mensual' },
-  pro:     { name: 'Plan Profesional',        price: '$250.000 COP',     limit: '1.000 archivos',           period: 'único pago' },
-  annual:  { name: 'Plan Anual Ilimitado',    price: '$2.650.000 COP',   limit: 'Ilimitado por 12 meses',   period: 'anual' },
-};
-
-const PAYMENT_INFO = {
-  nequi: (plan) => `<strong>Nequi:</strong> Envía <strong>${plan.price}</strong> al número <strong>300 123 4567</strong>.<br>
-    Escribe en el concepto tu correo registrado para identificar el pago.`,
-  pse:   (plan) => `<strong>PSE / Transferencia bancaria:</strong> Transfiere <strong>${plan.price}</strong> a la cuenta:<br>
-    Banco Bancolombia · Cuenta de Ahorros · <strong>123-456789-00</strong><br>
-    A nombre de: <strong>Encriptador Soportes SAS</strong> · NIT: 900.123.456-7<br>
-    Concepto: tu correo registrado.`,
-  card:  (plan) => `<strong>Tarjeta débito / crédito:</strong> Pago por pasarela segura por <strong>${plan.price}</strong>.<br>
-    Serás redirigido a la pasarela de pago al confirmar. Acepta Visa, Mastercard y American Express.`,
-  cash:  (plan) => `<strong>Efectivo / Corresponsal bancario:</strong> Paga <strong>${plan.price}</strong> en cualquier punto Efecty o Baloto.<br>
-    Referencia de pago: <strong>ENC-${Math.floor(100000 + Math.random()*900000)}</strong><br>
-    Comparte el comprobante al correo <strong>${ADMIN_EMAIL}</strong>.`,
-};
-
-function showPaymentScreen() {
-  document.getElementById('register-screen').classList.add('hidden');
-  document.getElementById('pending-screen').classList.remove('visible');
-  document.getElementById('denied-screen').classList.remove('visible');
-  document.getElementById('payment-screen').classList.add('visible');
-  selectedPlan = null;
-  selectedMethod = null;
-
-  // Si el plan vencido era mensual o anual, mostrar aviso
-  const email = getCurrentUser();
-  if (email) {
-    const users = getUsers();
-    const u = users[email];
-    if (u && u.plan && !isPlanActive(u)) {
-      const sub = document.querySelector('.payment-sub');
-      if (sub) sub.textContent = '⚠️ Tu suscripción venció — renueva tu plan para continuar';
-    }
-  }
-}
 
 function selectPlan(planKey) {
   selectedPlan = planKey;
@@ -1738,23 +1461,18 @@ function selectPlan(planKey) {
 }
 
 function renderWompiButton(planKey) {
-  const WOMPI_KEY = 'pub_test_xApJsGwbj0HaJi3WUXNetwUtAjCWBcRK';
-  const AMOUNTS = { monthly: 2500000, pro: 25000000, annual: 265000000 };
-  const LABELS  = {
-    monthly: 'Plan Mensual — $25.000 COP',
-    pro:     'Plan Profesional — $250.000 COP',
-    annual:  'Plan Anual — $2.650.000 COP'
-  };
-  const email   = getCurrentUser() || '';
-  const ref     = 'NODECRYPT-' + planKey.toUpperCase() + '-' + Date.now();
-  const amount  = AMOUNTS[planKey];
+  const WOMPI_KEY = 'prv_test_wwPFpbOnBH86nEuZdtSnZyONgsuJGiZo';
+  const AMOUNTS   = { monthly: 2500000, pro: 25000000, annual: 265000000 };
+  const planInfo  = PLANS[planKey];
+  const email     = getCurrentUser() || '';
+  const ref       = 'NODECRYPT-' + planKey.toUpperCase() + '-' + Date.now();
+  const amount    = AMOUNTS[planKey];
   const redirectUrl = window.location.href.split('?')[0] + '?wompi_ref=' + ref;
 
   localStorage.setItem('wompi_pending_ref',   ref);
   localStorage.setItem('wompi_pending_plan',  planKey);
   localStorage.setItem('wompi_pending_email', email);
 
-  // URL directa al checkout de Wompi — siempre funciona sin depender del widget
   const wompiUrl = 'https://checkout.wompi.co/p/?' +
     'public-key='           + encodeURIComponent(WOMPI_KEY) +
     '&currency=COP' +
@@ -1769,38 +1487,48 @@ function renderWompiButton(planKey) {
   const btn = document.createElement('a');
   btn.href = wompiUrl;
   btn.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px;border-radius:10px;text-decoration:none;background:linear-gradient(135deg,#00d4aa,#0099ff);color:#000;font-family:Syne,sans-serif;font-size:0.88rem;font-weight:700;letter-spacing:0.5px;cursor:pointer;box-sizing:border-box;text-transform:uppercase;';
-  btn.textContent = '💳 Pagar ahora · ' + LABELS[planKey];
+  btn.textContent = '💳 Pagar · ' + planInfo.name + ' — ' + planInfo.price;
   btn.onmouseover = () => { btn.style.boxShadow = '0 8px 30px rgba(0,212,170,0.4)'; btn.style.transform = 'translateY(-1px)'; };
   btn.onmouseout  = () => { btn.style.boxShadow = 'none'; btn.style.transform = 'none'; };
   container.appendChild(btn);
 
   const note = document.createElement('p');
   note.style.cssText = 'font-size:0.65rem;color:var(--text-dim);margin-top:10px;text-align:center;';
-  note.textContent = 'Pago procesado por Wompi \u00b7 Bancolombia \u00b7 100% seguro';
+  note.textContent = 'Pago procesado por Wompi · Bancolombia · 100% seguro';
   container.appendChild(note);
 }
 
-// Verificar si hay un pago Wompi pendiente al cargar la página
+// ============================================================
+// URL APPS SCRIPT BACKEND
+// ============================================================
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwIDxNdi9763-1cI09O2pDk0VMqviUKFHiK4wlQ3dFiWry5nI0YpbJQNGRo8LabQ10/exec';
+
+// ============================================================
+// RETORNO DESDE WOMPI
+// ============================================================
 function checkWompiReturn() {
-  const params = new URLSearchParams(window.location.search);
-  const wompiRef = params.get('wompi_ref');
-  if (!wompiRef) return;
+  const params      = new URLSearchParams(window.location.search);
+  const wompiRef    = params.get('wompi_ref');
+  if (!wompiRef) return false;
 
   const pendingRef   = localStorage.getItem('wompi_pending_ref');
   const pendingPlan  = localStorage.getItem('wompi_pending_plan');
   const pendingEmail = localStorage.getItem('wompi_pending_email');
 
-  if (wompiRef !== pendingRef || !pendingPlan || !pendingEmail) return;
+  if (wompiRef !== pendingRef || !pendingPlan || !pendingEmail) return false;
 
-  // Limpiar params de URL sin recargar
   window.history.replaceState({}, '', window.location.pathname);
 
-  // Marcar plan como activo (el pago fue confirmado por Wompi al redirigir)
+  const now = new Date().toISOString();
+
+  // 1. Guardar en localStorage
   const users = getUsers();
   if (users[pendingEmail]) {
-    users[pendingEmail].plan = pendingPlan;
-    users[pendingEmail].wompiRef = wompiRef;
-    users[pendingEmail].planActivatedAt = new Date().toISOString();
+    users[pendingEmail].plan             = pendingPlan;
+    users[pendingEmail].wompiRef         = wompiRef;
+    users[pendingEmail].planActivatedAt  = now;
+    users[pendingEmail].encryptCount     = 0;
+    users[pendingEmail].countPeriodStart = now;
     saveUsers(users);
   }
 
@@ -1808,36 +1536,65 @@ function checkWompiReturn() {
   localStorage.removeItem('wompi_pending_plan');
   localStorage.removeItem('wompi_pending_email');
 
-  // Dar acceso
+  // 2. Notificar al Apps Script → registra en Sheet + envía comprobante por correo
+  notifyPayment(pendingEmail, pendingPlan, wompiRef, now);
+
+  // 3. Dar acceso en pantalla
   setCurrentUser(pendingEmail);
   document.getElementById('auth-overlay').style.display = 'none';
-  document.getElementById('user-badge').style.display = 'flex';
+  document.getElementById('user-badge').style.display   = 'flex';
   document.getElementById('user-badge-email').textContent = pendingEmail;
-  const planName = PLANS[pendingPlan]?.name || '';
-  const expiry   = getPlanExpiryText(users[pendingEmail]);
-  document.getElementById('user-badge-plan').textContent = planName + (expiry ? ' · ' + expiry : '');
+  const u        = users[pendingEmail];
+  const planInfo = PLANS[pendingPlan];
+  const expiryText = getPlanExpiryText(u);
+  document.getElementById('user-badge-plan').textContent =
+    (planInfo?.name || '') + (expiryText ? ' · ' + expiryText : '');
+  updateUsageBar();
   return true;
 }
 
+/**
+ * Llama al Apps Script para registrar el pago en la Sheet
+ * y disparar el envío del comprobante al correo del usuario.
+ */
+function notifyPayment(email, plan, wompiRef, activatedAt) {
+  const planInfo = PLANS[plan];
+  const expiry   = new Date(new Date(activatedAt).getTime() + planInfo.periodDays * 24 * 60 * 60 * 1000);
+  const expiryStr = expiry.toLocaleDateString('es-CO', { year:'numeric', month:'long', day:'numeric' });
+
+  const url = APPS_SCRIPT_URL
+    + '?action=payment_confirmed'
+    + '&email='        + encodeURIComponent(email)
+    + '&plan='         + encodeURIComponent(plan)
+    + '&planName='     + encodeURIComponent(planInfo.name)
+    + '&price='        + encodeURIComponent(planInfo.price)
+    + '&limitLabel='   + encodeURIComponent(planInfo.limitLabel)
+    + '&periodLabel='  + encodeURIComponent(planInfo.periodLabel)
+    + '&wompiRef='     + encodeURIComponent(wompiRef)
+    + '&activatedAt='  + encodeURIComponent(activatedAt)
+    + '&expiryDate='   + encodeURIComponent(expiryStr);
+
+  fetch(url).catch(err => console.warn('No se pudo notificar al backend:', err));
+}
 
 // ============================================================
-// HELPERS PARA ALERTAS DE AUTH
+// ALERTAS AUTH
 // ============================================================
 function showAuthAlert(id, msg, type) {
-  const el = document.getElementById(id);
-  el.className = `auth-alert visible ${type}`;
+  const el   = document.getElementById(id);
   const icon = type === 'error' ? '❌' : type === 'success' ? '✅' : type === 'warn' ? '⚠️' : 'ℹ️';
+  el.className = `auth-alert visible ${type}`;
   el.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
 }
 function hideAuthAlert(id) { document.getElementById(id).className = 'auth-alert'; }
 
 // ============================================================
-// CLAVES RSA — PRODUCCIÓN
+// CLAVE RSA DE PRODUCCIÓN
 // ============================================================
 const PROD_KEY = `<RSAKeyValue><Modulus>7C8b4ybsYSc/2CuUgwjyRbDfgTr0THrKnfFHqZBdPqirA9uMiTCPri0QeyQrViqrWTBiGY6tbp1NZDzRt271xcEHAWVCMnP4Y+Fv17utLLsT8fLkOsa6bsFiAmTaAufrC/A3YBQwaIaLnojaDGD4CQCXrJla4b+wnZRL34EuK9DgQcNbUGHfcPhE52MdnifFIS/7l+AxEVlSWXZ+iO5L0vZEU1nqZMnusyon/bD3wGoJlsZXJmZc9kLKl6qXrHbbIFWHF5VQNHjgu7vMhgj8fnZgAy544jYZAkKwvChgn4MpSJ2TGguRjNqJKPcbs/r0SBMZNjzM6Pk+AXrWx5LovJFuPPiXFzPmwbqlPlevj/mLHz+md1nCxD80WUcZbN1GLPyjrorBJ4l5Z+dEJ/UZ7oaKpnaLNtfhZkgJPg3V4BvOqWhD883XeMCt5iXYqN7DDtNJwGO2jBAACp2zoYuvXvSeaUNZzk2veKLfsxGQUT8DkvUM3HtPO6o0LwyY5CHRujaYZH/J++Ka1ne3qJ4m9KHucau6xwf1TB91cjNcXdyV85+urs3oDIi0Vw7igWfGbrK97r3f5dzUx/G6B9gjTgjzfT+Q7b13BvT6yEbZeVJhYG8XkKZR1foCBDSqKet9pDVYPzzpve7fVYmqs85CFjIm1e3rDW4NO8SIqQUgCrk=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>`;
 
 // ============================================================
-// GENERADOR DE PAR DE CLAVES RSA
+// GENERADOR DE CLAVES RSA
 // ============================================================
 let currentPrivKeyXml = null;
 let currentPubKeyXml  = null;
@@ -1845,16 +1602,14 @@ let currentPubKeyXml  = null;
 async function generateKeyPair() {
   const btn = document.getElementById('btn-gen-key');
   btn.disabled = true;
-  btn.innerHTML = '<span class="spinner" style="border-color:rgba(0,0,0,0.3);border-top-color:#000;"></span>Generando…';
+  btn.innerHTML = '<span class="spinner"></span>Generando…';
 
   try {
-    await new Promise(r => setTimeout(r, 50)); // allow UI repaint
-
+    await new Promise(r => setTimeout(r, 50));
     const keypair = forge.pki.rsa.generateKeyPair({ bits: 2048, e: 0x10001 });
     const pubKey  = keypair.publicKey;
     const privKey = keypair.privateKey;
 
-    // Convertir a XML .NET format
     function bigIntToB64(bi) {
       const hex = bi.toString(16).padStart(2, '0');
       const buf = forge.util.hexToBytes(hex.length % 2 ? '0' + hex : hex);
@@ -1875,12 +1630,10 @@ async function generateKeyPair() {
 
     document.getElementById('pub-key').value = currentPubKeyXml;
     document.getElementById('key-status').classList.add('visible');
-
-    showAlert('enc-alert', '✅ Par de claves RSA generado. La clave privada estará disponible en la pestaña flotante tras encriptar.', 'success');
+    showAlert('enc-alert', '✅ Par de claves RSA generado. La clave privada estará disponible tras encriptar.', 'success');
 
   } catch(err) {
     showAlert('enc-alert', 'Error generando claves: ' + err.message, 'error');
-    console.error(err);
   }
 
   btn.disabled = false;
@@ -1891,22 +1644,16 @@ async function generateKeyPair() {
 // PESTAÑA FLOTANTE
 // ============================================================
 function showKeyFloat(privKeyXml) {
-  const panel = document.getElementById('key-float');
   document.getElementById('float-priv-key-display').textContent = privKeyXml;
-
-  // Link de descarga
   const blob = new Blob([privKeyXml], { type: 'application/xml' });
   const url  = URL.createObjectURL(blob);
   const dl   = document.getElementById('float-key-dl');
   dl.href     = url;
   dl.download = 'clave_privada_' + Date.now() + '.xml';
-
-  panel.classList.add('visible');
+  document.getElementById('key-float').classList.add('visible');
 }
 
-function closeKeyFloat() {
-  document.getElementById('key-float').classList.remove('visible');
-}
+function closeKeyFloat() { document.getElementById('key-float').classList.remove('visible'); }
 
 function copyPrivKey() {
   const text = document.getElementById('float-priv-key-display').textContent;
@@ -1928,11 +1675,11 @@ function switchTab(tab) {
 }
 
 function loadProductionKey() {
-  currentPubKeyXml = PROD_KEY;
+  currentPubKeyXml  = PROD_KEY;
+  currentPrivKeyXml = null;
   document.getElementById('pub-key').value = PROD_KEY;
-  currentPrivKeyXml = null; // clave de producción: no hay privada aquí
   document.getElementById('key-status').classList.remove('visible');
-  showAlert('enc-alert', '📋 Clave de producción (Salud Total) cargada. ⚠️ Solo úsala cuando tengas el visto bueno del área de Tecnología.', 'info');
+  showAlert('enc-alert', '📋 Clave de producción cargada. ⚠️ Solo úsala con el visto bueno de Tecnología.', 'info');
 }
 
 function showAlert(id, msg, type) {
@@ -1940,11 +1687,11 @@ function showAlert(id, msg, type) {
   el.className = `alert visible ${type}`;
   el.innerHTML = `<span>${type==='error'?'❌':type==='success'?'✅':'ℹ️'}</span><span>${msg}</span>`;
 }
-
 function hideAlert(id) { document.getElementById(id).className = 'alert'; }
 
-function handleDrag(e, id) { e.preventDefault(); document.getElementById(id).classList.add('drag-over'); }
+function handleDrag(e, id)   { e.preventDefault(); document.getElementById(id).classList.add('drag-over'); }
 function handleDragLeave(id) { document.getElementById(id).classList.remove('drag-over'); }
+
 function handleDrop(e, inputId) {
   e.preventDefault();
   const input = document.getElementById(inputId);
@@ -1967,8 +1714,7 @@ function onFileSelect() {
   if (!input.files || !input.files[0]) return;
   encFile = input.files[0];
   document.getElementById('drop-enc').classList.add('has-file');
-  const fi = document.getElementById('enc-file-info');
-  fi.classList.add('visible');
+  document.getElementById('enc-file-info').classList.add('visible');
   document.getElementById('enc-fname').textContent = encFile.name;
   document.getElementById('enc-fsize').textContent = formatSize(encFile.size);
   document.getElementById('enc-results').classList.remove('visible');
@@ -1995,7 +1741,7 @@ function setProgress(prefix, pct, label) {
 }
 
 // ============================================================
-// XML RSA PARSER
+// PARSER XML RSA
 // ============================================================
 function parseXmlRsaKey(xmlStr) {
   const parser = new DOMParser();
@@ -2017,10 +1763,10 @@ function parseXmlRsaKey(xmlStr) {
       new forge.jsbn.BigInteger(forge.util.bytesToHex(n), 16),
       new forge.jsbn.BigInteger(forge.util.bytesToHex(e), 16),
       new forge.jsbn.BigInteger(forge.util.bytesToHex(d), 16),
-      get('P') ? new forge.jsbn.BigInteger(forge.util.bytesToHex(get('P')), 16) : null,
-      get('Q') ? new forge.jsbn.BigInteger(forge.util.bytesToHex(get('Q')), 16) : null,
-      get('DP') ? new forge.jsbn.BigInteger(forge.util.bytesToHex(get('DP')), 16) : null,
-      get('DQ') ? new forge.jsbn.BigInteger(forge.util.bytesToHex(get('DQ')), 16) : null,
+      get('P')        ? new forge.jsbn.BigInteger(forge.util.bytesToHex(get('P')), 16)        : null,
+      get('Q')        ? new forge.jsbn.BigInteger(forge.util.bytesToHex(get('Q')), 16)        : null,
+      get('DP')       ? new forge.jsbn.BigInteger(forge.util.bytesToHex(get('DP')), 16)       : null,
+      get('DQ')       ? new forge.jsbn.BigInteger(forge.util.bytesToHex(get('DQ')), 16)       : null,
       get('InverseQ') ? new forge.jsbn.BigInteger(forge.util.bytesToHex(get('InverseQ')), 16) : null
     );
     return { pubKey, privKey };
@@ -2035,8 +1781,24 @@ async function encryptFile() {
   hideAlert('enc-alert');
 
   const keyXml = document.getElementById('pub-key').value.trim();
-  if (!keyXml) { showAlert('enc-alert', 'Primero genera un par de claves RSA o carga la clave de producción.', 'error'); return; }
+  if (!keyXml)  { showAlert('enc-alert', 'Primero genera un par de claves RSA o carga la clave de producción.', 'error'); return; }
   if (!encFile) { showAlert('enc-alert', 'Por favor selecciona un archivo a encriptar.', 'error'); return; }
+
+  // Verificar límite de cifrados
+  const email = getCurrentUser();
+  const users = getUsers();
+  const u     = users[email];
+  const plan  = PLANS[u?.plan];
+
+  if (plan && plan.limit !== null) {
+    const used = u.encryptCount || 0;
+    if (used >= plan.limit) {
+      showAlert('enc-alert',
+        `Has alcanzado el límite de ${plan.limit} cifrados de tu ${plan.name}. Renueva o cambia de plan para continuar.`,
+        'error');
+      return;
+    }
+  }
 
   document.getElementById('btn-encrypt').disabled = true;
   document.getElementById('enc-results').classList.remove('visible');
@@ -2053,9 +1815,9 @@ async function encryptFile() {
     const iv     = forge.random.getBytesSync(16);
 
     setProgress('enc', 55, 'Cifrando archivo con AES-256-CBC…');
-    const ext = '.' + encFile.name.split('.').pop();
+    const ext     = '.' + encFile.name.split('.').pop();
     const extBytes = new TextEncoder().encode(ext);
-    const extLen = extBytes.length;
+    const extLen   = extBytes.length;
 
     const cipher = forge.cipher.createCipher('AES-CBC', aesKey);
     cipher.start({ iv });
@@ -2064,16 +1826,16 @@ async function encryptFile() {
     const encryptedContent = cipher.output.getBytes();
 
     const encBuffer = new ArrayBuffer(4 + extLen + 16 + encryptedContent.length);
-    const view = new DataView(encBuffer);
+    const view      = new DataView(encBuffer);
     view.setInt32(0, extLen, true);
     const uint8 = new Uint8Array(encBuffer);
     uint8.set(extBytes, 4);
-    for (let i = 0; i < 16; i++) uint8[4 + extLen + i] = iv.charCodeAt(i);
+    for (let i = 0; i < 16; i++)                    uint8[4 + extLen + i] = iv.charCodeAt(i);
     for (let i = 0; i < encryptedContent.length; i++) uint8[4 + extLen + 16 + i] = encryptedContent.charCodeAt(i);
 
     setProgress('enc', 75, 'Cifrando clave AES con RSA…');
     const encAesKey = pubKey.encrypt(aesKey, 'RSAES-PKCS1-V1_5');
-    const keyBytes = forge.util.hexToBytes(forge.util.bytesToHex(encAesKey));
+    const keyBytes  = forge.util.hexToBytes(forge.util.bytesToHex(encAesKey));
 
     setProgress('enc', 90, 'Preparando archivos de descarga…');
     const baseName = encFile.name.replace(/\.[^.]+$/, '');
@@ -2082,9 +1844,8 @@ async function encryptFile() {
 
     const encBlob = new Blob([encBuffer], { type: 'application/octet-stream' });
     const keyBlob = new Blob([stringToUint8Array(keyBytes)], { type: 'application/octet-stream' });
-
-    const encUrl = URL.createObjectURL(encBlob);
-    const keyUrl = URL.createObjectURL(keyBlob);
+    const encUrl  = URL.createObjectURL(encBlob);
+    const keyUrl  = URL.createObjectURL(keyBlob);
 
     document.getElementById('enc-r1-name').textContent = encName;
     document.getElementById('enc-r2-name').textContent = keyName;
@@ -2096,7 +1857,16 @@ async function encryptFile() {
     setProgress('enc', 100, '✅ Encriptación completada');
     document.getElementById('enc-results').classList.add('visible');
 
-    // Mostrar clave privada en pestaña flotante (si fue generada localmente)
+    // Registrar el cifrado y actualizar barra
+    registerEncryption(email);
+    updateUsageBar();
+
+    // Advertencia si queda poco
+    const remaining = getRemainingEncryptions(users[email] || u);
+    if (remaining !== null && remaining <= 10 && remaining > 0) {
+      showAlert('enc-alert', `⚠️ Solo te quedan ${remaining} cifrado(s) en tu plan actual.`, 'info');
+    }
+
     if (currentPrivKeyXml) {
       setTimeout(() => showKeyFloat(currentPrivKeyXml), 300);
     }
@@ -2115,9 +1885,9 @@ async function encryptFile() {
 async function decryptFile() {
   hideAlert('dec-alert');
   const keyXml = document.getElementById('priv-key').value.trim();
-  if (!keyXml) { showAlert('dec-alert', 'Por favor ingresa la clave privada RSA.', 'error'); return; }
-  if (!decEncFile) { showAlert('dec-alert', 'Por favor selecciona el archivo .enc.', 'error'); return; }
-  if (!decKeyFile) { showAlert('dec-alert', 'Por favor selecciona el archivo .enc.key.', 'error'); return; }
+  if (!keyXml)    { showAlert('dec-alert', 'Por favor ingresa la clave privada RSA.', 'error'); return; }
+  if (!decEncFile){ showAlert('dec-alert', 'Por favor selecciona el archivo .enc.', 'error'); return; }
+  if (!decKeyFile){ showAlert('dec-alert', 'Por favor selecciona el archivo .enc.key.', 'error'); return; }
 
   document.getElementById('btn-decrypt').disabled = true;
   document.getElementById('dec-results').classList.remove('visible');
@@ -2139,8 +1909,8 @@ async function decryptFile() {
     setProgress('dec', 65, 'Parseando estructura del archivo .enc…');
     const extLen = new DataView(encBytes.buffer, encBytes.byteOffset, 4).getInt32(0, true);
     if (extLen < 1 || extLen > 20) throw new Error('Estructura .enc inválida (ext_len=' + extLen + ')');
-    const ext = new TextDecoder().decode(encBytes.slice(4, 4 + extLen));
-    const iv  = uint8ArrayToString(encBytes.slice(4 + extLen, 4 + extLen + 16));
+    const ext          = new TextDecoder().decode(encBytes.slice(4, 4 + extLen));
+    const iv           = uint8ArrayToString(encBytes.slice(4 + extLen, 4 + extLen + 16));
     const cipherContent = uint8ArrayToString(encBytes.slice(4 + extLen + 16));
 
     setProgress('dec', 80, 'Descifrando archivo con AES-256-CBC…');
@@ -2176,7 +1946,7 @@ async function decryptFile() {
 function readFileAsBytes(file) {
   return new Promise((res, rej) => {
     const reader = new FileReader();
-    reader.onload = e => res(new Uint8Array(e.target.result));
+    reader.onload  = e => res(new Uint8Array(e.target.result));
     reader.onerror = () => rej(new Error('Error leyendo archivo'));
     reader.readAsArrayBuffer(file);
   });
