@@ -1461,7 +1461,7 @@ function selectPlan(planKey) {
 }
 
 function renderWompiButton(planKey) {
-  const WOMPI_KEY = 'prv_test_wwPFpbOnBH86nEuZdtSnZyONgsuJGiZo';
+  const WOMPI_KEY = 'pub_prod_mpq9sOOIbuk776GtQ7YkNILlN2T304p7';
   const AMOUNTS   = { monthly: 2500000, pro: 25000000, annual: 265000000 };
   const planInfo  = PLANS[planKey];
   const email     = getCurrentUser() || '';
@@ -1519,6 +1519,11 @@ function checkWompiReturn() {
 
   window.history.replaceState({}, '', window.location.pathname);
 
+  // Wompi puede devolver estos params adicionales en la URL de retorno
+  const integrityHash  = params.get('integrity_hash')   || '';
+  const amountInCents  = params.get('amount_in_cents')  || '';
+  const currency       = params.get('currency')          || 'COP';
+
   const now = new Date().toISOString();
 
   // 1. Guardar en localStorage
@@ -1537,7 +1542,7 @@ function checkWompiReturn() {
   localStorage.removeItem('wompi_pending_email');
 
   // 2. Notificar al Apps Script → registra en Sheet + envía comprobante por correo
-  notifyPayment(pendingEmail, pendingPlan, wompiRef, now);
+  notifyPayment(pendingEmail, pendingPlan, wompiRef, now, integrityHash, amountInCents, currency);
 
   // 3. Dar acceso en pantalla
   setCurrentUser(pendingEmail);
@@ -1557,22 +1562,25 @@ function checkWompiReturn() {
  * Llama al Apps Script para registrar el pago en la Sheet
  * y disparar el envío del comprobante al correo del usuario.
  */
-function notifyPayment(email, plan, wompiRef, activatedAt) {
+function notifyPayment(email, plan, wompiRef, activatedAt, integrityHash, amountInCents, currency) {
   const planInfo = PLANS[plan];
   const expiry   = new Date(new Date(activatedAt).getTime() + planInfo.periodDays * 24 * 60 * 60 * 1000);
   const expiryStr = expiry.toLocaleDateString('es-CO', { year:'numeric', month:'long', day:'numeric' });
 
   const url = APPS_SCRIPT_URL
     + '?action=payment_confirmed'
-    + '&email='        + encodeURIComponent(email)
-    + '&plan='         + encodeURIComponent(plan)
-    + '&planName='     + encodeURIComponent(planInfo.name)
-    + '&price='        + encodeURIComponent(planInfo.price)
-    + '&limitLabel='   + encodeURIComponent(planInfo.limitLabel)
-    + '&periodLabel='  + encodeURIComponent(planInfo.periodLabel)
-    + '&wompiRef='     + encodeURIComponent(wompiRef)
-    + '&activatedAt='  + encodeURIComponent(activatedAt)
-    + '&expiryDate='   + encodeURIComponent(expiryStr);
+    + '&email='          + encodeURIComponent(email)
+    + '&plan='           + encodeURIComponent(plan)
+    + '&planName='       + encodeURIComponent(planInfo.name)
+    + '&price='          + encodeURIComponent(planInfo.price)
+    + '&limitLabel='     + encodeURIComponent(planInfo.limitLabel)
+    + '&periodLabel='    + encodeURIComponent(planInfo.periodLabel)
+    + '&wompiRef='       + encodeURIComponent(wompiRef)
+    + '&activatedAt='    + encodeURIComponent(activatedAt)
+    + '&expiryDate='     + encodeURIComponent(expiryStr)
+    + '&integrityHash='  + encodeURIComponent(integrityHash  || '')
+    + '&amountInCents='  + encodeURIComponent(amountInCents  || '')
+    + '&currency='       + encodeURIComponent(currency        || 'COP');
 
   fetch(url).catch(err => console.warn('No se pudo notificar al backend:', err));
 }
