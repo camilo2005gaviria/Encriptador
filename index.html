@@ -122,10 +122,36 @@ body{
 .auth-alert.info   {background:var(--info-bg);  color:var(--info);  border:1px solid #bad0ea}
 .auth-alert.warn   {background:var(--warn-bg);  color:var(--warn);  border:1px solid #e8d3a8}
 
+/* Link olvidé contraseña */
+.forgot-link{
+  display:block;text-align:right;margin-top:6px;
+  font-size:11.5px;color:var(--muted);cursor:pointer;
+  background:none;border:none;font-family:'DM Sans',sans-serif;
+  text-decoration:underline;text-underline-offset:2px;
+  transition:color .2s;
+}
+.forgot-link:hover{color:var(--text)}
+
 #pending-screen,#denied-screen{display:none;text-align:center}
 #pending-screen.visible,#denied-screen.visible{display:block;animation:fadeUp .35s ease both}
 #register-screen{display:block}
 #register-screen.hidden{display:none}
+
+/* OLVIDÉ CONTRASEÑA */
+#forgot-screen{display:none;animation:fadeUp .35s ease both}
+#forgot-screen.visible{display:block}
+.back-link{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:12px;color:var(--muted);cursor:pointer;
+  background:none;border:none;font-family:'DM Sans',sans-serif;
+  margin-bottom:20px;padding:0;
+  transition:color .2s;
+}
+.back-link:hover{color:var(--text)}
+
+/* RESET CONTRASEÑA */
+#reset-screen{display:none;animation:fadeUp .35s ease both}
+#reset-screen.visible{display:block}
 
 .status-eyebrow{
   font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;
@@ -328,7 +354,7 @@ h1{font-size:22px;font-weight:500;line-height:1.2;margin-bottom:4px}
   font-family:'DM Mono',monospace;font-size:11px;color:var(--info);
 }
 
-/* key gen box */
+/* key gen box — REDISEÑADO */
 .key-gen-box{
   background:var(--surface);border:1px solid var(--border);
   border-radius:var(--r);padding:18px 20px;margin-bottom:24px;
@@ -342,6 +368,20 @@ h1{font-size:22px;font-weight:500;line-height:1.2;margin-bottom:4px}
   color:var(--muted);padding:2px 8px;border-radius:3px;
 }
 .key-gen-desc{font-size:12.5px;color:var(--muted);margin-bottom:14px;line-height:1.65}
+
+/* Textarea clave pública propia */
+.own-key-section{margin-bottom:14px}
+.own-key-section .field-label{margin-bottom:6px}
+.own-key-section textarea{
+  min-height:70px;font-size:11px;resize:vertical;
+}
+.own-key-divider{
+  display:flex;align-items:center;gap:10px;margin:14px 0;
+}
+.own-key-divider span{font-size:11.5px;color:var(--faint);white-space:nowrap}
+.own-key-divider:before,.own-key-divider:after{
+  content:'';flex:1;height:1px;background:var(--border);
+}
 
 .btn-sm{
   padding:8px 18px;background:var(--text);border:none;border-radius:var(--r);
@@ -483,6 +523,8 @@ textarea::placeholder{color:var(--faint)}
 
 <div id="auth-overlay">
   <div class="auth-card">
+
+    <!-- LOGIN / REGISTRO -->
     <div id="register-screen">
       <div class="auth-eyebrow">Res. 2284 · Camilo Rios Gaviria</div>
       <div class="auth-title">Encriptador de Soportes</div>
@@ -490,6 +532,7 @@ textarea::placeholder{color:var(--faint)}
         <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Iniciar sesión</button>
         <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">Crear cuenta</button>
       </div>
+
       <div id="form-login">
         <div class="auth-field">
           <label>Correo electrónico</label>
@@ -500,10 +543,12 @@ textarea::placeholder{color:var(--faint)}
           <label>Contraseña</label>
           <input type="password" id="login-password" placeholder="••••••••"
             onkeydown="if(event.key==='Enter')submitLogin()"/>
+          <button class="forgot-link" onclick="showForgotScreen()">¿Olvidaste tu contraseña?</button>
         </div>
         <button class="auth-btn" id="btn-login" onclick="submitLogin()">Continuar</button>
         <div class="auth-alert" id="login-alert"></div>
       </div>
+
       <div id="form-register" style="display:none">
         <div class="auth-field">
           <label>Correo electrónico</label>
@@ -521,6 +566,40 @@ textarea::placeholder{color:var(--faint)}
         <button class="auth-btn" id="btn-register" onclick="submitRegistration()">Crear cuenta</button>
         <div class="auth-alert" id="reg-alert"></div>
       </div>
+    </div>
+
+    <!-- OLVIDÉ CONTRASEÑA -->
+    <div id="forgot-screen">
+      <button class="back-link" onclick="hideForgotScreen()">← Volver al inicio</button>
+      <div class="auth-eyebrow">Recuperación</div>
+      <div class="auth-title" style="font-size:18px;margin-bottom:14px">¿Olvidaste tu contraseña?</div>
+      <p style="font-size:12.5px;color:var(--muted);margin-bottom:20px;line-height:1.7">
+        Ingresa tu correo y te enviaremos un enlace para crear una nueva contraseña.
+      </p>
+      <div class="auth-field">
+        <label>Correo electrónico</label>
+        <input type="email" id="forgot-email" placeholder="tucorreo@empresa.com"
+          onkeydown="if(event.key==='Enter')submitForgotPassword()"/>
+      </div>
+      <button class="auth-btn" id="btn-forgot" onclick="submitForgotPassword()">Enviar enlace de recuperación</button>
+      <div class="auth-alert" id="forgot-alert"></div>
+    </div>
+
+    <!-- RESET CONTRASEÑA (cuando viene con token en URL) -->
+    <div id="reset-screen">
+      <div class="auth-eyebrow">Nueva contraseña</div>
+      <div class="auth-title" style="font-size:18px;margin-bottom:14px">Crea tu nueva contraseña</div>
+      <div class="auth-field">
+        <label>Nueva contraseña</label>
+        <input type="password" id="reset-password" placeholder="Mínimo 6 caracteres"/>
+      </div>
+      <div class="auth-field">
+        <label>Confirmar contraseña</label>
+        <input type="password" id="reset-password2" placeholder="Repite la contraseña"
+          onkeydown="if(event.key==='Enter')submitResetPassword()"/>
+      </div>
+      <button class="auth-btn" id="btn-reset" onclick="submitResetPassword()">Guardar nueva contraseña</button>
+      <div class="auth-alert" id="reset-alert"></div>
     </div>
 
     <div id="denied-screen">
@@ -578,9 +657,11 @@ textarea::placeholder{color:var(--faint)}
         <div id="payment-alert" class="auth-alert" style="margin-top:12px"></div>
       </div>
     </div>
+
   </div>
 </div>
 
+<!-- FLOAT: CLAVE PRIVADA -->
 <div id="key-float">
   <div class="key-float-header">
     <div class="key-float-title">
@@ -600,6 +681,7 @@ textarea::placeholder{color:var(--faint)}
   </div>
 </div>
 
+<!-- APP PRINCIPAL -->
 <div class="container">
   <header>
     <div class="logo-mark">🔒</div>
@@ -634,33 +716,54 @@ textarea::placeholder{color:var(--faint)}
     <button class="tab" onclick="switchTab('dec')">Desencriptar</button>
   </div>
 
-  <!-- ENCRIPTAR -->
+  <!-- PANEL ENCRIPTAR -->
   <div id="panel-enc" class="panel active">
     <div class="info-box fade-up-2">
       <strong>Metodología híbrida:</strong> El archivo se cifra con AES-256-CBC (clave aleatoria), luego esa clave se cifra con RSA.
       Se generan dos archivos: <code>.enc</code> (contenido cifrado) y <code>.enc.key</code> (clave AES cifrada).
     </div>
 
+    <!-- CAJA DE CLAVES REDISEÑADA -->
     <div class="key-gen-box fade-up-2">
       <div class="key-gen-header">
-        <span class="key-gen-title">Par de claves RSA — Generación automática</span>
-        <span class="key-gen-badge">Único por sesión</span>
+        <span class="key-gen-title">Clave Pública RSA</span>
+        <span class="key-gen-badge">Requerida para cifrar</span>
       </div>
       <div class="key-gen-desc">
-        Cada vez que encriptas se genera un par RSA único. La clave pública cifra tu archivo;
-        la clave privada aparece en un panel flotante para guardarla de forma segura.
+        Puedes pegar tu propia clave pública RSA (formato XML .NET), usar la clave de producción de Salud Total,
+        o generar un par nuevo para pruebas.
       </div>
+
+      <!-- OPCIÓN 1: Pegar clave propia -->
+      <div class="own-key-section">
+        <div class="field-label">Pega tu clave pública aquí</div>
+        <textarea id="own-pub-key-input"
+          placeholder="<RSAKeyValue><Modulus>...</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>"
+          style="min-height:70px;"
+          oninput="onOwnKeyInput()"></textarea>
+        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+          <button class="preset-btn" onclick="loadProductionKey()">Cargar clave Salud Total (Res. 2284)</button>
+          <button class="preset-btn" onclick="clearOwnKey()" id="btn-clear-key" style="display:none">✕ Limpiar clave</button>
+        </div>
+      </div>
+
+      <div class="own-key-divider"><span>o genera un par nuevo</span></div>
+
+      <!-- OPCIÓN 2: Generar par nuevo -->
+      <p style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.6">
+        Se genera una clave única por sesión. La clave privada aparecerá en un panel flotante para guardarla.
+      </p>
       <button class="btn-sm" id="btn-gen-key" onclick="generateKeyPair()">Generar nuevo par de claves</button>
       <div class="key-status" id="key-status">
         <svg class="check-svg" viewBox="0 0 16 16"><polyline points="3,8 7,12 13,4"/></svg>
         Par de claves generado y listo
       </div>
-    </div>
 
-    <div style="margin-bottom:24px;display:none" id="pub-key-section" class="fade-up-3">
-      <div class="field-label">Clave Pública RSA activa</div>
-      <textarea id="pub-key" placeholder="<RSAKeyValue>..." readonly style="opacity:.55"></textarea>
-      <button class="preset-btn" onclick="loadProductionKey()">Cargar clave Salud Total (Res. 2284)</button>
+      <!-- Clave pública activa (readonly, oculto) -->
+      <div style="margin-top:14px;display:none" id="pub-key-section">
+        <div class="field-label">Clave Pública activa</div>
+        <textarea id="pub-key" placeholder="<RSAKeyValue>..." readonly style="opacity:.55;min-height:60px"></textarea>
+      </div>
     </div>
 
     <div class="field-label fade-up-3">Archivo a encriptar</div>
@@ -710,7 +813,7 @@ textarea::placeholder{color:var(--faint)}
     </div>
   </div>
 
-  <!-- DESENCRIPTAR -->
+  <!-- PANEL DESENCRIPTAR -->
   <div id="panel-dec" class="panel">
     <div class="info-box fade-up">
       Para desencriptar necesitas la <strong>clave privada RSA</strong> (mostrada al encriptar)
@@ -828,8 +931,160 @@ function updateUsageBar(){
   }
 }
 
+// ============================================================
+// RESET TOKEN HELPERS
+// ============================================================
+function generateResetToken(){
+  const arr=new Uint8Array(24);crypto.getRandomValues(arr);
+  return Array.from(arr,b=>b.toString(16).padStart(2,'0')).join('');
+}
+function saveResetToken(email,token){
+  const resets=JSON.parse(localStorage.getItem('enc_resets')||'{}');
+  resets[token]={email,expires:Date.now()+3600000}; // 1 hora
+  localStorage.setItem('enc_resets',JSON.stringify(resets));
+}
+function consumeResetToken(token){
+  const resets=JSON.parse(localStorage.getItem('enc_resets')||'{}');
+  const entry=resets[token];
+  if(!entry)return null;
+  if(Date.now()>entry.expires){delete resets[token];localStorage.setItem('enc_resets',JSON.stringify(resets));return null;}
+  delete resets[token];localStorage.setItem('enc_resets',JSON.stringify(resets));
+  return entry.email;
+}
+
+// ============================================================
+// FLUJO: OLVIDÉ CONTRASEÑA
+// ============================================================
+function showForgotScreen(){
+  document.getElementById('register-screen').classList.add('hidden');
+  document.getElementById('forgot-screen').classList.add('visible');
+  document.getElementById('forgot-email').value='';
+  hideAuthAlert('forgot-alert');
+  setTimeout(()=>document.getElementById('forgot-email').focus(),100);
+}
+function hideForgotScreen(){
+  document.getElementById('register-screen').classList.remove('hidden');
+  document.getElementById('forgot-screen').classList.remove('visible');
+  hideAuthAlert('forgot-alert');
+}
+
+async function submitForgotPassword(){
+  const email=document.getElementById('forgot-email').value.trim();
+  hideAuthAlert('forgot-alert');
+  if(!email||!email.includes('@')){showAuthAlert('forgot-alert','Por favor ingresa un correo válido.','error');return;}
+
+  const btn=document.getElementById('btn-forgot');
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Enviando…';
+
+  // Verificamos si el usuario existe (sin revelar si existe o no por seguridad, pero aquí es local)
+  const users=getUsers();
+  if(!users[email]){
+    // Por UX informamos, ya que es una app local/conocida
+    btn.disabled=false;btn.textContent='Enviar enlace de recuperación';
+    showAuthAlert('forgot-alert','No existe una cuenta con ese correo.','error');
+    return;
+  }
+
+  // Generar token y guardarlo localmente
+  const token=generateResetToken();
+  saveResetToken(email,token);
+
+  // Construir URL de reset
+  const resetUrl=window.location.href.split('?')[0]+'?reset_token='+token;
+
+  // Enviar email vía Apps Script
+  try{
+    const res=await fetch(APPS_SCRIPT_URL+'?action=send_reset&email='+encodeURIComponent(email)+'&resetUrl='+encodeURIComponent(resetUrl));
+    const data=await res.json();
+    btn.disabled=false;btn.textContent='Enviar enlace de recuperación';
+    if(data.ok){
+      showAuthAlert('forgot-alert','¡Listo! Revisa tu correo — el enlace expira en 1 hora.','success');
+    }else{
+      showAuthAlert('forgot-alert','Error enviando el correo: '+(data.error||'intenta de nuevo'),'error');
+    }
+  }catch(err){
+    btn.disabled=false;btn.textContent='Enviar enlace de recuperación';
+    showAuthAlert('forgot-alert','Error de conexión. Intenta de nuevo.','error');
+  }
+}
+
+// ============================================================
+// FLUJO: RESET DESDE EL EMAIL (viene con ?reset_token=...)
+// ============================================================
+function checkResetToken(){
+  const params=new URLSearchParams(window.location.search);
+  const token=params.get('reset_token');
+  if(!token)return false;
+
+  // Limpia la URL
+  window.history.replaceState({},'',window.location.pathname);
+
+  // Verificar que el token existe y no venció
+  const resets=JSON.parse(localStorage.getItem('enc_resets')||'{}');
+  const entry=resets[token];
+  if(!entry||Date.now()>entry.expires){
+    // Token inválido o expirado — mostrar login con aviso
+    showRegister();
+    setTimeout(()=>showAuthAlert('login-alert','El enlace de recuperación expiró o es inválido. Solicita uno nuevo.','error'),300);
+    return true;
+  }
+
+  // Token válido — mostrar pantalla de reset
+  document.getElementById('auth-overlay').style.display='flex';
+  hideAllAuthScreens();
+  document.getElementById('reset-screen').classList.add('visible');
+  // Guardamos el token en un campo oculto para usarlo al hacer submit
+  document.getElementById('reset-screen').dataset.token=token;
+  return true;
+}
+
+function submitResetPassword(){
+  const pass=document.getElementById('reset-password').value;
+  const pass2=document.getElementById('reset-password2').value;
+  hideAuthAlert('reset-alert');
+
+  if(pass.length<6){showAuthAlert('reset-alert','La contraseña debe tener al menos 6 caracteres.','error');return;}
+  if(pass!==pass2){showAuthAlert('reset-alert','Las contraseñas no coinciden.','error');return;}
+
+  const token=document.getElementById('reset-screen').dataset.token;
+  const email=consumeResetToken(token);
+  if(!email){showAuthAlert('reset-alert','El enlace expiró. Solicita uno nuevo.','error');return;}
+
+  // Actualizar contraseña en localStorage
+  const users=getUsers();
+  if(!users[email]){showAuthAlert('reset-alert','No se encontró la cuenta.','error');return;}
+  users[email].password=btoa(pass);
+  saveUsers(users);
+
+  // Notificar al backend para actualizar la hoja
+  fetch(APPS_SCRIPT_URL+'?action=update_password&email='+encodeURIComponent(email)+'&password='+encodeURIComponent(btoa(pass)))
+    .catch(err=>console.warn('Backend update_password error:',err));
+
+  showAuthAlert('reset-alert','¡Contraseña actualizada! Inicia sesión ahora.','success');
+  setTimeout(()=>{
+    hideAllAuthScreens();
+    document.getElementById('register-screen').classList.remove('hidden');
+    document.getElementById('reset-screen').classList.remove('visible');
+    switchAuthTab('login');
+    document.getElementById('login-email').value=email;
+    document.getElementById('login-password').focus();
+  },1800);
+}
+
+function hideAllAuthScreens(){
+  document.getElementById('register-screen').classList.add('hidden');
+  document.getElementById('forgot-screen').classList.remove('visible');
+  document.getElementById('reset-screen').classList.remove('visible');
+  document.getElementById('denied-screen').classList.remove('visible');
+  document.getElementById('payment-screen').classList.remove('visible');
+}
+
+// ============================================================
+// INIT
+// ============================================================
 window.addEventListener('load',()=>{
   if(checkWompiReturn())return;
+  if(checkResetToken())return;
   const email=getCurrentUser();
   if(email){const u=getUsers()[email];if(u){if(isPlanActive(u)){grantAccess(email);return;}else{showPaymentScreen(true);return;}}}
   clearCurrentUser();showRegister();
@@ -875,15 +1130,13 @@ function submitRegistration(){
 }
 
 function showRegister(){
+  hideAllAuthScreens();
   document.getElementById('register-screen').classList.remove('hidden');
-  document.getElementById('denied-screen').classList.remove('visible');
-  document.getElementById('payment-screen').classList.remove('visible');
   switchAuthTab('login');
 }
 
 function showPaymentScreen(planVencido=false){
-  document.getElementById('register-screen').classList.add('hidden');
-  document.getElementById('denied-screen').classList.remove('visible');
+  hideAllAuthScreens();
   document.getElementById('payment-screen').classList.add('visible');
   selectedPlan=null;
   document.getElementById('payment-methods-section').classList.remove('visible');
@@ -1004,6 +1257,41 @@ function showAuthAlert(id,msg,type){
 }
 function hideAuthAlert(id){document.getElementById(id).className='auth-alert'}
 
+// ============================================================
+// CLAVE PROPIA — inputs de usuario
+// ============================================================
+function onOwnKeyInput(){
+  const val=document.getElementById('own-pub-key-input').value.trim();
+  document.getElementById('btn-clear-key').style.display=val?'inline-block':'none';
+  if(!val)return;
+  // Validar estructura básica
+  if(val.includes('<RSAKeyValue>')&&val.includes('<Modulus>')){
+    try{
+      parseXmlRsaKey(val); // test parse
+      currentPubKeyXml=val;
+      currentPrivKeyXml=null;
+      document.getElementById('pub-key').value=val;
+      document.getElementById('pub-key-section').style.display='none'; // ocultar el readonly, ya está arriba
+      document.getElementById('key-status').classList.remove('visible');
+      showAlert('enc-alert','Clave pública propia cargada correctamente.','success');
+    }catch(e){
+      // silently fail — no mostrar error mientras escribe
+    }
+  }
+}
+
+function clearOwnKey(){
+  document.getElementById('own-pub-key-input').value='';
+  document.getElementById('btn-clear-key').style.display='none';
+  currentPubKeyXml=null;currentPrivKeyXml=null;
+  document.getElementById('pub-key').value='';
+  document.getElementById('key-status').classList.remove('visible');
+  hideAlert('enc-alert');
+}
+
+// ============================================================
+// GENERAR PAR DE CLAVES
+// ============================================================
 let currentPrivKeyXml=null,currentPubKeyXml=null;
 
 async function generateKeyPair(){
@@ -1017,6 +1305,9 @@ async function generateKeyPair(){
     const p=b64(kp.privateKey.p),q=b64(kp.privateKey.q),dp=b64(kp.privateKey.dP),dq=b64(kp.privateKey.dQ),qi=b64(kp.privateKey.qInv);
     currentPubKeyXml=`<RSAKeyValue><Modulus>${n}</Modulus><Exponent>${e}</Exponent></RSAKeyValue>`;
     currentPrivKeyXml=`<RSAKeyValue><Modulus>${n}</Modulus><Exponent>${e}</Exponent><P>${p}</P><Q>${q}</Q><DP>${dp}</DP><DQ>${dq}</DQ><InverseQ>${qi}</InverseQ><D>${d}</D></RSAKeyValue>`;
+    // Limpiar textarea de clave propia
+    document.getElementById('own-pub-key-input').value='';
+    document.getElementById('btn-clear-key').style.display='none';
     document.getElementById('pub-key').value=currentPubKeyXml;
     document.getElementById('key-status').classList.add('visible');
     document.getElementById('pub-key-section').style.display='block';
@@ -1050,10 +1341,12 @@ function switchTab(tab){
 
 function loadProductionKey(){
   currentPubKeyXml=PROD_KEY;currentPrivKeyXml=null;
+  document.getElementById('own-pub-key-input').value=PROD_KEY;
+  document.getElementById('btn-clear-key').style.display='inline-block';
   document.getElementById('pub-key').value=PROD_KEY;
-  document.getElementById('pub-key-section').style.display='block';
   document.getElementById('key-status').classList.remove('visible');
-  showAlert('enc-alert','Clave de producción cargada. Úsala solo con el visto bueno de Tecnología.','info');
+  document.getElementById('pub-key-section').style.display='none';
+  showAlert('enc-alert','Clave de producción Salud Total cargada.','info');
 }
 
 function showAlert(id,msg,type){
@@ -1115,8 +1408,11 @@ function parseXmlRsaKey(xmlStr){
 
 async function encryptFile(){
   hideAlert('enc-alert');
-  const keyXml=document.getElementById('pub-key').value.trim();
-  if(!keyXml){showAlert('enc-alert','Primero genera un par de claves RSA.','error');return;}
+  // Prioridad: clave propia pegada > clave generada
+  const ownKeyVal=document.getElementById('own-pub-key-input').value.trim();
+  if(ownKeyVal)currentPubKeyXml=ownKeyVal;
+  const keyXml=currentPubKeyXml||document.getElementById('pub-key').value.trim();
+  if(!keyXml){showAlert('enc-alert','Primero pega tu clave pública o genera un par de claves RSA.','error');return;}
   if(!encFile){showAlert('enc-alert','Por favor selecciona un archivo.','error');return;}
   const email=getCurrentUser();const users=getUsers();const u=users[email];const plan=PLANS[u?.plan];
   if(plan&&plan.limit!==null&&(u.encryptCount||0)>=plan.limit){
