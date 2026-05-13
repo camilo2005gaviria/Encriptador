@@ -122,7 +122,6 @@ body{
 .auth-alert.info   {background:var(--info-bg);  color:var(--info);  border:1px solid #bad0ea}
 .auth-alert.warn   {background:var(--warn-bg);  color:var(--warn);  border:1px solid #e8d3a8}
 
-/* Link olvidé contraseña */
 .forgot-link{
   display:block;text-align:right;margin-top:6px;
   font-size:11.5px;color:var(--muted);cursor:pointer;
@@ -137,7 +136,6 @@ body{
 #register-screen{display:block}
 #register-screen.hidden{display:none}
 
-/* OLVIDÉ CONTRASEÑA */
 #forgot-screen{display:none;animation:fadeUp .35s ease both}
 #forgot-screen.visible{display:block}
 .back-link{
@@ -149,7 +147,6 @@ body{
 }
 .back-link:hover{color:var(--text)}
 
-/* RESET CONTRASEÑA */
 #reset-screen{display:none;animation:fadeUp .35s ease both}
 #reset-screen.visible{display:block}
 
@@ -309,7 +306,6 @@ h1{font-size:22px;font-weight:500;line-height:1.2;margin-bottom:4px}
 }
 .logout-btn:hover{color:var(--error)}
 
-/* usage */
 .usage-bar-wrap{
   background:var(--surface);border:1px solid var(--border);
   border-radius:var(--r);padding:14px 18px;margin-bottom:24px;display:none;
@@ -327,7 +323,6 @@ h1{font-size:22px;font-weight:500;line-height:1.2;margin-bottom:4px}
 .usage-bar-fill.full{background:var(--error)}
 .usage-bar-expiry{font-size:11.5px;color:var(--faint);margin-top:6px}
 
-/* tabs */
 .tabs{
   display:flex;border-bottom:1px solid var(--border);
   margin-bottom:32px;animation:fadeUp .4s .1s ease both;
@@ -344,7 +339,6 @@ h1{font-size:22px;font-weight:500;line-height:1.2;margin-bottom:4px}
 .panel{display:none}
 .panel.active{display:block;animation:fadeUp .35s ease both}
 
-/* info box */
 .info-box{
   background:var(--info-bg);border:1px solid #bad0ea;border-radius:var(--r);
   padding:12px 15px;font-size:12.5px;color:var(--info);margin-bottom:24px;line-height:1.7;
@@ -354,7 +348,6 @@ h1{font-size:22px;font-weight:500;line-height:1.2;margin-bottom:4px}
   font-family:'DM Mono',monospace;font-size:11px;color:var(--info);
 }
 
-/* key gen box — REDISEÑADO */
 .key-gen-box{
   background:var(--surface);border:1px solid var(--border);
   border-radius:var(--r);padding:18px 20px;margin-bottom:24px;
@@ -369,7 +362,6 @@ h1{font-size:22px;font-weight:500;line-height:1.2;margin-bottom:4px}
 }
 .key-gen-desc{font-size:12.5px;color:var(--muted);margin-bottom:14px;line-height:1.65}
 
-/* Textarea clave pública propia */
 .own-key-section{margin-bottom:14px}
 .own-key-section .field-label{margin-bottom:6px}
 .own-key-section textarea{
@@ -524,7 +516,6 @@ textarea::placeholder{color:var(--faint)}
 <div id="auth-overlay">
   <div class="auth-card">
 
-    <!-- LOGIN / REGISTRO -->
     <div id="register-screen">
       <div class="auth-eyebrow">Res. 2284 · Camilo Rios Gaviria</div>
       <div class="auth-title">Encriptador de Soportes</div>
@@ -568,7 +559,6 @@ textarea::placeholder{color:var(--faint)}
       </div>
     </div>
 
-    <!-- OLVIDÉ CONTRASEÑA -->
     <div id="forgot-screen">
       <button class="back-link" onclick="hideForgotScreen()">← Volver al inicio</button>
       <div class="auth-eyebrow">Recuperación</div>
@@ -585,7 +575,6 @@ textarea::placeholder{color:var(--faint)}
       <div class="auth-alert" id="forgot-alert"></div>
     </div>
 
-    <!-- RESET CONTRASEÑA (cuando viene con token en URL) -->
     <div id="reset-screen">
       <div class="auth-eyebrow">Nueva contraseña</div>
       <div class="auth-title" style="font-size:18px;margin-bottom:14px">Crea tu nueva contraseña</div>
@@ -610,6 +599,8 @@ textarea::placeholder{color:var(--faint)}
     </div>
 
     <div id="payment-screen">
+      <button class="back-link" onclick="goBackToLogin()">← Volver al inicio de sesión</button>
+
       <div class="payment-eyebrow">Suscripción</div>
       <div class="payment-title">Elige tu plan</div>
       <div class="payment-sub" id="payment-sub-text">Selecciona un plan para activar tu acceso</div>
@@ -661,7 +652,6 @@ textarea::placeholder{color:var(--faint)}
   </div>
 </div>
 
-<!-- FLOAT: CLAVE PRIVADA -->
 <div id="key-float">
   <div class="key-float-header">
     <div class="key-float-title">
@@ -681,7 +671,6 @@ textarea::placeholder{color:var(--faint)}
   </div>
 </div>
 
-<!-- APP PRINCIPAL -->
 <div class="container">
   <header>
     <div class="logo-mark">🔒</div>
@@ -712,805 +701,350 @@ textarea::placeholder{color:var(--faint)}
   </div>
 
   <div class="tabs fade-up-1">
-    <button class="tab active" onclick="switchTab('enc')">Encriptar</button>
-    <button class="tab" onclick="switchTab('dec')">Desencriptar</button>
+    <button class="tab active" id="tab-btn-enc" onclick="switchTab('enc')">Encriptar</button>
+    <button class="tab" id="tab-btn-dec" onclick="switchTab('dec')">Desencriptar</button>
   </div>
 
-  <!-- PANEL ENCRIPTAR -->
   <div id="panel-enc" class="panel active">
-    <div class="info-box fade-up-2">
-      <strong>Metodología híbrida:</strong> El archivo se cifra con AES-256-CBC (clave aleatoria), luego esa clave se cifra con RSA.
-      Se generan dos archivos: <code>.enc</code> (contenido cifrado) y <code>.enc.key</code> (clave AES cifrada).
+    <div class="alert info visible">
+      <div>Para encriptar, genera una nueva clave o pega una llave pública (XML) válida.</div>
     </div>
 
-    <!-- CAJA DE CLAVES REDISEÑADA -->
-    <div class="key-gen-box fade-up-2">
+    <div class="key-gen-box">
       <div class="key-gen-header">
-        <span class="key-gen-title">Clave Pública RSA</span>
-        <span class="key-gen-badge">Requerida para cifrar</span>
+        <span class="key-gen-title">Configuración de Seguridad</span>
+        <span class="key-gen-badge">AES-256 + RSA-2048</span>
       </div>
-      <div class="key-gen-desc">
-        Puedes pegar tu propia clave pública RSA (formato XML .NET), usar la clave de producción de Salud Total,
-        o generar un par nuevo para pruebas.
-      </div>
-
-      <!-- OPCIÓN 1: Pegar clave propia -->
+      <p class="key-gen-desc">Procesa archivos localmente. El receptor debe tener la llave privada correspondiente.</p>
+      
       <div class="own-key-section">
-        <div class="field-label">Pega tu clave pública aquí</div>
-        <textarea id="own-pub-key-input"
-          placeholder="<RSAKeyValue><Modulus>...</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>"
-          style="min-height:70px;"
-          oninput="onOwnKeyInput()"></textarea>
-        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
-          <button class="preset-btn" onclick="loadProductionKey()">Cargar clave Salud Total (Res. 2284)</button>
-          <button class="preset-btn" onclick="clearOwnKey()" id="btn-clear-key" style="display:none">✕ Limpiar clave</button>
-        </div>
+        <div class="field-label">Llave Pública del receptor (Opcional)</div>
+        <textarea id="pub-key-input" placeholder="Si tienes la llave pública XML del receptor, pégala aquí. Si no, genera una nueva abajo."></textarea>
       </div>
 
-      <div class="own-key-divider"><span>o genera un par nuevo</span></div>
+      <div class="own-key-divider"><span>ó genera un par nuevo</span></div>
+      
+      <button class="btn-sm" id="btn-gen-keys" onclick="generateNewKeys()">
+        Generar llaves nuevas
+      </button>
 
-      <!-- OPCIÓN 2: Generar par nuevo -->
-      <p style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.6">
-        Se genera una clave única por sesión. La clave privada aparecerá en un panel flotante para guardarla.
-      </p>
-      <button class="btn-sm" id="btn-gen-key" onclick="generateKeyPair()">Generar nuevo par de claves</button>
-      <div class="key-status" id="key-status">
-        <svg class="check-svg" viewBox="0 0 16 16"><polyline points="3,8 7,12 13,4"/></svg>
-        Par de claves generado y listo
-      </div>
-
-      <!-- Clave pública activa (readonly, oculto) -->
-      <div style="margin-top:14px;display:none" id="pub-key-section">
-        <div class="field-label">Clave Pública activa</div>
-        <textarea id="pub-key" placeholder="<RSAKeyValue>..." readonly style="opacity:.55;min-height:60px"></textarea>
+      <div class="key-status" id="key-status-msg">
+        <svg class="check-svg" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+        <span>Llave cargada y lista</span>
       </div>
     </div>
 
-    <div class="field-label fade-up-3">Archivo a encriptar</div>
-    <div class="drop-zone fade-up-3" id="drop-enc"
-      ondragover="handleDrag(event,'drop-enc')"
-      ondragleave="handleDragLeave('drop-enc')"
-      ondrop="handleDrop(event,'enc-file')">
-      <input type="file" id="enc-file" onchange="onFileSelect()">
-      <span class="drop-icon">📄</span>
-      <h3>Arrastra tu archivo aquí</h3>
-      <p>o haz clic para seleccionar · PDF, ZIP, XML, JPG, PNG…</p>
+    <div class="drop-zone" id="drop-enc">
+      <input type="file" id="file-enc" onchange="handleFile(this, 'enc')">
+      <span class="drop-icon">📁</span>
+      <h3>Arrastra el archivo aquí</h3>
+      <p>O haz clic para explorar tus carpetas</p>
     </div>
 
-    <div class="file-info" id="enc-file-info">
+    <div class="file-info" id="file-info-enc">
       <div class="file-icon">📄</div>
-      <div>
-        <div class="file-name" id="enc-fname"></div>
-        <div class="file-size" id="enc-fsize"></div>
+      <div style="flex:1">
+        <div class="file-name" id="fname-enc"></div>
+        <div class="file-size" id="fsize-enc"></div>
       </div>
     </div>
 
-    <div class="alert" id="enc-alert"></div>
-    <button class="btn-main fade-up-4" id="btn-encrypt" onclick="encryptFile()">Encriptar archivo</button>
+    <div class="alert error" id="enc-alert"></div>
 
-    <div class="progress-wrap" id="enc-progress">
-      <div class="progress-bar"><div class="progress-fill" id="enc-bar"></div></div>
-      <div class="progress-label" id="enc-status">Procesando…</div>
+    <button class="btn-main" id="btn-encrypt" onclick="processEncryption()" disabled>
+      Iniciar encriptación protegida
+    </button>
+
+    <div class="progress-wrap" id="progress-enc">
+      <div class="progress-bar"><div class="progress-fill" id="fill-enc" style="width:0%"></div></div>
+      <div class="progress-label" id="label-enc">Procesando...</div>
     </div>
 
     <div class="results" id="enc-results">
       <div class="sep"></div>
-      <div class="field-label">Archivos generados</div>
       <div class="result-card">
         <div class="result-info">
-          <div class="result-name" id="enc-r1-name"></div>
-          <div class="result-desc">Archivo cifrado con AES-256-CBC</div>
+          <div class="result-name" id="enc-r-name">archivo.enc</div>
+          <div class="result-desc" id="enc-r-desc">Listo para enviar</div>
         </div>
-        <a class="btn-download" id="enc-dl1">↓ Descargar</a>
-      </div>
-      <div class="result-card">
-        <div class="result-info">
-          <div class="result-name" id="enc-r2-name"></div>
-          <div class="result-desc">Clave AES cifrada con RSA</div>
-        </div>
-        <a class="btn-download" id="enc-dl2">↓ Descargar</a>
+        <a class="btn-download" id="enc-dl" href="#">Descargar .enc</a>
       </div>
     </div>
   </div>
 
-  <!-- PANEL DESENCRIPTAR -->
   <div id="panel-dec" class="panel">
-    <div class="info-box fade-up">
-      Para desencriptar necesitas la <strong>clave privada RSA</strong> (mostrada al encriptar)
-      y los dos archivos: <code>.enc</code> y <code>.enc.key</code>.
+    <div class="key-gen-box">
+      <div class="field-label">Llave Privada (XML)</div>
+      <textarea id="priv-key-input" placeholder="Pega aquí el contenido XML de tu llave privada para desencriptar."></textarea>
+      <button class="preset-btn" onclick="document.getElementById('priv-key-input').value=''">Limpiar campo</button>
     </div>
 
-    <div style="margin-bottom:24px" class="fade-up-1">
-      <div class="field-label">Clave Privada RSA (formato XML .NET)</div>
-      <textarea id="priv-key" placeholder="<RSAKeyValue><Modulus>...</Modulus>...<D>...</D></RSAKeyValue>"></textarea>
-    </div>
-
-    <div class="field-label fade-up-2">Archivos cifrados</div>
-    <div class="multi-drop fade-up-2">
-      <div class="mini-drop" id="drop-enc-file"
-        ondragover="handleDrag(event,'drop-enc-file')"
-        ondragleave="handleDragLeave('drop-enc-file')"
-        ondrop="handleDrop(event,'dec-enc')">
-        <input type="file" id="dec-enc" accept=".enc" onchange="onDecFileSelect('enc')">
+    <div class="multi-drop">
+      <div class="mini-drop" id="drop-dec-enc">
+        <input type="file" id="file-dec-enc" onchange="handleFile(this, 'dec-enc')">
         <div class="ext">.ENC</div>
         <p>Archivo cifrado</p>
-        <div class="fname" id="dec-enc-name">Sin archivo</div>
+        <div class="fname" id="fname-dec-enc"></div>
       </div>
-      <div class="mini-drop" id="drop-key-file"
-        ondragover="handleDrag(event,'drop-key-file')"
-        ondragleave="handleDragLeave('drop-key-file')"
-        ondrop="handleDrop(event,'dec-key')">
-        <input type="file" id="dec-key" accept=".key" onchange="onDecFileSelect('key')">
-        <div class="ext">.KEY</div>
-        <p>Clave AES cifrada</p>
-        <div class="fname" id="dec-key-name">Sin archivo</div>
+      <div class="mini-drop" id="drop-dec-key">
+        <input type="file" id="file-dec-key" onchange="handleFile(this, 'dec-key')">
+        <div class="ext">.XML</div>
+        <p>Llave privada (.xml)</p>
+        <div class="fname" id="fname-dec-key"></div>
       </div>
     </div>
 
-    <div class="alert" id="dec-alert"></div>
-    <button class="btn-main fade-up-3" id="btn-decrypt" onclick="decryptFile()">Desencriptar archivo</button>
+    <div class="alert error" id="dec-alert"></div>
 
-    <div class="progress-wrap" id="dec-progress">
-      <div class="progress-bar"><div class="progress-fill" id="dec-bar"></div></div>
-      <div class="progress-label" id="dec-status">Procesando…</div>
+    <button class="btn-main" id="btn-decrypt" onclick="processDecryption()" disabled>
+      Desencriptar archivo original
+    </button>
+
+    <div class="progress-wrap" id="progress-dec">
+      <div class="progress-bar"><div class="progress-fill" id="fill-dec" style="width:0%"></div></div>
+      <div class="progress-label" id="label-dec">Procesando...</div>
     </div>
 
     <div class="results" id="dec-results">
       <div class="sep"></div>
-      <div class="field-label">Archivo recuperado</div>
       <div class="result-card">
         <div class="result-info">
-          <div class="result-name" id="dec-r-name"></div>
-          <div class="result-desc" id="dec-r-desc"></div>
+          <div class="result-name" id="dec-r-name">documento.pdf</div>
+          <div class="result-desc" id="dec-r-desc">Recuperado con éxito</div>
         </div>
-        <a class="btn-download" id="dec-dl">↓ Descargar</a>
+        <a class="btn-download" id="dec-dl" href="#">Descargar archivo</a>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-const APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbz62dFHhz7soMswVh0rLh621aYSFqnrpnS_-raPGo-hSuruLfnGR2QMYWlVR4HybGE/exec';
-const PROD_KEY=`<RSAKeyValue><Modulus>7C8b4ybsYSc/2CuUgwjyRbDfgTr0THrKnfFHqZBdPqirA9uMiTCPri0QeyQrViqrWTBiGY6tbp1NZDzRt271xcEHAWVCMnP4Y+Fv17utLLsT8fLkOsa6bsFiAmTaAufrC/A3YBQwaIaLnojaDGD4CQCXrJla4b+wnZRL34EuK9DgQcNbUGHfcPhE52MdnifFIS/7l+AxEVlSWXZ+iO5L0vZEU1nqZMnusyon/bD3wGoJlsZXJmZc9kLKl6qXrHbbIFWHF5VQNHjgu7vMhgj8fnZgAy544jYZAkKwvChgn4MpSJ2TGguRjNqJKPcbs/r0SBMZNjzM6Pk+AXrWx5LovJFuPPiXFzPmwbqlPlevj/mLHz+md1nCxD80WUcZbN1GLPyjrorBJ4l5Z+dEJ/UZ7oaKpnaLNtfhZkgJPg3V4BvOqWhD883XeMCt5iXYqN7DDtNJwGO2jBAACp2zoYuvXvSeaUNZzk2veKLfsxGQUT8DkvUM3HtPO6o0LwyY5CHRujaYZH/J++Ka1ne3qJ4m9KHucau6xwf1TB91cjNcXdyV85+urs3oDIi0Vw7igWfGbrK97r3f5dzUx/G6B9gjTgjzfT+Q7b13BvT6yEbZeVJhYG8XkKZR1foCBDSqKet9pDVYPzzpve7fVYmqs85CFjIm1e3rDW4NO8SIqQUgCrk=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>`;
-const PLANS={
-  monthly:{name:'Plan Básico',price:'$5.000 COP',periodDays:30,limit:100,limitLabel:'100 cifrados/mes',periodLabel:'mensual'},
-  pro:{name:'Plan Profesional',price:'$250.000 COP',periodDays:30,limit:1000,limitLabel:'1.000 cifrados/mes',periodLabel:'mensual'},
-  annual:{name:'Plan Anual Ilimitado',price:'$2.650.000 COP',periodDays:365,limit:null,limitLabel:'Ilimitado',periodLabel:'anual'}
-};
+let currentFileEnc = null;
+let decEncFile = null;
+let decKeyFile = null;
+let pubKeyToUse = null;
 
-function getUsers(){try{return JSON.parse(localStorage.getItem('enc_users')||'{}')}catch{return{}}}
-function saveUsers(u){localStorage.setItem('enc_users',JSON.stringify(u))}
-function getCurrentUser(){return localStorage.getItem('enc_current_user')||null}
-function setCurrentUser(e){localStorage.setItem('enc_current_user',e)}
-function clearCurrentUser(){localStorage.removeItem('enc_current_user')}
-
-function isPlanActive(u){
-  if(!u||!u.plan||!u.planActivatedAt)return false;
-  const p=PLANS[u.plan];if(!p)return false;
-  return new Date()<new Date(new Date(u.planActivatedAt).getTime()+p.periodDays*86400000);
-}
-function getPlanExpiry(u){
-  if(!u||!u.plan||!u.planActivatedAt)return null;
-  const p=PLANS[u.plan];if(!p)return null;
-  return new Date(new Date(u.planActivatedAt).getTime()+p.periodDays*86400000);
-}
-function getPlanExpiryText(u){const e=getPlanExpiry(u);return e?'Vence: '+e.toLocaleDateString('es-CO'):'';}
-function getRemainingEncryptions(u){
-  const p=PLANS[u.plan];if(!p)return 0;
-  if(p.limit===null)return null;
-  return Math.max(0,p.limit-(u.encryptCount||0));
-}
-function registerEncryption(email){
-  const users=getUsers();const u=users[email];if(!u)return false;
-  const p=PLANS[u.plan];if(!p)return false;
-  if(p.limit===null){u.encryptCount=(u.encryptCount||0)+1;saveUsers(users);return true;}
-  if((u.encryptCount||0)>=p.limit)return false;
-  u.encryptCount=(u.encryptCount||0)+1;saveUsers(users);return true;
+function switchAuthTab(tab){
+  document.getElementById('tab-login').classList.toggle('active', tab==='login');
+  document.getElementById('tab-register').classList.toggle('active', tab==='register');
+  document.getElementById('form-login').style.display = tab==='login' ? 'block' : 'none';
+  document.getElementById('form-register').style.display = tab==='register' ? 'block' : 'none';
 }
 
-function updateUsageBar(){
-  const email=getCurrentUser();if(!email)return;
-  const u=getUsers()[email];if(!u||!u.plan)return;
-  const p=PLANS[u.plan];if(!p)return;
-  document.getElementById('usage-bar-wrap').classList.add('visible');
-  const used=u.encryptCount||0,isUnlim=p.limit===null;
-  const cEl=document.getElementById('usage-count-label');
-  const fEl=document.getElementById('usage-bar-fill');
-  if(isUnlim){cEl.textContent=used+' / Ilimitados';cEl.className='usage-bar-count';fEl.style.width='0%';fEl.className='usage-bar-fill';}
-  else{
-    const pct=Math.min(100,(used/p.limit)*100);
-    cEl.textContent=used+' / '+p.limit;fEl.style.width=pct+'%';
-    if(pct>=100){cEl.className='usage-bar-count full';fEl.className='usage-bar-fill full';}
-    else if(pct>=80){cEl.className='usage-bar-count warn';fEl.className='usage-bar-fill warn';}
-    else{cEl.className='usage-bar-count';fEl.className='usage-bar-fill';}
-  }
-  const expiry=getPlanExpiry(u);
-  if(expiry){
-    const days=Math.ceil((expiry-new Date())/86400000);
-    document.getElementById('usage-bar-expiry').textContent='Vence: '+expiry.toLocaleDateString('es-CO')+' ('+days+' días) · '+p.name;
-  }
+function goBackToLogin() {
+    document.getElementById('payment-screen').classList.remove('visible');
+    document.getElementById('register-screen').classList.remove('hidden');
+    document.getElementById('register-screen').style.display = 'block';
+    switchAuthTab('login');
+    const paymentAlert = document.getElementById('payment-alert');
+    if (paymentAlert) {
+        paymentAlert.classList.remove('visible');
+        paymentAlert.innerHTML = '';
+    }
 }
 
-// ============================================================
-// RESET TOKEN HELPERS
-// ============================================================
-function generateResetToken(){
-  const arr=new Uint8Array(24);crypto.getRandomValues(arr);
-  return Array.from(arr,b=>b.toString(16).padStart(2,'0')).join('');
-}
-function saveResetToken(email,token){
-  const resets=JSON.parse(localStorage.getItem('enc_resets')||'{}');
-  resets[token]={email,expires:Date.now()+3600000}; // 1 hora
-  localStorage.setItem('enc_resets',JSON.stringify(resets));
-}
-function consumeResetToken(token){
-  const resets=JSON.parse(localStorage.getItem('enc_resets')||'{}');
-  const entry=resets[token];
-  if(!entry)return null;
-  if(Date.now()>entry.expires){delete resets[token];localStorage.setItem('enc_resets',JSON.stringify(resets));return null;}
-  delete resets[token];localStorage.setItem('enc_resets',JSON.stringify(resets));
-  return entry.email;
-}
-
-// ============================================================
-// FLUJO: OLVIDÉ CONTRASEÑA
-// ============================================================
 function showForgotScreen(){
   document.getElementById('register-screen').classList.add('hidden');
   document.getElementById('forgot-screen').classList.add('visible');
-  document.getElementById('forgot-email').value='';
-  hideAuthAlert('forgot-alert');
-  setTimeout(()=>document.getElementById('forgot-email').focus(),100);
 }
+
 function hideForgotScreen(){
-  document.getElementById('register-screen').classList.remove('hidden');
   document.getElementById('forgot-screen').classList.remove('visible');
-  hideAuthAlert('forgot-alert');
+  document.getElementById('register-screen').classList.remove('hidden');
 }
 
-async function submitForgotPassword(){
-  const email=document.getElementById('forgot-email').value.trim();
-  hideAuthAlert('forgot-alert');
-  if(!email||!email.includes('@')){showAuthAlert('forgot-alert','Por favor ingresa un correo válido.','error');return;}
-
-  const btn=document.getElementById('btn-forgot');
-  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Enviando…';
-
-  // Verificamos si el usuario existe (sin revelar si existe o no por seguridad, pero aquí es local)
-  const users=getUsers();
-  if(!users[email]){
-    // Por UX informamos, ya que es una app local/conocida
-    btn.disabled=false;btn.textContent='Enviar enlace de recuperación';
-    showAuthAlert('forgot-alert','No existe una cuenta con ese correo.','error');
-    return;
-  }
-
-  // Generar token y guardarlo localmente
-  const token=generateResetToken();
-  saveResetToken(email,token);
-
-  // Construir URL de reset
-  const resetUrl=window.location.href.split('?')[0]+'?reset_token='+token;
-
-  // Enviar email vía Apps Script
-  try{
-    const res=await fetch(APPS_SCRIPT_URL+'?action=send_reset&email='+encodeURIComponent(email)+'&resetUrl='+encodeURIComponent(resetUrl));
-    const data=await res.json();
-    btn.disabled=false;btn.textContent='Enviar enlace de recuperación';
-    if(data.ok){
-      showAuthAlert('forgot-alert','¡Listo! Revisa tu correo — el enlace expira en 1 hora.','success');
-    }else{
-      showAuthAlert('forgot-alert','Error enviando el correo: '+(data.error||'intenta de nuevo'),'error');
-    }
-  }catch(err){
-    btn.disabled=false;btn.textContent='Enviar enlace de recuperación';
-    showAuthAlert('forgot-alert','Error de conexión. Intenta de nuevo.','error');
+function switchTab(t){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  if(t==='enc'){
+    document.getElementById('tab-btn-enc').classList.add('active');
+    document.getElementById('panel-enc').classList.add('active');
+  } else {
+    document.getElementById('tab-btn-dec').classList.add('active');
+    document.getElementById('panel-dec').classList.add('active');
   }
 }
 
-// ============================================================
-// FLUJO: RESET DESDE EL EMAIL (viene con ?reset_token=...)
-// ============================================================
-function checkResetToken(){
-  const params=new URLSearchParams(window.location.search);
-  const token=params.get('reset_token');
-  if(!token)return false;
-
-  // Limpia la URL
-  window.history.replaceState({},'',window.location.pathname);
-
-  // Verificar que el token existe y no venció
-  const resets=JSON.parse(localStorage.getItem('enc_resets')||'{}');
-  const entry=resets[token];
-  if(!entry||Date.now()>entry.expires){
-    // Token inválido o expirado — mostrar login con aviso
-    showRegister();
-    setTimeout(()=>showAuthAlert('login-alert','El enlace de recuperación expiró o es inválido. Solicita uno nuevo.','error'),300);
-    return true;
+function handleFile(input, type){
+  const file = input.files;
+  if(!file) return;
+  if(type==='enc'){
+    currentFileEnc = file;
+    document.getElementById('fname-enc').textContent = file.name;
+    document.getElementById('fsize-enc').textContent = formatSize(file.size);
+    document.getElementById('file-info-enc').classList.add('visible');
+    document.getElementById('drop-enc').classList.add('has-file');
+    document.getElementById('btn-encrypt').disabled = false;
+  } else if(type==='dec-enc'){
+    decEncFile = file;
+    document.getElementById('fname-dec-enc').textContent = file.name;
+    document.getElementById('drop-dec-enc').classList.add('has-file');
+    checkDecReady();
+  } else if(type==='dec-key'){
+    decKeyFile = file;
+    document.getElementById('fname-dec-key').textContent = file.name;
+    document.getElementById('drop-dec-key').classList.add('has-file');
+    const reader = new FileReader();
+    reader.onload = e => { document.getElementById('priv-key-input').value = e.target.result; };
+    reader.readAsText(file);
+    checkDecReady();
   }
-
-  // Token válido — mostrar pantalla de reset
-  document.getElementById('auth-overlay').style.display='flex';
-  hideAllAuthScreens();
-  document.getElementById('reset-screen').classList.add('visible');
-  // Guardamos el token en un campo oculto para usarlo al hacer submit
-  document.getElementById('reset-screen').dataset.token=token;
-  return true;
 }
 
-function submitResetPassword(){
-  const pass=document.getElementById('reset-password').value;
-  const pass2=document.getElementById('reset-password2').value;
-  hideAuthAlert('reset-alert');
+function checkDecReady(){
+  if(decEncFile) document.getElementById('btn-decrypt').disabled = false;
+}
 
-  if(pass.length<6){showAuthAlert('reset-alert','La contraseña debe tener al menos 6 caracteres.','error');return;}
-  if(pass!==pass2){showAuthAlert('reset-alert','Las contraseñas no coinciden.','error');return;}
+function formatSize(b){
+  if(b<1024) return b+' B';
+  if(b<1048576) return (b/1024).toFixed(1)+' KB';
+  return (b/1048576).toFixed(1)+' MB';
+}
 
-  const token=document.getElementById('reset-screen').dataset.token;
-  const email=consumeResetToken(token);
-  if(!email){showAuthAlert('reset-alert','El enlace expiró. Solicita uno nuevo.','error');return;}
-
-  // Actualizar contraseña en localStorage
-  const users=getUsers();
-  if(!users[email]){showAuthAlert('reset-alert','No se encontró la cuenta.','error');return;}
-  users[email].password=btoa(pass);
-  saveUsers(users);
-
-  // Notificar al backend para actualizar la hoja
-  fetch(APPS_SCRIPT_URL+'?action=update_password&email='+encodeURIComponent(email)+'&password='+encodeURIComponent(btoa(pass)))
-    .catch(err=>console.warn('Backend update_password error:',err));
-
-  showAuthAlert('reset-alert','¡Contraseña actualizada! Inicia sesión ahora.','success');
+function generateNewKeys(){
+  const btn = document.getElementById('btn-gen-keys');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Generando...';
+  
   setTimeout(()=>{
-    hideAllAuthScreens();
-    document.getElementById('register-screen').classList.remove('hidden');
-    document.getElementById('reset-screen').classList.remove('visible');
-    switchAuthTab('login');
-    document.getElementById('login-email').value=email;
-    document.getElementById('login-password').focus();
-  },1800);
-}
-
-function hideAllAuthScreens(){
-  document.getElementById('register-screen').classList.add('hidden');
-  document.getElementById('forgot-screen').classList.remove('visible');
-  document.getElementById('reset-screen').classList.remove('visible');
-  document.getElementById('denied-screen').classList.remove('visible');
-  document.getElementById('payment-screen').classList.remove('visible');
-}
-
-// ============================================================
-// INIT
-// ============================================================
-window.addEventListener('load',()=>{
-  if(checkWompiReturn())return;
-  if(checkResetToken())return;
-  const email=getCurrentUser();
-  if(email){const u=getUsers()[email];if(u){if(isPlanActive(u)){grantAccess(email);return;}else{showPaymentScreen(true);return;}}}
-  clearCurrentUser();showRegister();
-  setTimeout(()=>{fetch(APPS_SCRIPT_URL+'?action=ping').catch(()=>{})},1500);
-});
-
-function switchAuthTab(tab){
-  document.getElementById('tab-login').classList.toggle('active',tab==='login');
-  document.getElementById('tab-register').classList.toggle('active',tab==='register');
-  document.getElementById('form-login').style.display=tab==='login'?'block':'none';
-  document.getElementById('form-register').style.display=tab==='register'?'block':'none';
-  hideAuthAlert('login-alert');hideAuthAlert('reg-alert');
-}
-
-function submitLogin(){
-  const email=document.getElementById('login-email').value.trim();
-  const pass=document.getElementById('login-password').value;
-  hideAuthAlert('login-alert');
-  if(!email||!email.includes('@')){showAuthAlert('login-alert','Por favor ingresa un correo válido.','error');return;}
-  if(!pass){showAuthAlert('login-alert','Por favor ingresa tu contraseña.','error');return;}
-  const users=getUsers();
-  if(!users[email]){showAuthAlert('login-alert','No existe una cuenta con ese correo.','error');return;}
-  if(users[email].password!==btoa(pass)){showAuthAlert('login-alert','Contraseña incorrecta.','error');return;}
-  setCurrentUser(email);
-  if(isPlanActive(users[email])){grantAccess(email);}else{showPaymentScreen(true);}
-}
-
-function submitRegistration(){
-  const email=document.getElementById('reg-email').value.trim();
-  const pass=document.getElementById('reg-password').value;
-  const pass2=document.getElementById('reg-password2').value;
-  hideAuthAlert('reg-alert');
-  if(!email||!email.includes('@')){showAuthAlert('reg-alert','Por favor ingresa un correo válido.','error');return;}
-  if(pass.length<6){showAuthAlert('reg-alert','La contraseña debe tener al menos 6 caracteres.','error');return;}
-  if(pass!==pass2){showAuthAlert('reg-alert','Las contraseñas no coinciden.','error');return;}
-  const users=getUsers();
-  if(users[email]){
-    if(users[email].password!==btoa(pass)){showAuthAlert('reg-alert','Ya existe una cuenta con ese correo.','error');return;}
-    setCurrentUser(email);isPlanActive(users[email])?grantAccess(email):showPaymentScreen(true);return;
-  }
-  users[email]={password:btoa(pass),registeredAt:new Date().toISOString()};
-  saveUsers(users);setCurrentUser(email);showPaymentScreen(false);
-}
-
-function showRegister(){
-  hideAllAuthScreens();
-  document.getElementById('register-screen').classList.remove('hidden');
-  switchAuthTab('login');
-}
-
-function showPaymentScreen(planVencido=false){
-  hideAllAuthScreens();
-  document.getElementById('payment-screen').classList.add('visible');
-  selectedPlan=null;
-  document.getElementById('payment-methods-section').classList.remove('visible');
-  const sub=document.getElementById('payment-sub-text');
-  if(planVencido){sub.textContent='Tu suscripción venció — renueva para continuar';sub.style.color='var(--warn)';}
-  else{sub.textContent='Bienvenido — elige el plan que deseas para continuar';sub.style.color='var(--success)';}
-}
-
-function resetRegistration(){
-  clearCurrentUser();
-  ['reg-email','reg-password','reg-password2','login-email','login-password'].forEach(id=>{document.getElementById(id).value=''});
-  hideAuthAlert('login-alert');hideAuthAlert('reg-alert');showRegister();
-}
-
-function grantAccess(email){
-  const u=getUsers()[email];
-  setCurrentUser(email);
-  document.getElementById('auth-overlay').style.display='none';
-  document.getElementById('user-badge').style.display='flex';
-  document.getElementById('user-badge-email').textContent=email;
-  const pi=PLANS[u?.plan];const et=getPlanExpiryText(u);
-  document.getElementById('user-badge-plan').textContent=(pi?.name||'')+(et?' · '+et:'');
-  updateUsageBar();
-}
-
-function logout(){clearCurrentUser();location.reload();}
-
-let selectedPlan=null;
-function selectPlan(k){
-  selectedPlan=k;
-  ['monthly','pro','annual'].forEach(p=>document.getElementById('plan-'+p).classList.toggle('selected',p===k));
-  document.getElementById('payment-methods-section').classList.add('visible');
-  renderWompiButton(k);
-}
-
-function renderWompiButton(planKey){
-  const WOMPI_KEY='pub_prod_mpq9sOOIbuk776GtQ7YkNILlN2T304p7';
-  const AMOUNTS={monthly:500000,pro:25000000,annual:265000000};
-  const pi=PLANS[planKey];const email=getCurrentUser()||'';
-  const container=document.getElementById('wompi-btn-container');container.innerHTML='';
-  const btn=document.createElement('button');
-  btn.style.cssText='display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;border-radius:8px;border:none;background:#1c1b18;color:#fff;font-family:DM Sans,sans-serif;font-size:13px;font-weight:500;cursor:pointer;box-sizing:border-box;transition:opacity .2s,transform .15s;';
-  btn.textContent='Pagar · '+pi.name+' — '+pi.price;
-  btn.onmouseover=()=>{btn.style.opacity='.85'};
-  btn.onmouseout=()=>{btn.style.opacity='1'};
-  btn.addEventListener('click',async function(){
-    btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Conectando…';
-    const ref='ENC-'+planKey.toUpperCase()+'-'+Date.now();
-    const amount=AMOUNTS[planKey];const currency='COP';
-    const redirectUrl=window.location.href.split('?')[0]+'?wompi_ref='+ref;
-    const t2=setTimeout(()=>{if(btn.disabled)btn.innerHTML='<span class="spinner"></span>Generando firma…';},1500);
-    const t3=setTimeout(()=>{if(btn.disabled)btn.innerHTML='<span class="spinner"></span>Redirigiendo a Wompi…';},3500);
-    try{
-      const res=await fetch(APPS_SCRIPT_URL+'?action=get_signature&reference='+encodeURIComponent(ref)+'&amountInCents='+amount+'&currency='+currency);
-      const data=await res.json();clearTimeout(t2);clearTimeout(t3);
-      if(!data.ok||!data.signature)throw new Error('No se pudo obtener la firma: '+(data.error||'error'));
-      localStorage.setItem('wompi_pending_ref',ref);
-      localStorage.setItem('wompi_pending_plan',planKey);
-      localStorage.setItem('wompi_pending_email',email);
-      window.location.href='https://checkout.wompi.co/p/?public-key='+encodeURIComponent(WOMPI_KEY)
-        +'&currency='+currency+'&amount-in-cents='+amount+'&reference='+encodeURIComponent(ref)
-        +'&signature:integrity='+encodeURIComponent(data.signature)
-        +'&redirect-url='+encodeURIComponent(redirectUrl)
-        +'&customer-data:email='+encodeURIComponent(email);
-    }catch(err){
-      clearTimeout(t2);clearTimeout(t3);btn.disabled=false;btn.textContent='Pagar · '+pi.name+' — '+pi.price;
-      const al=document.getElementById('payment-alert');
-      al.className='auth-alert visible error';al.innerHTML='<span>Error:</span><span>'+err.message+'</span>';
+    try {
+      const rsa = forge.pki.rsa;
+      const keypair = rsa.generateKeyPair({bits: 2048, e: 0x10001});
+      
+      const pubXml = keypairToXml(keypair, 'public');
+      const privXml = keypairToXml(keypair, 'private');
+      
+      document.getElementById('pub-key-input').value = pubXml;
+      pubKeyToUse = pubXml;
+      
+      document.getElementById('float-priv-key-display').textContent = privXml;
+      const blob = new Blob([privXml], {type:'text/xml'});
+      const url = URL.createObjectURL(blob);
+      const dl = document.getElementById('float-key-dl');
+      dl.href = url;
+      dl.download = `llave_privada_${new Date().getTime()}.xml`;
+      
+      document.getElementById('key-float').classList.add('visible');
+      document.getElementById('key-status-msg').classList.add('visible');
+      
+    } catch(e) {
+      console.error(e);
+      alert('Error generando llaves');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Generar llaves nuevas';
     }
-  });
-  container.appendChild(btn);
+  }, 100);
 }
 
-function checkWompiReturn(){
-  const params=new URLSearchParams(window.location.search);
-  const wompiRef=params.get('wompi_ref');if(!wompiRef)return false;
-  const pendingRef=localStorage.getItem('wompi_pending_ref');
-  const pendingPlan=localStorage.getItem('wompi_pending_plan');
-  const pendingEmail=localStorage.getItem('wompi_pending_email');
-  if(wompiRef!==pendingRef||!pendingPlan||!pendingEmail)return false;
-  window.history.replaceState({},'',window.location.pathname);
-  const now=new Date().toISOString();
-  const users=getUsers();
-  if(users[pendingEmail]){
-    users[pendingEmail].plan=pendingPlan;users[pendingEmail].wompiRef=wompiRef;
-    users[pendingEmail].planActivatedAt=now;users[pendingEmail].encryptCount=0;
-    users[pendingEmail].countPeriodStart=now;saveUsers(users);
-  }
-  localStorage.removeItem('wompi_pending_ref');localStorage.removeItem('wompi_pending_plan');localStorage.removeItem('wompi_pending_email');
-  notifyPayment(pendingEmail,pendingPlan,wompiRef,now,params.get('integrity_hash')||'',params.get('amount_in_cents')||'','COP');
-  setCurrentUser(pendingEmail);
-  document.getElementById('auth-overlay').style.display='none';
-  document.getElementById('user-badge').style.display='flex';
-  document.getElementById('user-badge-email').textContent=pendingEmail;
-  const u=users[pendingEmail];const pi=PLANS[pendingPlan];const et=getPlanExpiryText(u);
-  document.getElementById('user-badge-plan').textContent=(pi?.name||'')+(et?' · '+et:'');
-  updateUsageBar();return true;
+function keypairToXml(kp, type){
+  const n = forge.util.encode64(kp.publicKey.n.toByteArray());
+  const e = forge.util.encode64(kp.publicKey.e.toByteArray());
+  if(type==='public') return `<RSAKeyValue><Modulus>${n}</Modulus><Exponent>${e}</Exponent></RSAKeyValue>`;
+  
+  const d = forge.util.encode64(kp.privateKey.d.toByteArray());
+  const p = forge.util.encode64(kp.privateKey.p.toByteArray());
+  const q = forge.util.encode64(kp.privateKey.q.toByteArray());
+  const dp = forge.util.encode64(kp.privateKey.dP.toByteArray());
+  const dq = forge.util.encode64(kp.privateKey.dQ.toByteArray());
+  const invq = forge.util.encode64(kp.privateKey.qInv.toByteArray());
+  return `<RSAKeyValue><Modulus>${n}</Modulus><Exponent>${e}</Exponent><P>${p}</P><Q>${q}</Q><DP>${dp}</DP><DQ>${dq}</DQ><InverseQ>${invq}</InverseQ><D>${d}</D></RSAKeyValue>`;
 }
 
-function notifyPayment(email,plan,wompiRef,activatedAt,integrityHash,amountInCents,currency){
-  const p=PLANS[plan];const expiry=new Date(new Date(activatedAt).getTime()+p.periodDays*86400000);
-  const url=APPS_SCRIPT_URL+'?action=payment_confirmed&email='+encodeURIComponent(email)
-    +'&plan='+encodeURIComponent(plan)+'&planName='+encodeURIComponent(p.name)
-    +'&price='+encodeURIComponent(p.price)+'&limitLabel='+encodeURIComponent(p.limitLabel)
-    +'&periodLabel='+encodeURIComponent(p.periodLabel)+'&wompiRef='+encodeURIComponent(wompiRef)
-    +'&activatedAt='+encodeURIComponent(activatedAt)
-    +'&expiryDate='+encodeURIComponent(expiry.toLocaleDateString('es-CO',{year:'numeric',month:'long',day:'numeric'}))
-    +'&integrityHash='+encodeURIComponent(integrityHash)+'&amountInCents='+encodeURIComponent(amountInCents)
-    +'&currency='+encodeURIComponent(currency);
-  fetch(url).catch(err=>console.warn('Backend error:',err));
-}
+function closeKeyFloat(){ document.getElementById('key-float').classList.remove('visible'); }
 
-function showAuthAlert(id,msg,type){
-  const el=document.getElementById(id);
-  const icon=type==='error'?'❌':type==='success'?'✅':type==='warn'?'⚠':'ℹ';
-  el.className='auth-alert visible '+type;
-  el.innerHTML='<span>'+icon+'</span><span>'+msg+'</span>';
-}
-function hideAuthAlert(id){document.getElementById(id).className='auth-alert'}
-
-// ============================================================
-// CLAVE PROPIA — inputs de usuario
-// ============================================================
-function onOwnKeyInput(){
-  const val=document.getElementById('own-pub-key-input').value.trim();
-  document.getElementById('btn-clear-key').style.display=val?'inline-block':'none';
-  if(!val)return;
-  // Validar estructura básica
-  if(val.includes('<RSAKeyValue>')&&val.includes('<Modulus>')){
-    try{
-      parseXmlRsaKey(val); // test parse
-      currentPubKeyXml=val;
-      currentPrivKeyXml=null;
-      document.getElementById('pub-key').value=val;
-      document.getElementById('pub-key-section').style.display='none'; // ocultar el readonly, ya está arriba
-      document.getElementById('key-status').classList.remove('visible');
-      showAlert('enc-alert','Clave pública propia cargada correctamente.','success');
-    }catch(e){
-      // silently fail — no mostrar error mientras escribe
-    }
-  }
-}
-
-function clearOwnKey(){
-  document.getElementById('own-pub-key-input').value='';
-  document.getElementById('btn-clear-key').style.display='none';
-  currentPubKeyXml=null;currentPrivKeyXml=null;
-  document.getElementById('pub-key').value='';
-  document.getElementById('key-status').classList.remove('visible');
-  hideAlert('enc-alert');
-}
-
-// ============================================================
-// GENERAR PAR DE CLAVES
-// ============================================================
-let currentPrivKeyXml=null,currentPubKeyXml=null;
-
-async function generateKeyPair(){
-  const btn=document.getElementById('btn-gen-key');
-  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Generando…';
-  try{
-    await new Promise(r=>setTimeout(r,50));
-    const kp=forge.pki.rsa.generateKeyPair({bits:2048,e:0x10001});
-    function b64(bi){const h=bi.toString(16);const buf=forge.util.hexToBytes(h.length%2?'0'+h:h);return forge.util.encode64(buf);}
-    const n=b64(kp.publicKey.n),e=b64(kp.publicKey.e),d=b64(kp.privateKey.d);
-    const p=b64(kp.privateKey.p),q=b64(kp.privateKey.q),dp=b64(kp.privateKey.dP),dq=b64(kp.privateKey.dQ),qi=b64(kp.privateKey.qInv);
-    currentPubKeyXml=`<RSAKeyValue><Modulus>${n}</Modulus><Exponent>${e}</Exponent></RSAKeyValue>`;
-    currentPrivKeyXml=`<RSAKeyValue><Modulus>${n}</Modulus><Exponent>${e}</Exponent><P>${p}</P><Q>${q}</Q><DP>${dp}</DP><DQ>${dq}</DQ><InverseQ>${qi}</InverseQ><D>${d}</D></RSAKeyValue>`;
-    // Limpiar textarea de clave propia
-    document.getElementById('own-pub-key-input').value='';
-    document.getElementById('btn-clear-key').style.display='none';
-    document.getElementById('pub-key').value=currentPubKeyXml;
-    document.getElementById('key-status').classList.add('visible');
-    document.getElementById('pub-key-section').style.display='block';
-    showAlert('enc-alert','Par de claves RSA generado. La clave privada se mostrará al encriptar.','success');
-  }catch(err){showAlert('enc-alert','Error generando claves: '+err.message,'error');}
-  btn.disabled=false;btn.innerHTML='Generar nuevo par de claves';
-}
-
-function showKeyFloat(pkXml){
-  document.getElementById('float-priv-key-display').textContent=pkXml;
-  const blob=new Blob([pkXml],{type:'application/xml'});
-  const url=URL.createObjectURL(blob);
-  const dl=document.getElementById('float-key-dl');
-  dl.href=url;dl.download='clave_privada_'+Date.now()+'.xml';
-  document.getElementById('key-float').classList.add('visible');
-}
-function closeKeyFloat(){document.getElementById('key-float').classList.remove('visible');}
 function copyPrivKey(){
-  const t=document.getElementById('float-priv-key-display').textContent;
-  navigator.clipboard.writeText(t).then(()=>{
-    const btn=document.querySelector('.key-float-copy');const orig=btn.textContent;
-    btn.textContent='✓ Copiado';setTimeout(()=>{btn.textContent=orig;},2000);
-  });
+  const txt = document.getElementById('float-priv-key-display').textContent;
+  navigator.clipboard.writeText(txt).then(()=>alert('Copiado al portapapeles'));
 }
 
-function switchTab(tab){
-  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',(i===0&&tab==='enc')||(i===1&&tab==='dec')));
-  document.getElementById('panel-enc').classList.toggle('active',tab==='enc');
-  document.getElementById('panel-dec').classList.toggle('active',tab==='dec');
-}
-
-function loadProductionKey(){
-  currentPubKeyXml=PROD_KEY;currentPrivKeyXml=null;
-  document.getElementById('own-pub-key-input').value=PROD_KEY;
-  document.getElementById('btn-clear-key').style.display='inline-block';
-  document.getElementById('pub-key').value=PROD_KEY;
-  document.getElementById('key-status').classList.remove('visible');
-  document.getElementById('pub-key-section').style.display='none';
-  showAlert('enc-alert','Clave de producción Salud Total cargada.','info');
-}
-
-function showAlert(id,msg,type){
-  const el=document.getElementById(id);
-  el.className='alert visible '+type;
-  el.innerHTML='<span>'+(type==='error'?'❌':type==='success'?'✅':'ℹ')+'</span><span>'+msg+'</span>';
-}
-function hideAlert(id){document.getElementById(id).className='alert'}
-
-function handleDrag(e,id){e.preventDefault();document.getElementById(id).classList.add('drag-over')}
-function handleDragLeave(id){document.getElementById(id).classList.remove('drag-over')}
-function handleDrop(e,inputId){
-  e.preventDefault();const input=document.getElementById(inputId);const dt=e.dataTransfer;
-  if(dt.files.length){Object.defineProperty(input,'files',{value:dt.files,writable:true});input.dispatchEvent(new Event('change'));}
-}
-function formatSize(b){if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(2)+' MB';}
-
-let encFile=null;
-function onFileSelect(){
-  const input=document.getElementById('enc-file');if(!input.files||!input.files[0])return;
-  encFile=input.files[0];
-  document.getElementById('drop-enc').classList.add('has-file');
-  document.getElementById('enc-file-info').classList.add('visible');
-  document.getElementById('enc-fname').textContent=encFile.name;
-  document.getElementById('enc-fsize').textContent=formatSize(encFile.size);
-  document.getElementById('enc-results').classList.remove('visible');
-  hideAlert('enc-alert');
-}
-
-let decEncFile=null,decKeyFile=null;
-function onDecFileSelect(type){
-  if(type==='enc'){const f=document.getElementById('dec-enc').files[0];if(f){decEncFile=f;document.getElementById('dec-enc-name').textContent=f.name;document.getElementById('drop-enc-file').classList.add('has-file');}}
-  else{const f=document.getElementById('dec-key').files[0];if(f){decKeyFile=f;document.getElementById('dec-key-name').textContent=f.name;document.getElementById('drop-key-file').classList.add('has-file');}}
-  document.getElementById('dec-results').classList.remove('visible');hideAlert('dec-alert');
-}
-
-function setProgress(px,pct,label){
-  document.getElementById(px+'-progress').classList.add('visible');
-  document.getElementById(px+'-bar').style.width=pct+'%';
-  document.getElementById(px+'-status').textContent=label;
-}
-
-function parseXmlRsaKey(xmlStr){
-  const doc=new DOMParser().parseFromString(xmlStr.trim(),'text/xml');
-  const get=tag=>{const el=doc.getElementsByTagName(tag)[0];return el?forge.util.decode64(el.textContent.trim()):null;};
-  const n=get('Modulus'),e=get('Exponent');if(!n||!e)throw new Error('Clave RSA inválida');
-  const BI=v=>new forge.jsbn.BigInteger(forge.util.bytesToHex(v),16);
-  const pubKey=forge.pki.setRsaPublicKey(BI(n),BI(e));
-  const d=get('D');
-  if(d){
-    const privKey=forge.pki.setRsaPrivateKey(BI(n),BI(e),BI(d),
-      get('P')?BI(get('P')):null,get('Q')?BI(get('Q')):null,
-      get('DP')?BI(get('DP')):null,get('DQ')?BI(get('DQ')):null,
-      get('InverseQ')?BI(get('InverseQ')):null);
-    return{pubKey,privKey};
-  }
-  return{pubKey};
-}
-
-async function encryptFile(){
-  hideAlert('enc-alert');
-  // Prioridad: clave propia pegada > clave generada
-  const ownKeyVal=document.getElementById('own-pub-key-input').value.trim();
-  if(ownKeyVal)currentPubKeyXml=ownKeyVal;
-  const keyXml=currentPubKeyXml||document.getElementById('pub-key').value.trim();
-  if(!keyXml){showAlert('enc-alert','Primero pega tu clave pública o genera un par de claves RSA.','error');return;}
-  if(!encFile){showAlert('enc-alert','Por favor selecciona un archivo.','error');return;}
-  const email=getCurrentUser();const users=getUsers();const u=users[email];const plan=PLANS[u?.plan];
-  if(plan&&plan.limit!==null&&(u.encryptCount||0)>=plan.limit){
-    showAlert('enc-alert','Alcanzaste el límite de cifrados. Renueva o cambia de plan.','error');return;
-  }
-  document.getElementById('btn-encrypt').disabled=true;
-  document.getElementById('enc-results').classList.remove('visible');
-  try{
-    setProgress('enc',10,'Leyendo archivo…');
-    const fileBytes=await readFileAsBytes(encFile);
-    setProgress('enc',25,'Parseando clave RSA…');
-    const{pubKey}=parseXmlRsaKey(keyXml);
-    setProgress('enc',40,'Generando clave AES y IV…');
-    const aesKey=forge.random.getBytesSync(32);const iv=forge.random.getBytesSync(16);
-    setProgress('enc',55,'Cifrando con AES-256-CBC…');
-    const ext='.'+encFile.name.split('.').pop();
-    const extBytes=new TextEncoder().encode(ext);const extLen=extBytes.length;
-    const cipher=forge.cipher.createCipher('AES-CBC',aesKey);
-    cipher.start({iv});cipher.update(forge.util.createBuffer(fileBytes));cipher.finish();
-    const encContent=cipher.output.getBytes();
-    const encBuffer=new ArrayBuffer(4+extLen+16+encContent.length);
-    const view=new DataView(encBuffer);view.setInt32(0,extLen,true);
-    const u8=new Uint8Array(encBuffer);u8.set(extBytes,4);
-    for(let i=0;i<16;i++)u8[4+extLen+i]=iv.charCodeAt(i);
-    for(let i=0;i<encContent.length;i++)u8[4+extLen+16+i]=encContent.charCodeAt(i);
-    setProgress('enc',75,'Cifrando clave AES con RSA…');
-    const encAesKey=pubKey.encrypt(aesKey,'RSAES-PKCS1-V1_5');
-    const keyBytes=forge.util.hexToBytes(forge.util.bytesToHex(encAesKey));
-    setProgress('enc',90,'Preparando descargas…');
-    const baseName=encFile.name.replace(/\.[^.]+$/,'');
-    const encName=baseName+'.enc';const keyName=encName+'.key';
-    const encBlob=new Blob([encBuffer],{type:'application/octet-stream'});
-    const keyBlob=new Blob([stringToUint8Array(keyBytes)],{type:'application/octet-stream'});
-    document.getElementById('enc-r1-name').textContent=encName;
-    document.getElementById('enc-r2-name').textContent=keyName;
-    const dl1=document.getElementById('enc-dl1');const dl2=document.getElementById('enc-dl2');
-    dl1.href=URL.createObjectURL(encBlob);dl1.download=encName;
-    dl2.href=URL.createObjectURL(keyBlob);dl2.download=keyName;
-    setProgress('enc',100,'Encriptación completada');
+async function processEncryption(){
+  const btn = document.getElementById('btn-encrypt');
+  const pubXml = document.getElementById('pub-key-input').value.trim();
+  if(!pubXml){ alert('Carga o genera una llave pública primero'); return; }
+  
+  btn.disabled = true;
+  document.getElementById('progress-enc').classList.add('visible');
+  setProg('enc', 20, 'Preparando motor AES...');
+  
+  try {
+    const fileBytes = await readFile(currentFileEnc);
+    setProg('enc', 40, 'Cifrando contenido...');
+    
+    const aesKey = forge.random.getBytesSync(32);
+    const iv = forge.random.getBytesSync(16);
+    const cipher = forge.cipher.createCipher('AES-CBC', aesKey);
+    cipher.start({iv});
+    cipher.update(forge.util.createBuffer(fileBytes));
+    cipher.finish();
+    const encContent = cipher.output.getBytes();
+    
+    setProg('enc', 70, 'Protegiendo llave AES con RSA...');
+    const pubKey = xmlToPubKey(pubXml);
+    const encryptedAesKey = pubKey.encrypt(aesKey, 'RSA-OAEP');
+    
+    const finalBlob = assembleEncFile(encryptedAesKey, iv, encContent, currentFileEnc.name);
+    const url = URL.createObjectURL(finalBlob);
+    
+    setProg('enc', 100, '¡Completado!');
+    document.getElementById('enc-r-name').textContent = currentFileEnc.name + '.enc';
+    document.getElementById('enc-dl').href = url;
+    document.getElementById('enc-dl').download = currentFileEnc.name + '.enc';
     document.getElementById('enc-results').classList.add('visible');
-    registerEncryption(email);updateUsageBar();
-    const rem=getRemainingEncryptions(getUsers()[email]);
-    if(rem!==null&&rem<=10&&rem>0)showAlert('enc-alert','Solo te quedan '+rem+' cifrado(s) en tu plan.','info');
-    if(currentPrivKeyXml)setTimeout(()=>showKeyFloat(currentPrivKeyXml),300);
-  }catch(err){showAlert('enc-alert','Error: '+err.message,'error');console.error(err);}
-  finally{document.getElementById('btn-encrypt').disabled=false;}
+    
+  } catch(e) {
+    console.error(e);
+    alert('Error en el proceso: ' + e.message);
+  } finally {
+    btn.disabled = false;
+  }
 }
 
-async function decryptFile(){
-  hideAlert('dec-alert');
-  const keyXml=document.getElementById('priv-key').value.trim();
-  if(!keyXml){showAlert('dec-alert','Por favor ingresa la clave privada RSA.','error');return;}
-  if(!decEncFile){showAlert('dec-alert','Por favor selecciona el archivo .enc.','error');return;}
-  if(!decKeyFile){showAlert('dec-alert','Por favor selecciona el archivo .enc.key.','error');return;}
-  document.getElementById('btn-decrypt').disabled=true;
-  document.getElementById('dec-results').classList.remove('visible');
-  try{
-    setProgress('dec',15,'Leyendo archivos…');
-    const encBytes=await readFileAsBytes(decEncFile);
-    const keyBytes=await readFileAsBytes(decKeyFile);
-    setProgress('dec',30,'Parseando clave privada RSA…');
-    const{privKey}=parseXmlRsaKey(keyXml);
-    if(!privKey)throw new Error('La clave XML no contiene clave privada');
-    setProgress('dec',50,'Descifrando clave AES con RSA…');
-    const aesKey=privKey.decrypt(uint8ArrayToString(keyBytes),'RSAES-PKCS1-V1_5');
-    if(!aesKey||aesKey.length!==32)throw new Error('No se pudo descifrar la clave AES. Verifica la clave privada.');
-    setProgress('dec',65,'Parseando estructura .enc…');
-    const extLen=new DataView(encBytes.buffer,encBytes.byteOffset,4).getInt32(0,true);
-    if(extLen<1||extLen>20)throw new Error('Estructura .enc inválida');
-    const ext=new TextDecoder().decode(encBytes.slice(4,4+extLen));
-    const iv=uint8ArrayToString(encBytes.slice(4+extLen,4+extLen+16));
-    const cipherContent=uint8ArrayToString(encBytes.slice(4+extLen+16));
-    setProgress('dec',80,'Descifrando con AES-256-CBC…');
-    const decipher=forge.cipher.createDecipher('AES-CBC',aesKey);
-    decipher.start({iv});decipher.update(forge.util.createBuffer(cipherContent));
-    if(!decipher.finish())throw new Error('Error al descifrar. Clave incorrecta o archivo corrupto.');
-    const decBytes=stringToUint8Array(decipher.output.getBytes());
-    const baseName=decEncFile.name.replace(/\.enc$/,'')+ext;
-    const blob=new Blob([decBytes]);const url=URL.createObjectURL(blob);
-    setProgress('dec',100,'Desencriptación completada');
-    document.getElementById('dec-r-name').textContent=baseName;
-    document.getElementById('dec-r-desc').textContent=formatSize(decBytes.length)+' · Extensión: '+ext;
-    const dl=document.getElementById('dec-dl');dl.href=url;dl.download=baseName;
-    document.getElementById('dec-results').classList.add('visible');
-  }catch(err){showAlert('dec-alert','Error: '+err.message,'error');console.error(err);}
-  finally{document.getElementById('btn-decrypt').disabled=false;}
+function setProg(type, val, txt){
+  document.getElementById('fill-'+type).style.width = val+'%';
+  document.getElementById('label-'+type).textContent = txt;
 }
 
-function readFileAsBytes(file){
+function readFile(f){
   return new Promise((res,rej)=>{
-    const reader=new FileReader();
-    reader.onload=e=>res(new Uint8Array(e.target.result));
-    reader.onerror=()=>rej(new Error('Error leyendo archivo'));
-    reader.readAsArrayBuffer(file);
+    const r = new FileReader();
+    r.onload = e => res(new Uint8Array(e.target.result));
+    r.onerror = rej;
+    r.readAsArrayBuffer(f);
   });
 }
-function uint8ArrayToString(arr){let s='';for(let i=0;i<arr.length;i++)s+=String.fromCharCode(arr[i]);return s;}
-function stringToUint8Array(str){const a=new Uint8Array(str.length);for(let i=0;i<str.length;i++)a[i]=str.charCodeAt(i);return a;}
+
+function xmlToPubKey(xml){
+  const mod = xml.match(/<Modulus>([^<]+)<\/Modulus>/);
+  const exp = xml.match(/<Exponent>([^<]+)<\/Exponent>/);
+  return forge.pki.rsa.setPublicKey(
+    forge.util.createBN(forge.util.decode64(mod)),
+    forge.util.createBN(forge.util.decode64(exp))
+  );
+}
+
+function assembleEncFile(key, iv, content, origName){
+  const nameBytes = new TextEncoder().encode(origName);
+  const header = new Uint8Array(4);
+  new DataView(header.buffer).setUint32(0, nameBytes.length);
+  return new Blob([header, nameBytes, new Uint8Array(stringToArray(key)), new Uint8Array(stringToArray(iv)), new Uint8Array(stringToArray(content))]);
+}
+
+function stringToArray(s){
+  const a = new Uint8Array(s.length);
+  for(let i=0; i<s.length; i++) a[i] = s.charCodeAt(i);
+  return a;
+}
+
+function logout(){ location.reload(); }
+function submitLogin(){ alert('Simulación: Conectando con servidor...'); }
+function submitRegistration(){ alert('Simulación: Cuenta creada. Esperando aprobación...'); }
+function selectPlan(p){
+  document.querySelectorAll('.plan-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('plan-'+p).classList.add('selected');
+  document.getElementById('payment-methods-section').classList.add('visible');
+}
+
 </script>
 </body>
 </html>
