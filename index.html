@@ -1469,34 +1469,60 @@ function renderWompiButton(planKey) {
   const container = document.getElementById('wompi-btn-container');
   container.innerHTML = '';
 
-  const btn = document.createElement('a');
-  btn.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px;border-radius:10px;text-decoration:none;background:linear-gradient(135deg,#00d4aa,#0099ff);color:#000;font-family:Syne,sans-serif;font-size:0.88rem;font-weight:700;letter-spacing:0.5px;cursor:pointer;box-sizing:border-box;text-transform:uppercase;';
-  btn.textContent = '💳 Pagar · ' + planInfo.name + ' — ' + planInfo.price;
+  const btn = document.createElement('button');
+  btn.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px;border-radius:10px;border:none;background:linear-gradient(135deg,#00d4aa,#0099ff);color:#000;font-family:Syne,sans-serif;font-size:0.88rem;font-weight:700;letter-spacing:0.5px;cursor:pointer;box-sizing:border-box;text-transform:uppercase;';
+  btn.innerHTML = '💳 Pagar · ' + planInfo.name + ' — ' + planInfo.price;
   btn.onmouseover = () => { btn.style.boxShadow = '0 8px 30px rgba(0,212,170,0.4)'; btn.style.transform = 'translateY(-1px)'; };
   btn.onmouseout  = () => { btn.style.boxShadow = 'none'; btn.style.transform = 'none'; };
 
-  // ⚡ La referencia y URL se generan en el momento exacto del clic
-  // para evitar el error "Token de aceptación ya fue usado" de Wompi
-  btn.addEventListener('click', function(e) {
-    e.preventDefault();
+  btn.addEventListener('click', async function() {
+    // Deshabilitar botón mientras obtiene la firma
+    btn.disabled = true;
+    btn.innerHTML = '<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(0,0,0,0.3);border-top-color:#000;border-radius:50%;animation:spin 0.7s linear infinite;margin-right:8px;vertical-align:middle;"></span>Preparando pago…';
 
     const ref         = 'ENC-' + planKey.toUpperCase() + '-' + Date.now();
     const amount      = AMOUNTS[planKey];
+    const currency    = 'COP';
     const redirectUrl = window.location.href.split('?')[0] + '?wompi_ref=' + ref;
 
-    localStorage.setItem('wompi_pending_ref',   ref);
-    localStorage.setItem('wompi_pending_plan',  planKey);
-    localStorage.setItem('wompi_pending_email', email);
+    try {
+      // Pedir la firma al Apps Script (el secreto nunca sale del servidor)
+      const sigUrl = APPS_SCRIPT_URL
+        + '?action=get_signature'
+        + '&reference='     + encodeURIComponent(ref)
+        + '&amountInCents=' + amount
+        + '&currency='      + currency;
 
-    const wompiUrl = 'https://checkout.wompi.co/p/?' +
-      'public-key='           + encodeURIComponent(WOMPI_KEY) +
-      '&currency=COP' +
-      '&amount-in-cents='     + amount +
-      '&reference='           + encodeURIComponent(ref) +
-      '&redirect-url='        + encodeURIComponent(redirectUrl) +
-      '&customer-data:email=' + encodeURIComponent(email);
+      const res  = await fetch(sigUrl);
+      const data = await res.json();
 
-    window.location.href = wompiUrl;
+      if (!data.ok || !data.signature) {
+        throw new Error('No se pudo obtener la firma de seguridad: ' + (data.error || 'error desconocido'));
+      }
+
+      // Guardar datos pendientes
+      localStorage.setItem('wompi_pending_ref',   ref);
+      localStorage.setItem('wompi_pending_plan',  planKey);
+      localStorage.setItem('wompi_pending_email', email);
+
+      // Construir URL con firma de integridad
+      const wompiUrl = 'https://checkout.wompi.co/p/?' +
+        'public-key='                + encodeURIComponent(WOMPI_KEY) +
+        '&currency='                 + currency +
+        '&amount-in-cents='          + amount +
+        '&reference='                + encodeURIComponent(ref) +
+        '&signature:integrity='      + encodeURIComponent(data.signature) +
+        '&redirect-url='             + encodeURIComponent(redirectUrl) +
+        '&customer-data:email='      + encodeURIComponent(email);
+
+      window.location.href = wompiUrl;
+
+    } catch(err) {
+      btn.disabled = false;
+      btn.innerHTML = '💳 Pagar · ' + planInfo.name + ' — ' + planInfo.price;
+      document.getElementById('payment-alert').className = 'auth-alert visible error';
+      document.getElementById('payment-alert').innerHTML = '<span>❌</span><span>' + err.message + '</span>';
+    }
   });
 
   container.appendChild(btn);
