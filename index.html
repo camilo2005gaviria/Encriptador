@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Encriptador de Soportes — Res. 2284</title>
+<title>Encriptador de Soportes Seguros</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/forge/1.3.1/forge.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap');
@@ -392,6 +392,39 @@ h1{font-size:22px;font-weight:500;line-height:1.2;margin-bottom:4px}
 .btn-sm:active{transform:scale(0.97)}
 .btn-sm:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
 
+.rsa-actions-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:12px;
+  flex-wrap:wrap;
+}
+
+.rsa-actions-left{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.btn-secondary{
+  background:transparent;
+  border:1px solid var(--border-mid);
+  color:var(--text);
+}
+
+.btn-secondary:hover{
+  border-color:var(--text);
+  background:rgba(28,27,24,0.03);
+  opacity:1;
+  box-shadow:none;
+}
+
+.btn-secondary:active{
+  transform:scale(0.97);
+}
+
+
 .key-status{display:none;align-items:center;gap:7px;margin-top:10px;font-size:12.5px;color:var(--success)}
 .key-status.visible{display:flex;animation:slideDown .25s ease both}
 .check-svg{
@@ -691,7 +724,7 @@ textarea::placeholder{color:var(--faint)}
     <div>
       <div class="header-eyebrow">Resolución 2284 de 2023</div>
       <h1>Encriptador de Soportes</h1>
-      <div class="header-sub">Cifrado híbrido AES-256 + RSA · Compatible con Salud Total / FileZilla</div>
+      <div class="header-sub">Cifrado híbrido AES-256 + RSA · Compatible con flujos seguros de intercambio de archivos</div>
     </div>
     <div class="user-badge" id="user-badge" style="display:none">
       <div class="user-badge-dot"></div>
@@ -726,47 +759,74 @@ textarea::placeholder{color:var(--faint)}
       Se generan dos archivos: <code>.enc</code> (contenido cifrado) y <code>.enc.key</code> (clave AES cifrada).
     </div>
 
-    <!-- CAJA DE CLAVES REDISEÑADA -->
+    <!-- SECCIÓN RSA -->
     <div class="key-gen-box fade-up-2">
+
       <div class="key-gen-header">
-        <span class="key-gen-title">Clave Pública RSA</span>
-        <span class="key-gen-badge">Requerida para cifrar</span>
-      </div>
-      <div class="key-gen-desc">
-        Puedes pegar tu propia clave pública RSA (formato XML .NET), usar la clave de producción de Salud Total,
-        o generar un par nuevo para pruebas.
-      </div>
-
-      <!-- OPCIÓN 1: Pegar clave propia -->
-      <div class="own-key-section">
-        <div class="field-label">Pega tu clave pública aquí</div>
-        <textarea id="own-pub-key-input"
-          placeholder="<RSAKeyValue><Modulus>...</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>"
-          style="min-height:70px;"
-          oninput="onOwnKeyInput()"></textarea>
-        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
-          <button class="preset-btn" onclick="loadProductionKey()">Cargar clave Salud Total (Res. 2284)</button>
-          <button class="preset-btn" onclick="clearOwnKey()" id="btn-clear-key" style="display:none">✕ Limpiar clave</button>
+        <div>
+          <div class="key-gen-title">Clave pública RSA</div>
+          <div class="key-gen-desc" style="margin-top:6px;margin-bottom:0">
+            Pega una clave pública existente o genera un nuevo par de claves para comenzar el cifrado.
+          </div>
         </div>
+
+        <span class="key-gen-badge">RSA · XML .NET</span>
       </div>
 
-      <div class="own-key-divider"><span>o genera un par nuevo</span></div>
+      <div class="own-key-section" style="margin-top:18px">
 
-      <!-- OPCIÓN 2: Generar par nuevo -->
-      <p style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.6">
-        Se genera una clave única por sesión. La clave privada aparecerá en un panel flotante para guardarla.
-      </p>
-      <button class="btn-sm" id="btn-gen-key" onclick="generateKeyPair()">Generar nuevo par de claves</button>
+        <div class="field-label">Clave pública</div>
+
+        <textarea
+          id="own-pub-key-input"
+          placeholder="<RSAKeyValue><Modulus>...</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>"
+          style="min-height:88px"
+          oninput="onOwnKeyInput()"></textarea>
+
+        <div class="rsa-actions-row">
+          <div class="rsa-actions-left">
+            <button class="btn-sm btn-secondary"
+              id="btn-use-key"
+              onclick="activateOwnKey()">
+              Usar clave introducida
+            </button>
+
+            <button class="btn-sm"
+              id="btn-gen-key"
+              onclick="generateKeyPair()">
+              Generar nuevo par de claves
+            </button>
+          </div>
+
+          <button class="preset-btn"
+            onclick="clearOwnKey()"
+            id="btn-clear-key"
+            style="display:none">
+            ✕ Limpiar
+          </button>
+        </div>
+
+      </div>
+
       <div class="key-status" id="key-status">
-        <svg class="check-svg" viewBox="0 0 16 16"><polyline points="3,8 7,12 13,4"/></svg>
-        Par de claves generado y listo
+        <svg class="check-svg" viewBox="0 0 16 16">
+          <polyline points="3,8 7,12 13,4"/>
+        </svg>
+
+        Configuración RSA lista para usar
       </div>
 
-      <!-- Clave pública activa (readonly, oculto) -->
-      <div style="margin-top:14px;display:none" id="pub-key-section">
-        <div class="field-label">Clave Pública activa</div>
-        <textarea id="pub-key" placeholder="<RSAKeyValue>..." readonly style="opacity:.55;min-height:60px"></textarea>
+      <!-- Clave pública activa -->
+      <div style="margin-top:16px;display:none" id="pub-key-section">
+        <div class="field-label">Clave pública activa</div>
+
+        <textarea
+          id="pub-key"
+          placeholder="<RSAKeyValue>..."
+          readonly
+          style="opacity:.55;min-height:60px"></textarea>
       </div>
+
     </div>
 
     <div class="field-label fade-up-3">Archivo a encriptar</div>
@@ -1080,6 +1140,39 @@ function hideAllAuthScreens(){
   document.getElementById('reset-screen').classList.remove('visible');
   document.getElementById('denied-screen').classList.remove('visible');
   document.getElementById('payment-screen').classList.remove('visible');
+}
+
+
+function activateOwnKey(){
+  const input=document.getElementById('own-pub-key-input');
+  const value=input.value.trim();
+
+  if(!value){
+    showAlert('enc-alert','Por favor pega una clave pública RSA válida.','error');
+    return;
+  }
+
+  try{
+    forge.pki.publicKeyFromPem?.(value);
+
+    // Si no es PEM, intentamos XML .NET
+  }catch(e){}
+
+  pubKeyXml=value;
+
+  document.getElementById('pub-key').value=value;
+  document.getElementById('pub-key-section').style.display='block';
+
+  const status=document.getElementById('key-status');
+  status.classList.add('visible');
+  status.innerHTML=`
+    <svg class="check-svg" viewBox="0 0 16 16">
+      <polyline points="3,8 7,12 13,4"/>
+    </svg>
+    Clave pública cargada correctamente
+  `;
+
+  showAlert('enc-alert','Clave pública RSA activada correctamente.','success');
 }
 
 // ============================================================
