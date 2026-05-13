@@ -42,9 +42,19 @@ body{
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes scaleIn{from{opacity:0;transform:scale(0.96)}to{opacity:1;transform:scale(1)}}
 @keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes scaleIn{from{opacity:0;transform:scale(0.96)}to{opacity:1;transform:scale(1)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+@keyframes checkDraw{from{stroke-dashoffset:30}to{stroke-dashoffset:0}}
 @keyframes floatIn{from{opacity:0;transform:translateY(16px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+
+.fade-up{animation:fadeUp .45s cubic-bezier(.22,1,.36,1) both}
+.fade-up-1{animation:fadeUp .45s .08s cubic-bezier(.22,1,.36,1) both}
+.fade-up-2{animation:fadeUp .45s .16s cubic-bezier(.22,1,.36,1) both}
+.fade-up-3{animation:fadeUp .45s .24s cubic-bezier(.22,1,.36,1) both}
+.fade-up-4{animation:fadeUp .45s .32s cubic-bezier(.22,1,.36,1) both}
 
 /* AUTH OVERLAY */
 #auth-overlay{
@@ -71,6 +81,7 @@ body{
   transition:color .2s,border-color .2s;
 }
 .auth-tab.active{color:var(--text);border-bottom-color:var(--text);font-weight:500}
+.auth-tab:hover:not(.active){color:var(--text)}
 .auth-field{margin-bottom:14px}
 .auth-field label{display:block;font-size:11.5px;color:var(--muted);margin-bottom:6px}
 .auth-field input{
@@ -78,244 +89,1428 @@ body{
   border-radius:var(--r);color:var(--text);
   font-family:'DM Sans',sans-serif;font-size:14px;
   padding:10px 13px;outline:none;
+  transition:border-color .2s,background .2s,box-shadow .2s;
 }
+.auth-field input:focus{
+  border-color:var(--text);background:var(--surface);
+  box-shadow:0 0 0 3px rgba(28,27,24,0.07);
+}
+.auth-field input::placeholder{color:var(--faint)}
 .auth-btn{
   width:100%;padding:11px;background:var(--text);border:none;
   border-radius:var(--r);color:#fff;
   font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;
   cursor:pointer;margin-top:8px;
+  transition:opacity .2s,transform .15s;position:relative;overflow:hidden;
 }
+.auth-btn:after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);
+  background-size:200%;opacity:0;
+}
+.auth-btn:hover{opacity:.85}
+.auth-btn:hover:after{opacity:1;animation:shimmer 1s ease}
+.auth-btn:active{transform:scale(0.985)}
+.auth-btn:disabled{opacity:.35;cursor:not-allowed;transform:none}
+.auth-alert{
+  padding:9px 12px;border-radius:var(--r);font-size:12.5px;
+  margin-top:12px;display:none;gap:7px;line-height:1.5;
+}
+.auth-alert.visible{display:flex;align-items:flex-start;animation:slideDown .25s ease both}
+.auth-alert.error  {background:var(--error-bg); color:var(--error); border:1px solid #f0c4cc}
+.auth-alert.success{background:var(--success-bg);color:var(--success);border:1px solid #b8d9c6}
+.auth-alert.info   {background:var(--info-bg);  color:var(--info);  border:1px solid #bad0ea}
+.auth-alert.warn   {background:var(--warn-bg);  color:var(--warn);  border:1px solid #e8d3a8}
 
+/* Link olvidé contraseña */
+.forgot-link{
+  display:block;text-align:right;margin-top:6px;
+  font-size:11.5px;color:var(--muted);cursor:pointer;
+  background:none;border:none;font-family:'DM Sans',sans-serif;
+  text-decoration:underline;text-underline-offset:2px;
+  transition:color .2s;
+}
+.forgot-link:hover{color:var(--text)}
+
+#pending-screen,#denied-screen{display:none;text-align:center}
+#pending-screen.visible,#denied-screen.visible{display:block;animation:fadeUp .35s ease both}
+#register-screen{display:block}
+#register-screen.hidden{display:none}
+
+/* OLVIDÉ CONTRASEÑA */
+#forgot-screen{display:none;animation:fadeUp .35s ease both}
+#forgot-screen.visible{display:block}
 .back-link{
   display:inline-flex;align-items:center;gap:5px;
   font-size:12px;color:var(--muted);cursor:pointer;
   background:none;border:none;font-family:'DM Sans',sans-serif;
-  margin-bottom:20px;padding:0;text-decoration:underline;
+  margin-bottom:20px;padding:0;
+  transition:color .2s;
 }
+.back-link:hover{color:var(--text)}
+
+/* RESET CONTRASEÑA */
+#reset-screen{display:none;animation:fadeUp .35s ease both}
+#reset-screen.visible{display:block}
+
+.status-eyebrow{
+  font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;
+  text-transform:uppercase;color:var(--faint);margin-bottom:10px;
+}
+.status-title{font-size:18px;font-weight:500;margin-bottom:10px}
+.status-desc{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:20px}
+.pulse-dot{
+  display:inline-block;width:8px;height:8px;background:var(--warn);
+  border-radius:50%;margin-right:8px;vertical-align:middle;
+  animation:pulse 1.6s ease-in-out infinite;
+}
+.check-status-btn{
+  padding:8px 18px;background:transparent;border:1px solid var(--border-mid);
+  border-radius:var(--r);color:var(--muted);font-family:'DM Sans',sans-serif;
+  font-size:12.5px;cursor:pointer;transition:border-color .2s,color .2s,transform .15s;
+}
+.check-status-btn:hover{border-color:var(--text);color:var(--text)}
+.check-status-btn:active{transform:scale(0.97)}
 
 /* PLANES */
 #payment-screen{display:none}
 #payment-screen.visible{display:block;animation:fadeUp .4s ease both}
-.payment-eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--faint);margin-bottom:8px;}
+.payment-eyebrow{
+  font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2.5px;
+  text-transform:uppercase;color:var(--faint);margin-bottom:8px;
+}
 .payment-title{font-size:20px;font-weight:500;margin-bottom:6px}
 .payment-sub{font-size:13px;color:var(--muted);margin-bottom:24px}
 .plans-grid{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
 .plan-card{
   background:var(--bg);border:1px solid var(--border);border-radius:var(--r);
   padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:12px;
-  transition: transform 0.2s;
+  transition:border-color .2s,background .2s,transform .2s,box-shadow .2s;
 }
-.plan-card:hover{transform: translateX(4px);}
-.plan-card.selected{border-color:var(--text);background:var(--surface);box-shadow:0 2px 14px rgba(0,0,0,0.05)}
+.plan-card:hover{border-color:var(--border-mid);transform:translateX(3px)}
+.plan-card.selected{
+  border-color:var(--text);background:var(--surface);transform:translateX(0);
+  box-shadow:0 2px 14px rgba(28,27,24,0.08);
+}
+.plan-radio{
+  width:16px;height:16px;border-radius:50%;border:1.5px solid var(--border-mid);
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  transition:border-color .2s,background .2s;
+}
+.plan-card.selected .plan-radio{border-color:var(--text);background:var(--text)}
+.plan-radio-dot{width:5px;height:5px;background:#fff;border-radius:50%;display:none;transition:transform .2s}
+.plan-card.selected .plan-radio-dot{display:block}
 .plan-info{flex:1}
-.plan-name{font-size:13px;font-weight:500}
-.plan-price{text-align:right;font-size:13px;font-weight:500}
+.plan-name{font-size:13px;font-weight:500;margin-bottom:2px;display:flex;align-items:center;gap:7px}
+.plan-desc{font-size:12px;color:var(--muted)}
+.plan-badge{font-size:10px;padding:1px 6px;border-radius:3px;font-family:'DM Mono',monospace}
+.badge-popular{background:var(--info-bg);color:var(--info)}
+.badge-best{background:var(--warn-bg);color:var(--warn)}
+.plan-price{text-align:right;flex-shrink:0}
+.plan-amount{font-size:13px;font-weight:500;white-space:nowrap}
+.plan-period{font-size:10.5px;color:var(--faint);font-family:'DM Mono',monospace}
+.payment-methods-section{display:none;margin-bottom:16px}
+.payment-methods-section.visible{display:block;animation:slideDown .3s ease both}
+.section-label{
+  font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;
+  text-transform:uppercase;color:var(--faint);margin-bottom:10px;
+}
 
-#payment-methods-section{display:none;margin-top:20px;animation:slideDown .3s ease both}
-#payment-methods-section.visible{display:block}
+/* KEY FLOAT */
+#key-float{
+  position:fixed;bottom:28px;right:28px;width:400px;
+  max-width:calc(100vw - 48px);background:var(--surface);
+  border:1px solid var(--border-mid);border-radius:var(--r-lg);
+  box-shadow:0 8px 32px rgba(28,27,24,0.11),0 2px 8px rgba(28,27,24,0.06);
+  z-index:500;display:none;
+}
+#key-float.visible{display:block;animation:floatIn .4s cubic-bezier(.22,1,.36,1) both}
+.key-float-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px 12px;border-bottom:1px solid var(--border);
+}
+.key-float-title{font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px}
+.key-float-badge{
+  font-size:10px;font-family:'DM Mono',monospace;background:var(--pill-bg);
+  color:var(--muted);padding:2px 7px;border-radius:3px;
+}
+.key-float-close{
+  background:none;border:none;color:var(--faint);cursor:pointer;
+  font-size:16px;padding:2px;line-height:1;
+  transition:color .2s,transform .2s;
+}
+.key-float-close:hover{color:var(--error);transform:rotate(90deg)}
+.key-float-body{padding:14px 18px 18px}
+.field-label{
+  font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;
+  text-transform:uppercase;color:var(--faint);margin-bottom:10px;
+}
+.key-float-xml{
+  background:var(--bg);border:1px solid var(--border);border-radius:var(--r);
+  padding:10px 12px;font-family:'DM Mono',monospace;font-size:10px;
+  color:var(--muted);word-break:break-all;line-height:1.6;
+  max-height:110px;overflow-y:auto;margin-bottom:10px;
+}
+.key-float-warning{
+  font-size:12px;color:var(--warn);background:var(--warn-bg);
+  border:1px solid #e8d3a8;border-radius:var(--r);
+  padding:8px 10px;margin-bottom:12px;line-height:1.5;
+}
+.key-float-actions{display:flex;gap:8px}
+.key-float-copy{
+  flex:1;padding:8px;background:transparent;border:1px solid var(--border-mid);
+  border-radius:var(--r);color:var(--muted);font-family:'DM Sans',sans-serif;
+  font-size:12.5px;cursor:pointer;transition:border-color .2s,color .2s,transform .15s;
+}
+.key-float-copy:hover{border-color:var(--text);color:var(--text)}
+.key-float-copy:active{transform:scale(0.97)}
+.key-float-dl{
+  flex:1;padding:8px;background:var(--text);border:none;border-radius:var(--r);
+  color:#fff;font-family:'DM Sans',sans-serif;font-size:12.5px;font-weight:500;
+  cursor:pointer;text-decoration:none;text-align:center;
+  display:flex;align-items:center;justify-content:center;gap:5px;
+  transition:opacity .2s,transform .15s;
+}
+.key-float-dl:hover{opacity:.85}
+.key-float-dl:active{transform:scale(0.97)}
 
-/* APP UI */
-.container{max-width:800px;margin:0 auto;padding:48px 28px; opacity:0; pointer-events:none;}
-.container.app-visible{opacity:1; pointer-events:all; animation:fadeIn 0.5s ease both;}
+/* APP */
+.container{max-width:800px;margin:0 auto;padding:48px 28px 120px}
+header{
+  display:flex;align-items:flex-start;gap:18px;
+  margin-bottom:48px;padding-bottom:32px;
+  border-bottom:1px solid var(--border);
+  animation:fadeUp .5s ease both;
+}
+.logo-mark{
+  width:40px;height:40px;background:var(--text);border-radius:var(--r);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;font-size:18px;
+  transition:transform .3s cubic-bezier(.22,1,.36,1),box-shadow .3s;
+}
+.logo-mark:hover{transform:rotate(-10deg) scale(1.1);box-shadow:0 6px 20px rgba(28,27,24,0.2)}
+.header-eyebrow{
+  font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2.5px;
+  text-transform:uppercase;color:var(--faint);margin-bottom:4px;
+}
+h1{font-size:22px;font-weight:500;line-height:1.2;margin-bottom:4px}
+.header-sub{font-size:12.5px;color:var(--muted)}
+.user-badge{
+  display:flex;align-items:center;gap:8px;margin-left:auto;flex-shrink:0;
+  background:var(--success-bg);border:1px solid #b8d9c6;
+  border-radius:var(--r);padding:7px 12px;font-size:12px;color:var(--success);
+  animation:scaleIn .4s .2s ease both;
+}
+.user-badge-dot{width:6px;height:6px;background:var(--success);border-radius:50%;animation:pulse 2s ease-in-out infinite}
+.logout-btn{
+  background:none;border:none;color:var(--faint);font-size:11.5px;
+  cursor:pointer;padding:2px 5px;border-radius:4px;
+  transition:color .15s;font-family:'DM Sans',sans-serif;
+}
+.logout-btn:hover{color:var(--error)}
 
-header{display:flex;align-items:center;gap:18px;margin-bottom:48px;border-bottom:1px solid var(--border);padding-bottom:20px;}
-.logo-mark{width:40px;height:40px;background:var(--text);border-radius:var(--r);display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px;}
+/* usage */
+.usage-bar-wrap{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);padding:14px 18px;margin-bottom:24px;display:none;
+  animation:fadeUp .4s ease both;
+}
+.usage-bar-wrap.visible{display:block}
+.usage-bar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.usage-bar-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--faint)}
+.usage-bar-count{font-size:13px;font-weight:500;color:var(--text);transition:color .3s}
+.usage-bar-count.warn{color:var(--warn)}
+.usage-bar-count.full{color:var(--error)}
+.usage-bar-track{height:2px;background:var(--border);border-radius:1px;overflow:hidden}
+.usage-bar-fill{height:100%;background:var(--text);border-radius:1px;transition:width .6s cubic-bezier(.22,1,.36,1)}
+.usage-bar-fill.warn{background:var(--warn)}
+.usage-bar-fill.full{background:var(--error)}
+.usage-bar-expiry{font-size:11.5px;color:var(--faint);margin-top:6px}
 
-.tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:32px;}
-.tab{padding:10px 20px;border:none;background:transparent;color:var(--muted);font-size:13px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;}
+/* tabs */
+.tabs{
+  display:flex;border-bottom:1px solid var(--border);
+  margin-bottom:32px;animation:fadeUp .4s .1s ease both;
+}
+.tab{
+  padding:10px 20px;border:none;background:transparent;color:var(--muted);
+  font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;
+  border-bottom:2px solid transparent;margin-bottom:-1px;
+  transition:color .2s,border-color .2s;
+}
 .tab.active{color:var(--text);border-bottom-color:var(--text);font-weight:500}
+.tab:hover:not(.active){color:var(--text)}
 
 .panel{display:none}
 .panel.active{display:block;animation:fadeUp .35s ease both}
 
-.key-gen-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:24px;}
-textarea{width:100%;min-height:80px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:12px;font-family:'DM Mono',monospace;font-size:11px;outline:none;}
-.drop-zone{border:1.5px dashed var(--border-mid);border-radius:var(--r-lg);padding:40px;text-align:center;cursor:pointer;margin-bottom:24px;}
-.btn-main{width:100%;padding:14px;background:var(--text);border:none;border-radius:var(--r);color:#fff;font-weight:500;cursor:pointer;}
+/* info box */
+.info-box{
+  background:var(--info-bg);border:1px solid #bad0ea;border-radius:var(--r);
+  padding:12px 15px;font-size:12.5px;color:var(--info);margin-bottom:24px;line-height:1.7;
+}
+.info-box code{
+  background:#d7e4f4;padding:1px 5px;border-radius:3px;
+  font-family:'DM Mono',monospace;font-size:11px;color:var(--info);
+}
+
+/* key gen box — REDISEÑADO */
+.key-gen-box{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);padding:18px 20px;margin-bottom:24px;
+  transition:border-color .2s,box-shadow .2s;
+}
+.key-gen-box:hover{border-color:var(--border-mid);box-shadow:0 2px 12px rgba(28,27,24,0.05)}
+.key-gen-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.key-gen-title{font-size:13px;font-weight:500}
+.key-gen-badge{
+  font-family:'DM Mono',monospace;font-size:10px;background:var(--pill-bg);
+  color:var(--muted);padding:2px 8px;border-radius:3px;
+}
+.key-gen-desc{font-size:12.5px;color:var(--muted);margin-bottom:14px;line-height:1.65}
+
+/* Textarea clave pública propia */
+.own-key-section{margin-bottom:14px}
+.own-key-section .field-label{margin-bottom:6px}
+.own-key-section textarea{
+  min-height:70px;font-size:11px;resize:vertical;
+}
+.own-key-divider{
+  display:flex;align-items:center;gap:10px;margin:14px 0;
+}
+.own-key-divider span{font-size:11.5px;color:var(--faint);white-space:nowrap}
+.own-key-divider:before,.own-key-divider:after{
+  content:'';flex:1;height:1px;background:var(--border);
+}
+
+.btn-sm{
+  padding:8px 18px;background:var(--text);border:none;border-radius:var(--r);
+  color:#fff;font-family:'DM Sans',sans-serif;font-size:12.5px;font-weight:500;
+  cursor:pointer;transition:opacity .2s,transform .15s,box-shadow .2s;
+}
+.btn-sm:hover{opacity:.85;box-shadow:0 3px 12px rgba(28,27,24,0.18)}
+.btn-sm:active{transform:scale(0.97)}
+.btn-sm:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
+
+.key-status{display:none;align-items:center;gap:7px;margin-top:10px;font-size:12.5px;color:var(--success)}
+.key-status.visible{display:flex;animation:slideDown .25s ease both}
+.check-svg{
+  width:16px;height:16px;flex-shrink:0;stroke:var(--success);stroke-width:2.5;
+  stroke-dasharray:30;stroke-dashoffset:0;fill:none;animation:checkDraw .4s ease both;
+}
+
+.preset-btn{
+  margin-top:8px;padding:6px 13px;background:transparent;border:1px solid var(--border);
+  border-radius:var(--r);color:var(--muted);font-family:'DM Sans',sans-serif;
+  font-size:12px;cursor:pointer;transition:border-color .2s,color .2s,transform .15s;
+}
+.preset-btn:hover{border-color:var(--border-mid);color:var(--text)}
+.preset-btn:active{transform:scale(0.97)}
+
+textarea{
+  width:100%;min-height:80px;background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r);color:var(--text);font-family:'DM Mono',monospace;
+  font-size:11.5px;padding:13px;resize:vertical;outline:none;line-height:1.6;
+  transition:border-color .2s,box-shadow .2s;
+}
+textarea:focus{border-color:var(--text);box-shadow:0 0 0 3px rgba(28,27,24,0.07)}
+textarea::placeholder{color:var(--faint)}
+
+.drop-zone{
+  border:1.5px dashed var(--border-mid);border-radius:var(--r-lg);
+  padding:44px 24px;text-align:center;cursor:pointer;
+  position:relative;margin-bottom:24px;
+  transition:border-color .25s,background .25s,transform .25s;
+}
+.drop-zone:hover{border-color:var(--text);background:rgba(28,27,24,0.025);transform:scale(1.005)}
+.drop-zone.drag-over{border-color:var(--text);background:rgba(28,27,24,0.035);transform:scale(1.01)}
+.drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.drop-icon{font-size:2.2rem;margin-bottom:10px;display:block;transition:transform .25s}
+.drop-zone:hover .drop-icon{transform:translateY(-5px)}
+.drop-zone h3{font-size:15px;font-weight:500;color:var(--text);margin-bottom:5px}
+.drop-zone p{font-size:12.5px;color:var(--muted)}
+.drop-zone.has-file{border-style:solid;border-color:var(--text)}
+
+.file-info{
+  display:none;align-items:center;gap:12px;padding:12px 16px;
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  margin-bottom:24px;font-size:13px;
+}
+.file-info.visible{display:flex;animation:slideDown .3s ease both}
+.file-icon{
+  width:34px;height:34px;background:var(--pill-bg);border-radius:var(--r);
+  display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;
+}
+.file-name{font-weight:500;color:var(--text)}
+.file-size{color:var(--muted);font-size:12px}
+
+.multi-drop{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px}
+.mini-drop{
+  border:1.5px dashed var(--border-mid);border-radius:var(--r);
+  padding:22px 14px;text-align:center;cursor:pointer;position:relative;
+  transition:border-color .2s,background .2s,transform .2s;
+}
+.mini-drop:hover{border-color:var(--text);background:rgba(28,27,24,0.025);transform:translateY(-3px)}
+.mini-drop.has-file{border-style:solid;border-color:var(--text)}
+.mini-drop input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.mini-drop .ext{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:var(--text)}
+.mini-drop p{font-size:11.5px;color:var(--muted);margin-top:3px}
+.mini-drop .fname{font-size:11.5px;color:var(--text);margin-top:6px;word-break:break-all}
+
+.btn-main{
+  width:100%;padding:14px;background:var(--text);border:none;border-radius:var(--r);
+  color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;
+  cursor:pointer;transition:opacity .2s,transform .15s,box-shadow .2s;
+  position:relative;overflow:hidden;
+}
+.btn-main:after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent);
+  background-size:200%;opacity:0;
+}
+.btn-main:not(:disabled):hover{opacity:.85;box-shadow:0 4px 20px rgba(28,27,24,0.2)}
+.btn-main:not(:disabled):hover:after{opacity:1;animation:shimmer 1.2s ease}
+.btn-main:not(:disabled):active{transform:scale(0.985)}
+.btn-main:disabled{opacity:.3;cursor:not-allowed}
+
+.progress-wrap{display:none;margin-top:20px}
+.progress-wrap.visible{display:block;animation:fadeIn .25s ease both}
+.progress-bar{height:2px;background:var(--border);border-radius:1px;overflow:hidden;margin-bottom:9px}
+.progress-fill{height:100%;background:var(--text);border-radius:1px;transition:width .4s cubic-bezier(.22,1,.36,1)}
+.progress-label{font-size:12px;color:var(--muted)}
+
+.results{display:none;margin-top:20px}
+.results.visible{display:block;animation:fadeUp .35s ease both}
+.sep{height:1px;background:var(--border);margin:20px 0}
+.result-card{
+  background:var(--success-bg);border:1px solid #b8d9c6;border-radius:var(--r);
+  padding:14px 18px;margin-bottom:10px;display:flex;align-items:center;
+  justify-content:space-between;gap:14px;animation:fadeUp .35s ease both;
+}
+.result-card:nth-child(2){animation-delay:.08s}
+.result-info .result-name{font-size:13px;color:var(--text);font-weight:500;margin-bottom:2px}
+.result-info .result-desc{font-size:11.5px;color:var(--muted)}
+.btn-download{
+  padding:7px 16px;background:transparent;border:1px solid #b8d9c6;
+  border-radius:var(--r);color:var(--success);font-family:'DM Sans',sans-serif;
+  font-size:12px;cursor:pointer;white-space:nowrap;flex-shrink:0;text-decoration:none;
+  transition:background .2s,border-color .2s,transform .15s;
+}
+.btn-download:hover{background:rgba(30,92,58,0.08);border-color:var(--success)}
+.btn-download:active{transform:scale(0.97)}
+
+.alert{display:none;padding:11px 14px;border-radius:var(--r);font-size:12.5px;margin-bottom:18px}
+.alert.visible{display:flex;align-items:flex-start;gap:9px;animation:slideDown .25s ease both}
+.alert.error  {background:var(--error-bg); border:1px solid #f0c4cc;color:var(--error)}
+.alert.success{background:var(--success-bg);border:1px solid #b8d9c6;color:var(--success)}
+.alert.info   {background:var(--info-bg);  border:1px solid #bad0ea;color:var(--info)}
+
+.spinner{
+  display:inline-block;width:13px;height:13px;
+  border:2px solid rgba(255,255,255,.3);border-top-color:#fff;
+  border-radius:50%;animation:spin .7s linear infinite;
+  vertical-align:middle;margin-right:6px;
+}
+
+@media(max-width:520px){
+  .auth-card{padding:28px 20px}
+  .multi-drop{grid-template-columns:1fr}
+  .container{padding:32px 18px 80px}
+}
 </style>
 </head>
 <body>
 
 <div id="auth-overlay">
   <div class="auth-card">
-    
+
+    <!-- LOGIN / REGISTRO -->
     <div id="register-screen">
       <div class="auth-eyebrow">Res. 2284 · Camilo Rios Gaviria</div>
       <div class="auth-title">Encriptador de Soportes</div>
-      
       <div class="auth-tabs">
         <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Iniciar sesión</button>
         <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">Crear cuenta</button>
       </div>
 
-      <div id="form-auth">
+      <div id="form-login">
         <div class="auth-field">
           <label>Correo electrónico</label>
-          <input type="email" id="auth-email" placeholder="tucorreo@empresa.com">
+          <input type="email" id="login-email" placeholder="tucorreo@empresa.com"
+            onkeydown="if(event.key==='Enter')submitLogin()"/>
         </div>
         <div class="auth-field">
           <label>Contraseña</label>
-          <input type="password" id="auth-pass" placeholder="••••••••">
+          <input type="password" id="login-password" placeholder="••••••••"
+            onkeydown="if(event.key==='Enter')submitLogin()"/>
+          <button class="forgot-link" onclick="showForgotScreen()">¿Olvidaste tu contraseña?</button>
         </div>
-        <button class="auth-btn" onclick="goToPayment()">Continuar</button>
+        <button class="auth-btn" id="btn-login" onclick="submitLogin()">Continuar</button>
+        <div class="auth-alert" id="login-alert"></div>
+      </div>
+
+      <div id="form-register" style="display:none">
+        <div class="auth-field">
+          <label>Correo electrónico</label>
+          <input type="email" id="reg-email" placeholder="tucorreo@empresa.com"/>
+        </div>
+        <div class="auth-field">
+          <label>Contraseña</label>
+          <input type="password" id="reg-password" placeholder="Mínimo 6 caracteres"/>
+        </div>
+        <div class="auth-field">
+          <label>Confirmar contraseña</label>
+          <input type="password" id="reg-password2" placeholder="Repite la contraseña"
+            onkeydown="if(event.key==='Enter')submitRegistration()"/>
+        </div>
+        <button class="auth-btn" id="btn-register" onclick="submitRegistration()">Crear cuenta</button>
+        <div class="auth-alert" id="reg-alert"></div>
       </div>
     </div>
 
+    <!-- OLVIDÉ CONTRASEÑA -->
+    <div id="forgot-screen">
+      <button class="back-link" onclick="hideForgotScreen()">← Volver al inicio</button>
+      <div class="auth-eyebrow">Recuperación</div>
+      <div class="auth-title" style="font-size:18px;margin-bottom:14px">¿Olvidaste tu contraseña?</div>
+      <p style="font-size:12.5px;color:var(--muted);margin-bottom:20px;line-height:1.7">
+        Ingresa tu correo y te enviaremos un enlace para crear una nueva contraseña.
+      </p>
+      <div class="auth-field">
+        <label>Correo electrónico</label>
+        <input type="email" id="forgot-email" placeholder="tucorreo@empresa.com"
+          onkeydown="if(event.key==='Enter')submitForgotPassword()"/>
+      </div>
+      <button class="auth-btn" id="btn-forgot" onclick="submitForgotPassword()">Enviar enlace de recuperación</button>
+      <div class="auth-alert" id="forgot-alert"></div>
+    </div>
+
+    <!-- RESET CONTRASEÑA (cuando viene con token en URL) -->
+    <div id="reset-screen">
+      <div class="auth-eyebrow">Nueva contraseña</div>
+      <div class="auth-title" style="font-size:18px;margin-bottom:14px">Crea tu nueva contraseña</div>
+      <div class="auth-field">
+        <label>Nueva contraseña</label>
+        <input type="password" id="reset-password" placeholder="Mínimo 6 caracteres"/>
+      </div>
+      <div class="auth-field">
+        <label>Confirmar contraseña</label>
+        <input type="password" id="reset-password2" placeholder="Repite la contraseña"
+          onkeydown="if(event.key==='Enter')submitResetPassword()"/>
+      </div>
+      <button class="auth-btn" id="btn-reset" onclick="submitResetPassword()">Guardar nueva contraseña</button>
+      <div class="auth-alert" id="reset-alert"></div>
+    </div>
+
+    <div id="denied-screen">
+      <div class="status-eyebrow">Estado</div>
+      <div class="status-title">Acceso denegado</div>
+      <div class="status-desc">Tu solicitud fue denegada. Contacta a <strong>gaviriarioscamilo@gmail.com</strong>.</div>
+      <button class="check-status-btn" onclick="resetRegistration()">← Volver</button>
+    </div>
+
     <div id="payment-screen">
-      <button class="back-link" onclick="goBackToLogin()">← Volver al inicio de sesión</button>
-      
       <div class="payment-eyebrow">Suscripción</div>
       <div class="payment-title">Elige tu plan</div>
-      <div class="payment-sub">Activa tu acceso para comenzar a encriptar</div>
-      
+      <div class="payment-sub" id="payment-sub-text">Selecciona un plan para activar tu acceso</div>
       <div class="plans-grid">
         <div class="plan-card" id="plan-monthly" onclick="selectPlan('monthly')">
+          <div class="plan-radio"><div class="plan-radio-dot"></div></div>
           <div class="plan-info">
             <div class="plan-name">Plan Básico</div>
-            <div style="font-size:11px; color:var(--muted)">100 cifrados / mes</div>
+            <div class="plan-desc">Hasta <strong>100 cifrados</strong> por mes</div>
           </div>
-          <div class="plan-price">$5.000 COP</div>
+          <div class="plan-price">
+            <div class="plan-amount">$5.000</div>
+            <div class="plan-period">COP / mes</div>
+          </div>
         </div>
         <div class="plan-card" id="plan-pro" onclick="selectPlan('pro')">
+          <div class="plan-radio"><div class="plan-radio-dot"></div></div>
           <div class="plan-info">
-            <div class="plan-name">Profesional</div>
-            <div style="font-size:11px; color:var(--muted)">1.000 cifrados / mes</div>
+            <div class="plan-name">Profesional <span class="plan-badge badge-popular">Popular</span></div>
+            <div class="plan-desc">Hasta <strong>1.000 cifrados</strong> por mes</div>
           </div>
-          <div class="plan-price">$250.000 COP</div>
+          <div class="plan-price">
+            <div class="plan-amount">$250.000</div>
+            <div class="plan-period">COP / mes</div>
+          </div>
         </div>
         <div class="plan-card" id="plan-annual" onclick="selectPlan('annual')">
+          <div class="plan-radio"><div class="plan-radio-dot"></div></div>
           <div class="plan-info">
-            <div class="plan-name">Anual Ilimitado</div>
-            <div style="font-size:11px; color:var(--muted)">Cifrados ilimitados</div>
+            <div class="plan-name">Anual Ilimitado <span class="plan-badge badge-best">Mejor valor</span></div>
+            <div class="plan-desc"><strong>Cifrados ilimitados</strong> por 12 meses</div>
           </div>
-          <div class="plan-price">$2.650.000 COP</div>
+          <div class="plan-price">
+            <div class="plan-amount">$2.650.000</div>
+            <div class="plan-period">COP / año</div>
+          </div>
         </div>
       </div>
-
-      <div id="payment-methods-section">
-        <div style="font-family: 'DM Mono'; font-size:10px; color:var(--faint); margin-bottom:10px; text-transform:uppercase; letter-spacing:1px;">Pago Seguro — Bancolombia / Wompi</div>
-        <button class="auth-btn" style="background:#2ecc71" onclick="simulatePayment()">Pagar con Wompi</button>
+      <div class="payment-methods-section" id="payment-methods-section">
+        <div class="section-label">Pago seguro — Wompi</div>
+        <p style="font-size:12.5px;color:var(--muted);margin-bottom:14px;line-height:1.65">
+          Acepta tarjetas, PSE y Nequi.<br>Serás redirigido a la pasarela de Bancolombia.
+        </p>
+        <div id="wompi-btn-container"></div>
+        <div id="payment-alert" class="auth-alert" style="margin-top:12px"></div>
       </div>
     </div>
 
   </div>
 </div>
 
-<div class="container" id="main-app">
+<!-- FLOAT: CLAVE PRIVADA -->
+<div id="key-float">
+  <div class="key-float-header">
+    <div class="key-float-title">
+      🔑 Clave privada generada
+      <span class="key-float-badge">Nueva cada vez</span>
+    </div>
+    <button class="key-float-close" onclick="closeKeyFloat()" title="Cerrar">✕</button>
+  </div>
+  <div class="key-float-body">
+    <div class="field-label">Clave RSA privada (XML .NET)</div>
+    <div class="key-float-xml" id="float-priv-key-display"></div>
+    <div class="key-float-warning">⚠ Guarda esta clave ahora. Sin ella no podrás recuperar los datos.</div>
+    <div class="key-float-actions">
+      <button class="key-float-copy" onclick="copyPrivKey()">Copiar XML</button>
+      <a class="key-float-dl" id="float-key-dl" download="clave_privada.xml">↓ Descargar .xml</a>
+    </div>
+  </div>
+</div>
+
+<!-- APP PRINCIPAL -->
+<div class="container">
   <header>
     <div class="logo-mark">🔒</div>
     <div>
-      <div class="auth-eyebrow">Camilo Rios Gaviria</div>
-      <h1>Panel de Encriptación</h1>
-      <p style="font-size:12px; color:var(--success)">Suscripción Activa</p>
+      <div class="header-eyebrow">Resolución 2284 de 2023</div>
+      <h1>Encriptador de Soportes</h1>
+      <div class="header-sub">Cifrado híbrido AES-256 + RSA · Compatible con Salud Total / FileZilla</div>
+    </div>
+    <div class="user-badge" id="user-badge" style="display:none">
+      <div class="user-badge-dot"></div>
+      <div style="display:flex;flex-direction:column;gap:1px">
+        <span id="user-badge-email"></span>
+        <span id="user-badge-plan" style="font-size:10.5px;color:var(--success);opacity:.8;font-family:'DM Mono',monospace"></span>
+      </div>
+      <button class="logout-btn" onclick="logout()">Salir</button>
     </div>
   </header>
 
-  <div class="tabs">
-    <button class="tab active" id="tab-btn-enc" onclick="switchTab('enc')">Encriptar</button>
-    <button class="tab" id="tab-btn-dec" onclick="switchTab('dec')">Desencriptar</button>
+  <div class="usage-bar-wrap" id="usage-bar-wrap">
+    <div class="usage-bar-header">
+      <span class="usage-bar-label">Cifrados usados</span>
+      <span class="usage-bar-count" id="usage-count-label">0 / 100</span>
+    </div>
+    <div class="usage-bar-track">
+      <div class="usage-bar-fill" id="usage-bar-fill" style="width:0%"></div>
+    </div>
+    <div class="usage-bar-expiry" id="usage-bar-expiry"></div>
   </div>
 
+  <div class="tabs fade-up-1">
+    <button class="tab active" onclick="switchTab('enc')">Encriptar</button>
+    <button class="tab" onclick="switchTab('dec')">Desencriptar</button>
+  </div>
+
+  <!-- PANEL ENCRIPTAR -->
   <div id="panel-enc" class="panel active">
-    <div class="key-gen-box">
-        <label class="auth-field" style="font-size:11px; color:var(--muted)">LLAVE PÚBLICA (XML)</label>
-        <textarea id="pub-key-input" placeholder="Pega aquí la llave pública o genera una..."></textarea>
-        <button class="auth-btn" style="width:auto; margin-top:10px; padding:8px 15px; font-size:12px;" onclick="generateNewKeys()">Generar nuevas llaves</button>
+    <div class="info-box fade-up-2">
+      <strong>Metodología híbrida:</strong> El archivo se cifra con AES-256-CBC (clave aleatoria), luego esa clave se cifra con RSA.
+      Se generan dos archivos: <code>.enc</code> (contenido cifrado) y <code>.enc.key</code> (clave AES cifrada).
     </div>
-    <div class="drop-zone" onclick="document.getElementById('file-enc').click()">
-        <input type="file" id="file-enc" style="display:none" onchange="handleFile(this, 'enc')">
-        <p id="enc-filename">Arrastra o selecciona un archivo</p>
+
+    <!-- CAJA DE CLAVES REDISEÑADA -->
+    <div class="key-gen-box fade-up-2">
+      <div class="key-gen-header">
+        <span class="key-gen-title">Clave Pública RSA</span>
+        <span class="key-gen-badge">Requerida para cifrar</span>
+      </div>
+      <div class="key-gen-desc">
+        Puedes pegar tu propia clave pública RSA (formato XML .NET), usar la clave de producción de Salud Total,
+        o generar un par nuevo para pruebas.
+      </div>
+
+      <!-- OPCIÓN 1: Pegar clave propia -->
+      <div class="own-key-section">
+        <div class="field-label">Pega tu clave pública aquí</div>
+        <textarea id="own-pub-key-input"
+          placeholder="<RSAKeyValue><Modulus>...</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>"
+          style="min-height:70px;"
+          oninput="onOwnKeyInput()"></textarea>
+        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+          <button class="preset-btn" onclick="loadProductionKey()">Cargar clave Salud Total (Res. 2284)</button>
+          <button class="preset-btn" onclick="clearOwnKey()" id="btn-clear-key" style="display:none">✕ Limpiar clave</button>
+        </div>
+      </div>
+
+      <div class="own-key-divider"><span>o genera un par nuevo</span></div>
+
+      <!-- OPCIÓN 2: Generar par nuevo -->
+      <p style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.6">
+        Se genera una clave única por sesión. La clave privada aparecerá en un panel flotante para guardarla.
+      </p>
+      <button class="btn-sm" id="btn-gen-key" onclick="generateKeyPair()">Generar nuevo par de claves</button>
+      <div class="key-status" id="key-status">
+        <svg class="check-svg" viewBox="0 0 16 16"><polyline points="3,8 7,12 13,4"/></svg>
+        Par de claves generado y listo
+      </div>
+
+      <!-- Clave pública activa (readonly, oculto) -->
+      <div style="margin-top:14px;display:none" id="pub-key-section">
+        <div class="field-label">Clave Pública activa</div>
+        <textarea id="pub-key" placeholder="<RSAKeyValue>..." readonly style="opacity:.55;min-height:60px"></textarea>
+      </div>
     </div>
-    <button class="btn-main" id="btn-encrypt" onclick="processEncryption()">Iniciar Encriptación</button>
+
+    <div class="field-label fade-up-3">Archivo a encriptar</div>
+    <div class="drop-zone fade-up-3" id="drop-enc"
+      ondragover="handleDrag(event,'drop-enc')"
+      ondragleave="handleDragLeave('drop-enc')"
+      ondrop="handleDrop(event,'enc-file')">
+      <input type="file" id="enc-file" onchange="onFileSelect()">
+      <span class="drop-icon">📄</span>
+      <h3>Arrastra tu archivo aquí</h3>
+      <p>o haz clic para seleccionar · PDF, ZIP, XML, JPG, PNG…</p>
+    </div>
+
+    <div class="file-info" id="enc-file-info">
+      <div class="file-icon">📄</div>
+      <div>
+        <div class="file-name" id="enc-fname"></div>
+        <div class="file-size" id="enc-fsize"></div>
+      </div>
+    </div>
+
+    <div class="alert" id="enc-alert"></div>
+    <button class="btn-main fade-up-4" id="btn-encrypt" onclick="encryptFile()">Encriptar archivo</button>
+
+    <div class="progress-wrap" id="enc-progress">
+      <div class="progress-bar"><div class="progress-fill" id="enc-bar"></div></div>
+      <div class="progress-label" id="enc-status">Procesando…</div>
+    </div>
+
+    <div class="results" id="enc-results">
+      <div class="sep"></div>
+      <div class="field-label">Archivos generados</div>
+      <div class="result-card">
+        <div class="result-info">
+          <div class="result-name" id="enc-r1-name"></div>
+          <div class="result-desc">Archivo cifrado con AES-256-CBC</div>
+        </div>
+        <a class="btn-download" id="enc-dl1">↓ Descargar</a>
+      </div>
+      <div class="result-card">
+        <div class="result-info">
+          <div class="result-name" id="enc-r2-name"></div>
+          <div class="result-desc">Clave AES cifrada con RSA</div>
+        </div>
+        <a class="btn-download" id="enc-dl2">↓ Descargar</a>
+      </div>
+    </div>
   </div>
 
+  <!-- PANEL DESENCRIPTAR -->
   <div id="panel-dec" class="panel">
-    <div class="key-gen-box">
-        <label class="auth-field" style="font-size:11px; color:var(--muted)">LLAVE PRIVADA (XML)</label>
-        <textarea id="priv-key-input" placeholder="Pega aquí tu llave privada XML para recuperar archivos..."></textarea>
+    <div class="info-box fade-up">
+      Para desencriptar necesitas la <strong>clave privada RSA</strong> (mostrada al encriptar)
+      y los dos archivos: <code>.enc</code> y <code>.enc.key</code>.
     </div>
-    <div class="drop-zone" onclick="document.getElementById('file-dec').click()">
-        <input type="file" id="file-dec" style="display:none" onchange="handleFile(this, 'dec')">
-        <p id="dec-filename">Selecciona el archivo .ENC</p>
+
+    <div style="margin-bottom:24px" class="fade-up-1">
+      <div class="field-label">Clave Privada RSA (formato XML .NET)</div>
+      <textarea id="priv-key" placeholder="<RSAKeyValue><Modulus>...</Modulus>...<D>...</D></RSAKeyValue>"></textarea>
     </div>
-    <button class="btn-main" onclick="processDecryption()">Desencriptar Original</button>
+
+    <div class="field-label fade-up-2">Archivos cifrados</div>
+    <div class="multi-drop fade-up-2">
+      <div class="mini-drop" id="drop-enc-file"
+        ondragover="handleDrag(event,'drop-enc-file')"
+        ondragleave="handleDragLeave('drop-enc-file')"
+        ondrop="handleDrop(event,'dec-enc')">
+        <input type="file" id="dec-enc" accept=".enc" onchange="onDecFileSelect('enc')">
+        <div class="ext">.ENC</div>
+        <p>Archivo cifrado</p>
+        <div class="fname" id="dec-enc-name">Sin archivo</div>
+      </div>
+      <div class="mini-drop" id="drop-key-file"
+        ondragover="handleDrag(event,'drop-key-file')"
+        ondragleave="handleDragLeave('drop-key-file')"
+        ondrop="handleDrop(event,'dec-key')">
+        <input type="file" id="dec-key" accept=".key" onchange="onDecFileSelect('key')">
+        <div class="ext">.KEY</div>
+        <p>Clave AES cifrada</p>
+        <div class="fname" id="dec-key-name">Sin archivo</div>
+      </div>
+    </div>
+
+    <div class="alert" id="dec-alert"></div>
+    <button class="btn-main fade-up-3" id="btn-decrypt" onclick="decryptFile()">Desencriptar archivo</button>
+
+    <div class="progress-wrap" id="dec-progress">
+      <div class="progress-bar"><div class="progress-fill" id="dec-bar"></div></div>
+      <div class="progress-label" id="dec-status">Procesando…</div>
+    </div>
+
+    <div class="results" id="dec-results">
+      <div class="sep"></div>
+      <div class="field-label">Archivo recuperado</div>
+      <div class="result-card">
+        <div class="result-info">
+          <div class="result-name" id="dec-r-name"></div>
+          <div class="result-desc" id="dec-r-desc"></div>
+        </div>
+        <a class="btn-download" id="dec-dl">↓ Descargar</a>
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
-let currentFileEnc = null;
+const APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbz62dFHhz7soMswVh0rLh621aYSFqnrpnS_-raPGo-hSuruLfnGR2QMYWlVR4HybGE/exec';
+const PROD_KEY=`<RSAKeyValue><Modulus>7C8b4ybsYSc/2CuUgwjyRbDfgTr0THrKnfFHqZBdPqirA9uMiTCPri0QeyQrViqrWTBiGY6tbp1NZDzRt271xcEHAWVCMnP4Y+Fv17utLLsT8fLkOsa6bsFiAmTaAufrC/A3YBQwaIaLnojaDGD4CQCXrJla4b+wnZRL34EuK9DgQcNbUGHfcPhE52MdnifFIS/7l+AxEVlSWXZ+iO5L0vZEU1nqZMnusyon/bD3wGoJlsZXJmZc9kLKl6qXrHbbIFWHF5VQNHjgu7vMhgj8fnZgAy544jYZAkKwvChgn4MpSJ2TGguRjNqJKPcbs/r0SBMZNjzM6Pk+AXrWx5LovJFuPPiXFzPmwbqlPlevj/mLHz+md1nCxD80WUcZbN1GLPyjrorBJ4l5Z+dEJ/UZ7oaKpnaLNtfhZkgJPg3V4BvOqWhD883XeMCt5iXYqN7DDtNJwGO2jBAACp2zoYuvXvSeaUNZzk2veKLfsxGQUT8DkvUM3HtPO6o0LwyY5CHRujaYZH/J++Ka1ne3qJ4m9KHucau6xwf1TB91cjNcXdyV85+urs3oDIi0Vw7igWfGbrK97r3f5dzUx/G6B9gjTgjzfT+Q7b13BvT6yEbZeVJhYG8XkKZR1foCBDSqKet9pDVYPzzpve7fVYmqs85CFjIm1e3rDW4NO8SIqQUgCrk=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>`;
+const PLANS={
+  monthly:{name:'Plan Básico',price:'$5.000 COP',periodDays:30,limit:100,limitLabel:'100 cifrados/mes',periodLabel:'mensual'},
+  pro:{name:'Plan Profesional',price:'$250.000 COP',periodDays:30,limit:1000,limitLabel:'1.000 cifrados/mes',periodLabel:'mensual'},
+  annual:{name:'Plan Anual Ilimitado',price:'$2.650.000 COP',periodDays:365,limit:null,limitLabel:'Ilimitado',periodLabel:'anual'}
+};
 
-function switchAuthTab(tab) {
-  document.getElementById('tab-login').classList.toggle('active', tab==='login');
-  document.getElementById('tab-register').classList.toggle('active', tab==='register');
+function getUsers(){try{return JSON.parse(localStorage.getItem('enc_users')||'{}')}catch{return{}}}
+function saveUsers(u){localStorage.setItem('enc_users',JSON.stringify(u))}
+function getCurrentUser(){return localStorage.getItem('enc_current_user')||null}
+function setCurrentUser(e){localStorage.setItem('enc_current_user',e)}
+function clearCurrentUser(){localStorage.removeItem('enc_current_user')}
+
+function isPlanActive(u){
+  if(!u||!u.plan||!u.planActivatedAt)return false;
+  const p=PLANS[u.plan];if(!p)return false;
+  return new Date()<new Date(new Date(u.planActivatedAt).getTime()+p.periodDays*86400000);
+}
+function getPlanExpiry(u){
+  if(!u||!u.plan||!u.planActivatedAt)return null;
+  const p=PLANS[u.plan];if(!p)return null;
+  return new Date(new Date(u.planActivatedAt).getTime()+p.periodDays*86400000);
+}
+function getPlanExpiryText(u){const e=getPlanExpiry(u);return e?'Vence: '+e.toLocaleDateString('es-CO'):'';}
+function getRemainingEncryptions(u){
+  const p=PLANS[u.plan];if(!p)return 0;
+  if(p.limit===null)return null;
+  return Math.max(0,p.limit-(u.encryptCount||0));
+}
+function registerEncryption(email){
+  const users=getUsers();const u=users[email];if(!u)return false;
+  const p=PLANS[u.plan];if(!p)return false;
+  if(p.limit===null){u.encryptCount=(u.encryptCount||0)+1;saveUsers(users);return true;}
+  if((u.encryptCount||0)>=p.limit)return false;
+  u.encryptCount=(u.encryptCount||0)+1;saveUsers(users);return true;
 }
 
-function goToPayment() {
-  const email = document.getElementById('auth-email').value;
-  if(!email) { alert("Por favor ingresa tu correo"); return; }
-  document.getElementById('register-screen').style.display = 'none';
-  document.getElementById('payment-screen').classList.add('visible');
+function updateUsageBar(){
+  const email=getCurrentUser();if(!email)return;
+  const u=getUsers()[email];if(!u||!u.plan)return;
+  const p=PLANS[u.plan];if(!p)return;
+  document.getElementById('usage-bar-wrap').classList.add('visible');
+  const used=u.encryptCount||0,isUnlim=p.limit===null;
+  const cEl=document.getElementById('usage-count-label');
+  const fEl=document.getElementById('usage-bar-fill');
+  if(isUnlim){cEl.textContent=used+' / Ilimitados';cEl.className='usage-bar-count';fEl.style.width='0%';fEl.className='usage-bar-fill';}
+  else{
+    const pct=Math.min(100,(used/p.limit)*100);
+    cEl.textContent=used+' / '+p.limit;fEl.style.width=pct+'%';
+    if(pct>=100){cEl.className='usage-bar-count full';fEl.className='usage-bar-fill full';}
+    else if(pct>=80){cEl.className='usage-bar-count warn';fEl.className='usage-bar-fill warn';}
+    else{cEl.className='usage-bar-count';fEl.className='usage-bar-fill';}
+  }
+  const expiry=getPlanExpiry(u);
+  if(expiry){
+    const days=Math.ceil((expiry-new Date())/86400000);
+    document.getElementById('usage-bar-expiry').textContent='Vence: '+expiry.toLocaleDateString('es-CO')+' ('+days+' días) · '+p.name;
+  }
 }
 
-function goBackToLogin() {
-  document.getElementById('payment-screen').classList.remove('visible');
-  document.getElementById('register-screen').style.display = 'block';
+// ============================================================
+// RESET TOKEN HELPERS
+// ============================================================
+function generateResetToken(){
+  const arr=new Uint8Array(24);crypto.getRandomValues(arr);
+  return Array.from(arr,b=>b.toString(16).padStart(2,'0')).join('');
+}
+function saveResetToken(email,token){
+  const resets=JSON.parse(localStorage.getItem('enc_resets')||'{}');
+  resets[token]={email,expires:Date.now()+3600000}; // 1 hora
+  localStorage.setItem('enc_resets',JSON.stringify(resets));
+}
+function consumeResetToken(token){
+  const resets=JSON.parse(localStorage.getItem('enc_resets')||'{}');
+  const entry=resets[token];
+  if(!entry)return null;
+  if(Date.now()>entry.expires){delete resets[token];localStorage.setItem('enc_resets',JSON.stringify(resets));return null;}
+  delete resets[token];localStorage.setItem('enc_resets',JSON.stringify(resets));
+  return entry.email;
 }
 
-function selectPlan(p) {
-  document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
-  document.getElementById('plan-' + p).classList.add('selected');
-  document.getElementById('payment-methods-section').classList.add('visible');
+// ============================================================
+// FLUJO: OLVIDÉ CONTRASEÑA
+// ============================================================
+function showForgotScreen(){
+  document.getElementById('register-screen').classList.add('hidden');
+  document.getElementById('forgot-screen').classList.add('visible');
+  document.getElementById('forgot-email').value='';
+  hideAuthAlert('forgot-alert');
+  setTimeout(()=>document.getElementById('forgot-email').focus(),100);
+}
+function hideForgotScreen(){
+  document.getElementById('register-screen').classList.remove('hidden');
+  document.getElementById('forgot-screen').classList.remove('visible');
+  hideAuthAlert('forgot-alert');
 }
 
-function simulatePayment() {
-  alert("Procesando pago en Wompi...");
-  document.getElementById('auth-overlay').style.display = 'none';
-  document.getElementById('main-app').classList.add('app-visible');
-}
+async function submitForgotPassword(){
+  const email=document.getElementById('forgot-email').value.trim();
+  hideAuthAlert('forgot-alert');
+  if(!email||!email.includes('@')){showAuthAlert('forgot-alert','Por favor ingresa un correo válido.','error');return;}
 
-function switchTab(t) {
-  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('tab-btn-' + t).classList.add('active');
-  document.getElementById('panel-' + t).classList.add('active');
-}
+  const btn=document.getElementById('btn-forgot');
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Enviando…';
 
-function handleFile(input, type) {
-    if(input.files) {
-        if(type === 'enc') {
-            currentFileEnc = input.files;
-            document.getElementById('enc-filename').innerText = currentFileEnc.name;
-        } else {
-            document.getElementById('dec-filename').innerText = input.files.name;
-        }
+  // Verificamos si el usuario existe (sin revelar si existe o no por seguridad, pero aquí es local)
+  const users=getUsers();
+  if(!users[email]){
+    // Por UX informamos, ya que es una app local/conocida
+    btn.disabled=false;btn.textContent='Enviar enlace de recuperación';
+    showAuthAlert('forgot-alert','No existe una cuenta con ese correo.','error');
+    return;
+  }
+
+  // Generar token y guardarlo localmente
+  const token=generateResetToken();
+  saveResetToken(email,token);
+
+  // Construir URL de reset
+  const resetUrl=window.location.href.split('?')[0]+'?reset_token='+token;
+
+  // Enviar email vía Apps Script
+  try{
+    const res=await fetch(APPS_SCRIPT_URL+'?action=send_reset&email='+encodeURIComponent(email)+'&resetUrl='+encodeURIComponent(resetUrl));
+    const data=await res.json();
+    btn.disabled=false;btn.textContent='Enviar enlace de recuperación';
+    if(data.ok){
+      showAuthAlert('forgot-alert','¡Listo! Revisa tu correo — el enlace expira en 1 hora.','success');
+    }else{
+      showAuthAlert('forgot-alert','Error enviando el correo: '+(data.error||'intenta de nuevo'),'error');
     }
+  }catch(err){
+    btn.disabled=false;btn.textContent='Enviar enlace de recuperación';
+    showAuthAlert('forgot-alert','Error de conexión. Intenta de nuevo.','error');
+  }
 }
 
-// Lógica de Encriptación RSA/AES resumida (Tu lógica original)
-async function generateNewKeys() {
-    const rsa = forge.pki.rsa;
-    const keypair = rsa.generateKeyPair({bits: 2048, e: 0x10001});
-    // Aquí iría la conversión a XML que ya tenías
-    alert("Nuevas llaves generadas localmente.");
+// ============================================================
+// FLUJO: RESET DESDE EL EMAIL (viene con ?reset_token=...)
+// ============================================================
+function checkResetToken(){
+  const params=new URLSearchParams(window.location.search);
+  const token=params.get('reset_token');
+  if(!token)return false;
+
+  // Limpia la URL
+  window.history.replaceState({},'',window.location.pathname);
+
+  // Verificar que el token existe y no venció
+  const resets=JSON.parse(localStorage.getItem('enc_resets')||'{}');
+  const entry=resets[token];
+  if(!entry||Date.now()>entry.expires){
+    // Token inválido o expirado — mostrar login con aviso
+    showRegister();
+    setTimeout(()=>showAuthAlert('login-alert','El enlace de recuperación expiró o es inválido. Solicita uno nuevo.','error'),300);
+    return true;
+  }
+
+  // Token válido — mostrar pantalla de reset
+  document.getElementById('auth-overlay').style.display='flex';
+  hideAllAuthScreens();
+  document.getElementById('reset-screen').classList.add('visible');
+  // Guardamos el token en un campo oculto para usarlo al hacer submit
+  document.getElementById('reset-screen').dataset.token=token;
+  return true;
 }
 
-async function processEncryption() {
-    if(!currentFileEnc) { alert("Sube un archivo"); return; }
-    alert("Cifrando archivo con AES-256...");
-    // Simulación de descarga del resultado
-    const blob = new Blob(["contenido_cifrado_simulado"]);
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = currentFileEnc.name + ".enc";
-    a.click();
+function submitResetPassword(){
+  const pass=document.getElementById('reset-password').value;
+  const pass2=document.getElementById('reset-password2').value;
+  hideAuthAlert('reset-alert');
+
+  if(pass.length<6){showAuthAlert('reset-alert','La contraseña debe tener al menos 6 caracteres.','error');return;}
+  if(pass!==pass2){showAuthAlert('reset-alert','Las contraseñas no coinciden.','error');return;}
+
+  const token=document.getElementById('reset-screen').dataset.token;
+  const email=consumeResetToken(token);
+  if(!email){showAuthAlert('reset-alert','El enlace expiró. Solicita uno nuevo.','error');return;}
+
+  // Actualizar contraseña en localStorage
+  const users=getUsers();
+  if(!users[email]){showAuthAlert('reset-alert','No se encontró la cuenta.','error');return;}
+  users[email].password=btoa(pass);
+  saveUsers(users);
+
+  // Notificar al backend para actualizar la hoja
+  fetch(APPS_SCRIPT_URL+'?action=update_password&email='+encodeURIComponent(email)+'&password='+encodeURIComponent(btoa(pass)))
+    .catch(err=>console.warn('Backend update_password error:',err));
+
+  showAuthAlert('reset-alert','¡Contraseña actualizada! Inicia sesión ahora.','success');
+  setTimeout(()=>{
+    hideAllAuthScreens();
+    document.getElementById('register-screen').classList.remove('hidden');
+    document.getElementById('reset-screen').classList.remove('visible');
+    switchAuthTab('login');
+    document.getElementById('login-email').value=email;
+    document.getElementById('login-password').focus();
+  },1800);
 }
 
-async function processDecryption() {
-    alert("Validando llave privada y desencriptando...");
+function hideAllAuthScreens(){
+  document.getElementById('register-screen').classList.add('hidden');
+  document.getElementById('forgot-screen').classList.remove('visible');
+  document.getElementById('reset-screen').classList.remove('visible');
+  document.getElementById('denied-screen').classList.remove('visible');
+  document.getElementById('payment-screen').classList.remove('visible');
 }
+
+// ============================================================
+// INIT
+// ============================================================
+window.addEventListener('load',()=>{
+  if(checkWompiReturn())return;
+  if(checkResetToken())return;
+  const email=getCurrentUser();
+  if(email){const u=getUsers()[email];if(u){if(isPlanActive(u)){grantAccess(email);return;}else{showPaymentScreen(true);return;}}}
+  clearCurrentUser();showRegister();
+  setTimeout(()=>{fetch(APPS_SCRIPT_URL+'?action=ping').catch(()=>{})},1500);
+});
+
+function switchAuthTab(tab){
+  document.getElementById('tab-login').classList.toggle('active',tab==='login');
+  document.getElementById('tab-register').classList.toggle('active',tab==='register');
+  document.getElementById('form-login').style.display=tab==='login'?'block':'none';
+  document.getElementById('form-register').style.display=tab==='register'?'block':'none';
+  hideAuthAlert('login-alert');hideAuthAlert('reg-alert');
+}
+
+function submitLogin(){
+  const email=document.getElementById('login-email').value.trim();
+  const pass=document.getElementById('login-password').value;
+  hideAuthAlert('login-alert');
+  if(!email||!email.includes('@')){showAuthAlert('login-alert','Por favor ingresa un correo válido.','error');return;}
+  if(!pass){showAuthAlert('login-alert','Por favor ingresa tu contraseña.','error');return;}
+  const users=getUsers();
+  if(!users[email]){showAuthAlert('login-alert','No existe una cuenta con ese correo.','error');return;}
+  if(users[email].password!==btoa(pass)){showAuthAlert('login-alert','Contraseña incorrecta.','error');return;}
+  setCurrentUser(email);
+  if(isPlanActive(users[email])){grantAccess(email);}else{showPaymentScreen(true);}
+}
+
+function submitRegistration(){
+  const email=document.getElementById('reg-email').value.trim();
+  const pass=document.getElementById('reg-password').value;
+  const pass2=document.getElementById('reg-password2').value;
+  hideAuthAlert('reg-alert');
+  if(!email||!email.includes('@')){showAuthAlert('reg-alert','Por favor ingresa un correo válido.','error');return;}
+  if(pass.length<6){showAuthAlert('reg-alert','La contraseña debe tener al menos 6 caracteres.','error');return;}
+  if(pass!==pass2){showAuthAlert('reg-alert','Las contraseñas no coinciden.','error');return;}
+  const users=getUsers();
+  if(users[email]){
+    if(users[email].password!==btoa(pass)){showAuthAlert('reg-alert','Ya existe una cuenta con ese correo.','error');return;}
+    setCurrentUser(email);isPlanActive(users[email])?grantAccess(email):showPaymentScreen(true);return;
+  }
+  users[email]={password:btoa(pass),registeredAt:new Date().toISOString()};
+  saveUsers(users);setCurrentUser(email);showPaymentScreen(false);
+}
+
+function showRegister(){
+  hideAllAuthScreens();
+  document.getElementById('register-screen').classList.remove('hidden');
+  switchAuthTab('login');
+}
+
+function showPaymentScreen(planVencido=false){
+  hideAllAuthScreens();
+  document.getElementById('payment-screen').classList.add('visible');
+  selectedPlan=null;
+  document.getElementById('payment-methods-section').classList.remove('visible');
+  const sub=document.getElementById('payment-sub-text');
+  if(planVencido){sub.textContent='Tu suscripción venció — renueva para continuar';sub.style.color='var(--warn)';}
+  else{sub.textContent='Bienvenido — elige el plan que deseas para continuar';sub.style.color='var(--success)';}
+}
+
+function resetRegistration(){
+  clearCurrentUser();
+  ['reg-email','reg-password','reg-password2','login-email','login-password'].forEach(id=>{document.getElementById(id).value=''});
+  hideAuthAlert('login-alert');hideAuthAlert('reg-alert');showRegister();
+}
+
+function grantAccess(email){
+  const u=getUsers()[email];
+  setCurrentUser(email);
+  document.getElementById('auth-overlay').style.display='none';
+  document.getElementById('user-badge').style.display='flex';
+  document.getElementById('user-badge-email').textContent=email;
+  const pi=PLANS[u?.plan];const et=getPlanExpiryText(u);
+  document.getElementById('user-badge-plan').textContent=(pi?.name||'')+(et?' · '+et:'');
+  updateUsageBar();
+}
+
+function logout(){clearCurrentUser();location.reload();}
+
+let selectedPlan=null;
+function selectPlan(k){
+  selectedPlan=k;
+  ['monthly','pro','annual'].forEach(p=>document.getElementById('plan-'+p).classList.toggle('selected',p===k));
+  document.getElementById('payment-methods-section').classList.add('visible');
+  renderWompiButton(k);
+}
+
+function renderWompiButton(planKey){
+  const WOMPI_KEY='pub_prod_mpq9sOOIbuk776GtQ7YkNILlN2T304p7';
+  const AMOUNTS={monthly:500000,pro:25000000,annual:265000000};
+  const pi=PLANS[planKey];const email=getCurrentUser()||'';
+  const container=document.getElementById('wompi-btn-container');container.innerHTML='';
+  const btn=document.createElement('button');
+  btn.style.cssText='display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;border-radius:8px;border:none;background:#1c1b18;color:#fff;font-family:DM Sans,sans-serif;font-size:13px;font-weight:500;cursor:pointer;box-sizing:border-box;transition:opacity .2s,transform .15s;';
+  btn.textContent='Pagar · '+pi.name+' — '+pi.price;
+  btn.onmouseover=()=>{btn.style.opacity='.85'};
+  btn.onmouseout=()=>{btn.style.opacity='1'};
+  btn.addEventListener('click',async function(){
+    btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Conectando…';
+    const ref='ENC-'+planKey.toUpperCase()+'-'+Date.now();
+    const amount=AMOUNTS[planKey];const currency='COP';
+    const redirectUrl=window.location.href.split('?')[0]+'?wompi_ref='+ref;
+    const t2=setTimeout(()=>{if(btn.disabled)btn.innerHTML='<span class="spinner"></span>Generando firma…';},1500);
+    const t3=setTimeout(()=>{if(btn.disabled)btn.innerHTML='<span class="spinner"></span>Redirigiendo a Wompi…';},3500);
+    try{
+      const res=await fetch(APPS_SCRIPT_URL+'?action=get_signature&reference='+encodeURIComponent(ref)+'&amountInCents='+amount+'&currency='+currency);
+      const data=await res.json();clearTimeout(t2);clearTimeout(t3);
+      if(!data.ok||!data.signature)throw new Error('No se pudo obtener la firma: '+(data.error||'error'));
+      localStorage.setItem('wompi_pending_ref',ref);
+      localStorage.setItem('wompi_pending_plan',planKey);
+      localStorage.setItem('wompi_pending_email',email);
+      window.location.href='https://checkout.wompi.co/p/?public-key='+encodeURIComponent(WOMPI_KEY)
+        +'&currency='+currency+'&amount-in-cents='+amount+'&reference='+encodeURIComponent(ref)
+        +'&signature:integrity='+encodeURIComponent(data.signature)
+        +'&redirect-url='+encodeURIComponent(redirectUrl)
+        +'&customer-data:email='+encodeURIComponent(email);
+    }catch(err){
+      clearTimeout(t2);clearTimeout(t3);btn.disabled=false;btn.textContent='Pagar · '+pi.name+' — '+pi.price;
+      const al=document.getElementById('payment-alert');
+      al.className='auth-alert visible error';al.innerHTML='<span>Error:</span><span>'+err.message+'</span>';
+    }
+  });
+  container.appendChild(btn);
+}
+
+function checkWompiReturn(){
+  const params=new URLSearchParams(window.location.search);
+  const wompiRef=params.get('wompi_ref');if(!wompiRef)return false;
+  const pendingRef=localStorage.getItem('wompi_pending_ref');
+  const pendingPlan=localStorage.getItem('wompi_pending_plan');
+  const pendingEmail=localStorage.getItem('wompi_pending_email');
+  if(wompiRef!==pendingRef||!pendingPlan||!pendingEmail)return false;
+  window.history.replaceState({},'',window.location.pathname);
+  const now=new Date().toISOString();
+  const users=getUsers();
+  if(users[pendingEmail]){
+    users[pendingEmail].plan=pendingPlan;users[pendingEmail].wompiRef=wompiRef;
+    users[pendingEmail].planActivatedAt=now;users[pendingEmail].encryptCount=0;
+    users[pendingEmail].countPeriodStart=now;saveUsers(users);
+  }
+  localStorage.removeItem('wompi_pending_ref');localStorage.removeItem('wompi_pending_plan');localStorage.removeItem('wompi_pending_email');
+  notifyPayment(pendingEmail,pendingPlan,wompiRef,now,params.get('integrity_hash')||'',params.get('amount_in_cents')||'','COP');
+  setCurrentUser(pendingEmail);
+  document.getElementById('auth-overlay').style.display='none';
+  document.getElementById('user-badge').style.display='flex';
+  document.getElementById('user-badge-email').textContent=pendingEmail;
+  const u=users[pendingEmail];const pi=PLANS[pendingPlan];const et=getPlanExpiryText(u);
+  document.getElementById('user-badge-plan').textContent=(pi?.name||'')+(et?' · '+et:'');
+  updateUsageBar();return true;
+}
+
+function notifyPayment(email,plan,wompiRef,activatedAt,integrityHash,amountInCents,currency){
+  const p=PLANS[plan];const expiry=new Date(new Date(activatedAt).getTime()+p.periodDays*86400000);
+  const url=APPS_SCRIPT_URL+'?action=payment_confirmed&email='+encodeURIComponent(email)
+    +'&plan='+encodeURIComponent(plan)+'&planName='+encodeURIComponent(p.name)
+    +'&price='+encodeURIComponent(p.price)+'&limitLabel='+encodeURIComponent(p.limitLabel)
+    +'&periodLabel='+encodeURIComponent(p.periodLabel)+'&wompiRef='+encodeURIComponent(wompiRef)
+    +'&activatedAt='+encodeURIComponent(activatedAt)
+    +'&expiryDate='+encodeURIComponent(expiry.toLocaleDateString('es-CO',{year:'numeric',month:'long',day:'numeric'}))
+    +'&integrityHash='+encodeURIComponent(integrityHash)+'&amountInCents='+encodeURIComponent(amountInCents)
+    +'&currency='+encodeURIComponent(currency);
+  fetch(url).catch(err=>console.warn('Backend error:',err));
+}
+
+function showAuthAlert(id,msg,type){
+  const el=document.getElementById(id);
+  const icon=type==='error'?'❌':type==='success'?'✅':type==='warn'?'⚠':'ℹ';
+  el.className='auth-alert visible '+type;
+  el.innerHTML='<span>'+icon+'</span><span>'+msg+'</span>';
+}
+function hideAuthAlert(id){document.getElementById(id).className='auth-alert'}
+
+// ============================================================
+// CLAVE PROPIA — inputs de usuario
+// ============================================================
+function onOwnKeyInput(){
+  const val=document.getElementById('own-pub-key-input').value.trim();
+  document.getElementById('btn-clear-key').style.display=val?'inline-block':'none';
+  if(!val)return;
+  // Validar estructura básica
+  if(val.includes('<RSAKeyValue>')&&val.includes('<Modulus>')){
+    try{
+      parseXmlRsaKey(val); // test parse
+      currentPubKeyXml=val;
+      currentPrivKeyXml=null;
+      document.getElementById('pub-key').value=val;
+      document.getElementById('pub-key-section').style.display='none'; // ocultar el readonly, ya está arriba
+      document.getElementById('key-status').classList.remove('visible');
+      showAlert('enc-alert','Clave pública propia cargada correctamente.','success');
+    }catch(e){
+      // silently fail — no mostrar error mientras escribe
+    }
+  }
+}
+
+function clearOwnKey(){
+  document.getElementById('own-pub-key-input').value='';
+  document.getElementById('btn-clear-key').style.display='none';
+  currentPubKeyXml=null;currentPrivKeyXml=null;
+  document.getElementById('pub-key').value='';
+  document.getElementById('key-status').classList.remove('visible');
+  hideAlert('enc-alert');
+}
+
+// ============================================================
+// GENERAR PAR DE CLAVES
+// ============================================================
+let currentPrivKeyXml=null,currentPubKeyXml=null;
+
+async function generateKeyPair(){
+  const btn=document.getElementById('btn-gen-key');
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Generando…';
+  try{
+    await new Promise(r=>setTimeout(r,50));
+    const kp=forge.pki.rsa.generateKeyPair({bits:2048,e:0x10001});
+    function b64(bi){const h=bi.toString(16);const buf=forge.util.hexToBytes(h.length%2?'0'+h:h);return forge.util.encode64(buf);}
+    const n=b64(kp.publicKey.n),e=b64(kp.publicKey.e),d=b64(kp.privateKey.d);
+    const p=b64(kp.privateKey.p),q=b64(kp.privateKey.q),dp=b64(kp.privateKey.dP),dq=b64(kp.privateKey.dQ),qi=b64(kp.privateKey.qInv);
+    currentPubKeyXml=`<RSAKeyValue><Modulus>${n}</Modulus><Exponent>${e}</Exponent></RSAKeyValue>`;
+    currentPrivKeyXml=`<RSAKeyValue><Modulus>${n}</Modulus><Exponent>${e}</Exponent><P>${p}</P><Q>${q}</Q><DP>${dp}</DP><DQ>${dq}</DQ><InverseQ>${qi}</InverseQ><D>${d}</D></RSAKeyValue>`;
+    // Limpiar textarea de clave propia
+    document.getElementById('own-pub-key-input').value='';
+    document.getElementById('btn-clear-key').style.display='none';
+    document.getElementById('pub-key').value=currentPubKeyXml;
+    document.getElementById('key-status').classList.add('visible');
+    document.getElementById('pub-key-section').style.display='block';
+    showAlert('enc-alert','Par de claves RSA generado. La clave privada se mostrará al encriptar.','success');
+  }catch(err){showAlert('enc-alert','Error generando claves: '+err.message,'error');}
+  btn.disabled=false;btn.innerHTML='Generar nuevo par de claves';
+}
+
+function showKeyFloat(pkXml){
+  document.getElementById('float-priv-key-display').textContent=pkXml;
+  const blob=new Blob([pkXml],{type:'application/xml'});
+  const url=URL.createObjectURL(blob);
+  const dl=document.getElementById('float-key-dl');
+  dl.href=url;dl.download='clave_privada_'+Date.now()+'.xml';
+  document.getElementById('key-float').classList.add('visible');
+}
+function closeKeyFloat(){document.getElementById('key-float').classList.remove('visible');}
+function copyPrivKey(){
+  const t=document.getElementById('float-priv-key-display').textContent;
+  navigator.clipboard.writeText(t).then(()=>{
+    const btn=document.querySelector('.key-float-copy');const orig=btn.textContent;
+    btn.textContent='✓ Copiado';setTimeout(()=>{btn.textContent=orig;},2000);
+  });
+}
+
+function switchTab(tab){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',(i===0&&tab==='enc')||(i===1&&tab==='dec')));
+  document.getElementById('panel-enc').classList.toggle('active',tab==='enc');
+  document.getElementById('panel-dec').classList.toggle('active',tab==='dec');
+}
+
+function loadProductionKey(){
+  currentPubKeyXml=PROD_KEY;currentPrivKeyXml=null;
+  document.getElementById('own-pub-key-input').value=PROD_KEY;
+  document.getElementById('btn-clear-key').style.display='inline-block';
+  document.getElementById('pub-key').value=PROD_KEY;
+  document.getElementById('key-status').classList.remove('visible');
+  document.getElementById('pub-key-section').style.display='none';
+  showAlert('enc-alert','Clave de producción Salud Total cargada.','info');
+}
+
+function showAlert(id,msg,type){
+  const el=document.getElementById(id);
+  el.className='alert visible '+type;
+  el.innerHTML='<span>'+(type==='error'?'❌':type==='success'?'✅':'ℹ')+'</span><span>'+msg+'</span>';
+}
+function hideAlert(id){document.getElementById(id).className='alert'}
+
+function handleDrag(e,id){e.preventDefault();document.getElementById(id).classList.add('drag-over')}
+function handleDragLeave(id){document.getElementById(id).classList.remove('drag-over')}
+function handleDrop(e,inputId){
+  e.preventDefault();const input=document.getElementById(inputId);const dt=e.dataTransfer;
+  if(dt.files.length){Object.defineProperty(input,'files',{value:dt.files,writable:true});input.dispatchEvent(new Event('change'));}
+}
+function formatSize(b){if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(2)+' MB';}
+
+let encFile=null;
+function onFileSelect(){
+  const input=document.getElementById('enc-file');if(!input.files||!input.files[0])return;
+  encFile=input.files[0];
+  document.getElementById('drop-enc').classList.add('has-file');
+  document.getElementById('enc-file-info').classList.add('visible');
+  document.getElementById('enc-fname').textContent=encFile.name;
+  document.getElementById('enc-fsize').textContent=formatSize(encFile.size);
+  document.getElementById('enc-results').classList.remove('visible');
+  hideAlert('enc-alert');
+}
+
+let decEncFile=null,decKeyFile=null;
+function onDecFileSelect(type){
+  if(type==='enc'){const f=document.getElementById('dec-enc').files[0];if(f){decEncFile=f;document.getElementById('dec-enc-name').textContent=f.name;document.getElementById('drop-enc-file').classList.add('has-file');}}
+  else{const f=document.getElementById('dec-key').files[0];if(f){decKeyFile=f;document.getElementById('dec-key-name').textContent=f.name;document.getElementById('drop-key-file').classList.add('has-file');}}
+  document.getElementById('dec-results').classList.remove('visible');hideAlert('dec-alert');
+}
+
+function setProgress(px,pct,label){
+  document.getElementById(px+'-progress').classList.add('visible');
+  document.getElementById(px+'-bar').style.width=pct+'%';
+  document.getElementById(px+'-status').textContent=label;
+}
+
+function parseXmlRsaKey(xmlStr){
+  const doc=new DOMParser().parseFromString(xmlStr.trim(),'text/xml');
+  const get=tag=>{const el=doc.getElementsByTagName(tag)[0];return el?forge.util.decode64(el.textContent.trim()):null;};
+  const n=get('Modulus'),e=get('Exponent');if(!n||!e)throw new Error('Clave RSA inválida');
+  const BI=v=>new forge.jsbn.BigInteger(forge.util.bytesToHex(v),16);
+  const pubKey=forge.pki.setRsaPublicKey(BI(n),BI(e));
+  const d=get('D');
+  if(d){
+    const privKey=forge.pki.setRsaPrivateKey(BI(n),BI(e),BI(d),
+      get('P')?BI(get('P')):null,get('Q')?BI(get('Q')):null,
+      get('DP')?BI(get('DP')):null,get('DQ')?BI(get('DQ')):null,
+      get('InverseQ')?BI(get('InverseQ')):null);
+    return{pubKey,privKey};
+  }
+  return{pubKey};
+}
+
+async function encryptFile(){
+  hideAlert('enc-alert');
+  // Prioridad: clave propia pegada > clave generada
+  const ownKeyVal=document.getElementById('own-pub-key-input').value.trim();
+  if(ownKeyVal)currentPubKeyXml=ownKeyVal;
+  const keyXml=currentPubKeyXml||document.getElementById('pub-key').value.trim();
+  if(!keyXml){showAlert('enc-alert','Primero pega tu clave pública o genera un par de claves RSA.','error');return;}
+  if(!encFile){showAlert('enc-alert','Por favor selecciona un archivo.','error');return;}
+  const email=getCurrentUser();const users=getUsers();const u=users[email];const plan=PLANS[u?.plan];
+  if(plan&&plan.limit!==null&&(u.encryptCount||0)>=plan.limit){
+    showAlert('enc-alert','Alcanzaste el límite de cifrados. Renueva o cambia de plan.','error');return;
+  }
+  document.getElementById('btn-encrypt').disabled=true;
+  document.getElementById('enc-results').classList.remove('visible');
+  try{
+    setProgress('enc',10,'Leyendo archivo…');
+    const fileBytes=await readFileAsBytes(encFile);
+    setProgress('enc',25,'Parseando clave RSA…');
+    const{pubKey}=parseXmlRsaKey(keyXml);
+    setProgress('enc',40,'Generando clave AES y IV…');
+    const aesKey=forge.random.getBytesSync(32);const iv=forge.random.getBytesSync(16);
+    setProgress('enc',55,'Cifrando con AES-256-CBC…');
+    const ext='.'+encFile.name.split('.').pop();
+    const extBytes=new TextEncoder().encode(ext);const extLen=extBytes.length;
+    const cipher=forge.cipher.createCipher('AES-CBC',aesKey);
+    cipher.start({iv});cipher.update(forge.util.createBuffer(fileBytes));cipher.finish();
+    const encContent=cipher.output.getBytes();
+    const encBuffer=new ArrayBuffer(4+extLen+16+encContent.length);
+    const view=new DataView(encBuffer);view.setInt32(0,extLen,true);
+    const u8=new Uint8Array(encBuffer);u8.set(extBytes,4);
+    for(let i=0;i<16;i++)u8[4+extLen+i]=iv.charCodeAt(i);
+    for(let i=0;i<encContent.length;i++)u8[4+extLen+16+i]=encContent.charCodeAt(i);
+    setProgress('enc',75,'Cifrando clave AES con RSA…');
+    const encAesKey=pubKey.encrypt(aesKey,'RSAES-PKCS1-V1_5');
+    const keyBytes=forge.util.hexToBytes(forge.util.bytesToHex(encAesKey));
+    setProgress('enc',90,'Preparando descargas…');
+    const baseName=encFile.name.replace(/\.[^.]+$/,'');
+    const encName=baseName+'.enc';const keyName=encName+'.key';
+    const encBlob=new Blob([encBuffer],{type:'application/octet-stream'});
+    const keyBlob=new Blob([stringToUint8Array(keyBytes)],{type:'application/octet-stream'});
+    document.getElementById('enc-r1-name').textContent=encName;
+    document.getElementById('enc-r2-name').textContent=keyName;
+    const dl1=document.getElementById('enc-dl1');const dl2=document.getElementById('enc-dl2');
+    dl1.href=URL.createObjectURL(encBlob);dl1.download=encName;
+    dl2.href=URL.createObjectURL(keyBlob);dl2.download=keyName;
+    setProgress('enc',100,'Encriptación completada');
+    document.getElementById('enc-results').classList.add('visible');
+    registerEncryption(email);updateUsageBar();
+    const rem=getRemainingEncryptions(getUsers()[email]);
+    if(rem!==null&&rem<=10&&rem>0)showAlert('enc-alert','Solo te quedan '+rem+' cifrado(s) en tu plan.','info');
+    if(currentPrivKeyXml)setTimeout(()=>showKeyFloat(currentPrivKeyXml),300);
+  }catch(err){showAlert('enc-alert','Error: '+err.message,'error');console.error(err);}
+  finally{document.getElementById('btn-encrypt').disabled=false;}
+}
+
+async function decryptFile(){
+  hideAlert('dec-alert');
+  const keyXml=document.getElementById('priv-key').value.trim();
+  if(!keyXml){showAlert('dec-alert','Por favor ingresa la clave privada RSA.','error');return;}
+  if(!decEncFile){showAlert('dec-alert','Por favor selecciona el archivo .enc.','error');return;}
+  if(!decKeyFile){showAlert('dec-alert','Por favor selecciona el archivo .enc.key.','error');return;}
+  document.getElementById('btn-decrypt').disabled=true;
+  document.getElementById('dec-results').classList.remove('visible');
+  try{
+    setProgress('dec',15,'Leyendo archivos…');
+    const encBytes=await readFileAsBytes(decEncFile);
+    const keyBytes=await readFileAsBytes(decKeyFile);
+    setProgress('dec',30,'Parseando clave privada RSA…');
+    const{privKey}=parseXmlRsaKey(keyXml);
+    if(!privKey)throw new Error('La clave XML no contiene clave privada');
+    setProgress('dec',50,'Descifrando clave AES con RSA…');
+    const aesKey=privKey.decrypt(uint8ArrayToString(keyBytes),'RSAES-PKCS1-V1_5');
+    if(!aesKey||aesKey.length!==32)throw new Error('No se pudo descifrar la clave AES. Verifica la clave privada.');
+    setProgress('dec',65,'Parseando estructura .enc…');
+    const extLen=new DataView(encBytes.buffer,encBytes.byteOffset,4).getInt32(0,true);
+    if(extLen<1||extLen>20)throw new Error('Estructura .enc inválida');
+    const ext=new TextDecoder().decode(encBytes.slice(4,4+extLen));
+    const iv=uint8ArrayToString(encBytes.slice(4+extLen,4+extLen+16));
+    const cipherContent=uint8ArrayToString(encBytes.slice(4+extLen+16));
+    setProgress('dec',80,'Descifrando con AES-256-CBC…');
+    const decipher=forge.cipher.createDecipher('AES-CBC',aesKey);
+    decipher.start({iv});decipher.update(forge.util.createBuffer(cipherContent));
+    if(!decipher.finish())throw new Error('Error al descifrar. Clave incorrecta o archivo corrupto.');
+    const decBytes=stringToUint8Array(decipher.output.getBytes());
+    const baseName=decEncFile.name.replace(/\.enc$/,'')+ext;
+    const blob=new Blob([decBytes]);const url=URL.createObjectURL(blob);
+    setProgress('dec',100,'Desencriptación completada');
+    document.getElementById('dec-r-name').textContent=baseName;
+    document.getElementById('dec-r-desc').textContent=formatSize(decBytes.length)+' · Extensión: '+ext;
+    const dl=document.getElementById('dec-dl');dl.href=url;dl.download=baseName;
+    document.getElementById('dec-results').classList.add('visible');
+  }catch(err){showAlert('dec-alert','Error: '+err.message,'error');console.error(err);}
+  finally{document.getElementById('btn-decrypt').disabled=false;}
+}
+
+function readFileAsBytes(file){
+  return new Promise((res,rej)=>{
+    const reader=new FileReader();
+    reader.onload=e=>res(new Uint8Array(e.target.result));
+    reader.onerror=()=>rej(new Error('Error leyendo archivo'));
+    reader.readAsArrayBuffer(file);
+  });
+}
+function uint8ArrayToString(arr){let s='';for(let i=0;i<arr.length;i++)s+=String.fromCharCode(arr[i]);return s;}
+function stringToUint8Array(str){const a=new Uint8Array(str.length);for(let i=0;i<str.length;i++)a[i]=str.charCodeAt(i);return a;}
 </script>
-
 </body>
 </html>
