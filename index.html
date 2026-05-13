@@ -882,7 +882,7 @@
             <div class="plan-desc">Hasta <strong style="color:var(--text)">100 cifrados</strong> por mes. Se renueva cada 30 días.</div>
           </div>
           <div class="plan-price">
-            <div class="plan-amount">$25.000</div>
+            <div class="plan-amount">$5.000</div>
             <div class="plan-period">COP · mensual</div>
           </div>
         </div>
@@ -1133,9 +1133,9 @@ const ADMIN_EMAIL = 'gaviriarioscamilo@gmail.com';
 const PLANS = {
   monthly: {
     name:       'Plan Básico',
-    price:      '$25.000 COP',
-    periodDays: 30,          // vence a los 30 días
-    limit:      100,         // máx 100 cifrados por período
+    price:      '$5.000 COP',  // ⚠️ PRECIO DE PRUEBA — cambiar a $25.000 en producción
+    periodDays: 30,
+    limit:      100,
     limitLabel: '100 cifrados / mes',
     periodLabel:'mensual'
   },
@@ -1462,7 +1462,7 @@ function selectPlan(planKey) {
 
 function renderWompiButton(planKey) {
   const WOMPI_KEY = 'pub_prod_mpq9sOOIbuk776GtQ7YkNILlN2T304p7';
-  const AMOUNTS   = { monthly: 2500000, pro: 25000000, annual: 265000000 };
+  const AMOUNTS   = { monthly: 500000, pro: 25000000, annual: 265000000 }; // monthly = $5.000 PRUEBA
   const planInfo  = PLANS[planKey];
   const email     = getCurrentUser() || '';
   const ref       = 'NODECRYPT-' + planKey.toUpperCase() + '-' + Date.now();
