@@ -1465,31 +1465,40 @@ function renderWompiButton(planKey) {
   const AMOUNTS   = { monthly: 500000, pro: 25000000, annual: 265000000 }; // monthly = $5.000 PRUEBA
   const planInfo  = PLANS[planKey];
   const email     = getCurrentUser() || '';
-  const ref       = 'NODECRYPT-' + planKey.toUpperCase() + '-' + Date.now();
-  const amount    = AMOUNTS[planKey];
-  const redirectUrl = window.location.href.split('?')[0] + '?wompi_ref=' + ref;
-
-  localStorage.setItem('wompi_pending_ref',   ref);
-  localStorage.setItem('wompi_pending_plan',  planKey);
-  localStorage.setItem('wompi_pending_email', email);
-
-  const wompiUrl = 'https://checkout.wompi.co/p/?' +
-    'public-key='           + encodeURIComponent(WOMPI_KEY) +
-    '&currency=COP' +
-    '&amount-in-cents='     + amount +
-    '&reference='           + encodeURIComponent(ref) +
-    '&redirect-url='        + encodeURIComponent(redirectUrl) +
-    '&customer-data:email=' + encodeURIComponent(email);
 
   const container = document.getElementById('wompi-btn-container');
   container.innerHTML = '';
 
   const btn = document.createElement('a');
-  btn.href = wompiUrl;
   btn.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px;border-radius:10px;text-decoration:none;background:linear-gradient(135deg,#00d4aa,#0099ff);color:#000;font-family:Syne,sans-serif;font-size:0.88rem;font-weight:700;letter-spacing:0.5px;cursor:pointer;box-sizing:border-box;text-transform:uppercase;';
   btn.textContent = '💳 Pagar · ' + planInfo.name + ' — ' + planInfo.price;
   btn.onmouseover = () => { btn.style.boxShadow = '0 8px 30px rgba(0,212,170,0.4)'; btn.style.transform = 'translateY(-1px)'; };
   btn.onmouseout  = () => { btn.style.boxShadow = 'none'; btn.style.transform = 'none'; };
+
+  // ⚡ La referencia y URL se generan en el momento exacto del clic
+  // para evitar el error "Token de aceptación ya fue usado" de Wompi
+  btn.addEventListener('click', function(e) {
+    e.preventDefault();
+
+    const ref         = 'ENC-' + planKey.toUpperCase() + '-' + Date.now();
+    const amount      = AMOUNTS[planKey];
+    const redirectUrl = window.location.href.split('?')[0] + '?wompi_ref=' + ref;
+
+    localStorage.setItem('wompi_pending_ref',   ref);
+    localStorage.setItem('wompi_pending_plan',  planKey);
+    localStorage.setItem('wompi_pending_email', email);
+
+    const wompiUrl = 'https://checkout.wompi.co/p/?' +
+      'public-key='           + encodeURIComponent(WOMPI_KEY) +
+      '&currency=COP' +
+      '&amount-in-cents='     + amount +
+      '&reference='           + encodeURIComponent(ref) +
+      '&redirect-url='        + encodeURIComponent(redirectUrl) +
+      '&customer-data:email=' + encodeURIComponent(email);
+
+    window.location.href = wompiUrl;
+  });
+
   container.appendChild(btn);
 
   const note = document.createElement('p');
