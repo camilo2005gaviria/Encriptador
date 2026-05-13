@@ -1311,7 +1311,6 @@ window.addEventListener('load', () => {
         grantAccess(email);
         return;
       } else {
-        // Plan vencido
         showPaymentScreen(true);
         return;
       }
@@ -1319,6 +1318,11 @@ window.addEventListener('load', () => {
   }
   clearCurrentUser();
   showRegister();
+
+  // Precalentar Apps Script en segundo plano para eliminar cold start
+  setTimeout(() => {
+    fetch(APPS_SCRIPT_URL + '?action=ping').catch(() => {});
+  }, 1500);
 });
 
 // ============================================================
@@ -1476,17 +1480,28 @@ function renderWompiButton(planKey) {
   btn.onmouseout  = () => { btn.style.boxShadow = 'none'; btn.style.transform = 'none'; };
 
   btn.addEventListener('click', async function() {
-    // Deshabilitar botón mientras obtiene la firma
     btn.disabled = true;
-    btn.innerHTML = '<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(0,0,0,0.3);border-top-color:#000;border-radius:50%;animation:spin 0.7s linear infinite;margin-right:8px;vertical-align:middle;"></span>Preparando pago…';
+
+    const spinnerStyle = 'display:inline-block;width:14px;height:14px;border:2px solid rgba(0,0,0,0.3);border-top-color:#000;border-radius:50%;animation:spin 0.7s linear infinite;margin-right:8px;vertical-align:middle;';
+
+    // Mensajes progresivos para que el usuario sepa qué está pasando
+    btn.innerHTML = `<span style="${spinnerStyle}"></span>Conectando con servidor seguro…`;
 
     const ref         = 'ENC-' + planKey.toUpperCase() + '-' + Date.now();
     const amount      = AMOUNTS[planKey];
     const currency    = 'COP';
     const redirectUrl = window.location.href.split('?')[0] + '?wompi_ref=' + ref;
 
+    // Cambiar mensaje tras 1.5s si sigue esperando
+    const msg2 = setTimeout(() => {
+      if (btn.disabled) btn.innerHTML = `<span style="${spinnerStyle}"></span>Generando firma de seguridad…`;
+    }, 1500);
+
+    const msg3 = setTimeout(() => {
+      if (btn.disabled) btn.innerHTML = `<span style="${spinnerStyle}"></span>Casi listo, redirigiendo a Wompi…`;
+    }, 3500);
+
     try {
-      // Pedir la firma al Apps Script (el secreto nunca sale del servidor)
       const sigUrl = APPS_SCRIPT_URL
         + '?action=get_signature'
         + '&reference='     + encodeURIComponent(ref)
@@ -1496,28 +1511,33 @@ function renderWompiButton(planKey) {
       const res  = await fetch(sigUrl);
       const data = await res.json();
 
+      clearTimeout(msg2);
+      clearTimeout(msg3);
+
       if (!data.ok || !data.signature) {
         throw new Error('No se pudo obtener la firma de seguridad: ' + (data.error || 'error desconocido'));
       }
 
-      // Guardar datos pendientes
+      btn.innerHTML = `<span style="${spinnerStyle}"></span>Redirigiendo a Wompi…`;
+
       localStorage.setItem('wompi_pending_ref',   ref);
       localStorage.setItem('wompi_pending_plan',  planKey);
       localStorage.setItem('wompi_pending_email', email);
 
-      // Construir URL con firma de integridad
       const wompiUrl = 'https://checkout.wompi.co/p/?' +
-        'public-key='                + encodeURIComponent(WOMPI_KEY) +
-        '&currency='                 + currency +
-        '&amount-in-cents='          + amount +
-        '&reference='                + encodeURIComponent(ref) +
-        '&signature:integrity='      + encodeURIComponent(data.signature) +
-        '&redirect-url='             + encodeURIComponent(redirectUrl) +
-        '&customer-data:email='      + encodeURIComponent(email);
+        'public-key='           + encodeURIComponent(WOMPI_KEY) +
+        '&currency='            + currency +
+        '&amount-in-cents='     + amount +
+        '&reference='           + encodeURIComponent(ref) +
+        '&signature:integrity=' + encodeURIComponent(data.signature) +
+        '&redirect-url='        + encodeURIComponent(redirectUrl) +
+        '&customer-data:email=' + encodeURIComponent(email);
 
       window.location.href = wompiUrl;
 
     } catch(err) {
+      clearTimeout(msg2);
+      clearTimeout(msg3);
       btn.disabled = false;
       btn.innerHTML = '💳 Pagar · ' + planInfo.name + ' — ' + planInfo.price;
       document.getElementById('payment-alert').className = 'auth-alert visible error';
