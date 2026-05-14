@@ -1006,26 +1006,8 @@ async function submitForgotPassword(){
     return;
   }
 
-  // ── Fallback: backend no disponible o aún sin deploy ──
-  // Mostramos el enlace directamente para que el usuario lo use en este mismo navegador.
-  // Como el token está en localStorage, funciona mientras no cambie de dispositivo.
-  navigator.clipboard.writeText(resetUrl).catch(()=>{});
-
-  const el=document.getElementById('forgot-alert');
-  el.className='auth-alert visible info';
-  el.innerHTML=`<span>🔑</span><div style="width:100%">
-    <div style="font-weight:500;margin-bottom:5px">Enlace de recuperación generado</div>
-    <div style="font-size:12px;margin-bottom:10px;line-height:1.6">
-      El servidor de correo aún no tiene el nuevo deploy. <strong>Haz clic en el botón de abajo</strong> para restablecer tu contraseña directamente (funciona en este navegador):
-    </div>
-    <a href="${resetUrl}"
-       style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:var(--info-bg);border:1px solid #bad0ea;border-radius:6px;color:var(--info);font-size:12.5px;font-weight:500;text-decoration:none;margin-bottom:8px;transition:background .2s"
-       onmouseover="this.style.background='#d7e4f4'"
-       onmouseout="this.style.background='var(--info-bg)'">
-      🔐 Restablecer contraseña ahora
-    </a>
-    <div style="font-size:11px;color:var(--faint);margin-top:4px">⏱ Válido por 1 hora · Solo en este navegador/dispositivo</div>
-  </div>`;
+  // Backend no disponible — NO mostrar el enlace en pantalla por seguridad
+  showAuthAlert('forgot-alert','No se pudo enviar el correo. Verifica tu conexión o intenta más tarde.','error');
 }
 
 // ============================================================
