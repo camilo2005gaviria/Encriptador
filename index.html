@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Encriptador de Soportes Seguros</title>
+<title>Encriptador de Soportes — Res. 2284</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/forge/1.3.1/forge.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap');
@@ -392,39 +392,6 @@ h1{font-size:22px;font-weight:500;line-height:1.2;margin-bottom:4px}
 .btn-sm:active{transform:scale(0.97)}
 .btn-sm:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
 
-.rsa-actions-row{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  margin-top:12px;
-  flex-wrap:wrap;
-}
-
-.rsa-actions-left{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-}
-
-.btn-secondary{
-  background:transparent;
-  border:1px solid var(--border-mid);
-  color:var(--text);
-}
-
-.btn-secondary:hover{
-  border-color:var(--text);
-  background:rgba(28,27,24,0.03);
-  opacity:1;
-  box-shadow:none;
-}
-
-.btn-secondary:active{
-  transform:scale(0.97);
-}
-
-
 .key-status{display:none;align-items:center;gap:7px;margin-top:10px;font-size:12.5px;color:var(--success)}
 .key-status.visible{display:flex;animation:slideDown .25s ease both}
 .check-svg{
@@ -545,111 +512,6 @@ textarea::placeholder{color:var(--faint)}
   vertical-align:middle;margin-right:6px;
 }
 
-
-/* MODAL RENOVAR PLAN */
-#renew-modal{
-  position:fixed;
-  inset:0;
-  z-index:1200;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:24px;
-}
-
-#renew-modal.visible{
-  display:flex;
-  animation:fadeIn .25s ease both;
-}
-
-.renew-modal-backdrop{
-  position:absolute;
-  inset:0;
-  background:rgba(20,20,20,0.35);
-  backdrop-filter:blur(3px);
-}
-
-.renew-modal-card{
-  position:relative;
-  width:100%;
-  max-width:420px;
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:var(--r-lg);
-  padding:28px;
-  box-shadow:0 18px 60px rgba(0,0,0,.12);
-  animation:floatIn .35s cubic-bezier(.22,1,.36,1) both;
-}
-
-.renew-modal-eyebrow{
-  font-family:'DM Mono',monospace;
-  font-size:10px;
-  letter-spacing:2px;
-  text-transform:uppercase;
-  color:var(--faint);
-  margin-bottom:10px;
-}
-
-.renew-modal-title{
-  font-size:22px;
-  font-weight:500;
-  color:var(--text);
-  line-height:1.25;
-  margin-bottom:12px;
-}
-
-.renew-modal-desc{
-  font-size:13px;
-  color:var(--muted);
-  line-height:1.7;
-  margin-bottom:22px;
-}
-
-.renew-modal-actions{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
-
-.renew-btn-secondary{
-  flex:1;
-  min-width:120px;
-  padding:11px;
-  background:transparent;
-  border:1px solid var(--border-mid);
-  border-radius:var(--r);
-  color:var(--muted);
-  font-family:'DM Sans',sans-serif;
-  font-size:13px;
-  cursor:pointer;
-  transition:.2s;
-}
-
-.renew-btn-secondary:hover{
-  border-color:var(--text);
-  color:var(--text);
-}
-
-.renew-btn-primary{
-  flex:1;
-  min-width:120px;
-  padding:11px;
-  background:var(--text);
-  border:none;
-  border-radius:var(--r);
-  color:#fff;
-  font-family:'DM Sans',sans-serif;
-  font-size:13px;
-  font-weight:500;
-  cursor:pointer;
-  transition:.2s;
-}
-
-.renew-btn-primary:hover{
-  opacity:.85;
-}
-
-
 @media(max-width:520px){
   .auth-card{padding:28px 20px}
   .multi-drop{grid-template-columns:1fr}
@@ -751,9 +613,6 @@ textarea::placeholder{color:var(--faint)}
       <div class="payment-eyebrow">Suscripción</div>
       <div class="payment-title">Elige tu plan</div>
       <div class="payment-sub" id="payment-sub-text">Selecciona un plan para activar tu acceso</div>
-      <button class="back-link" onclick="resetRegistration()" style="margin-bottom:16px">
-       ← Volver
-      </button>
       <div class="plans-grid">
         <div class="plan-card" id="plan-monthly" onclick="selectPlan('monthly')">
           <div class="plan-radio"><div class="plan-radio-dot"></div></div>
@@ -827,9 +686,9 @@ textarea::placeholder{color:var(--faint)}
   <header>
     <div class="logo-mark">🔒</div>
     <div>
-      <div class="header-eyebrow">Resolución 2284 de 2023</div>
+      <div class="header-eyebrow">Resolución 2284 de 2023 · Camilo Rios Gaviria</div>
       <h1>Encriptador de Soportes</h1>
-      <div class="header-sub">Cifrado híbrido AES-256 + RSA · Compatible con flujos seguros de intercambio de archivos</div>
+      <div class="header-sub">Cifrado híbrido AES-256 + RSA · Compatible con Salud Total / FileZilla</div>
     </div>
     <div class="user-badge" id="user-badge" style="display:none">
       <div class="user-badge-dot"></div>
@@ -864,74 +723,47 @@ textarea::placeholder{color:var(--faint)}
       Se generan dos archivos: <code>.enc</code> (contenido cifrado) y <code>.enc.key</code> (clave AES cifrada).
     </div>
 
-    <!-- SECCIÓN RSA -->
+    <!-- CAJA DE CLAVES REDISEÑADA -->
     <div class="key-gen-box fade-up-2">
-
       <div class="key-gen-header">
-        <div>
-          <div class="key-gen-title">Clave pública RSA</div>
-          <div class="key-gen-desc" style="margin-top:6px;margin-bottom:0">
-            Pega una clave pública existente o genera un nuevo par de claves para comenzar el cifrado.
-          </div>
-        </div>
-
-        <span class="key-gen-badge">RSA · XML .NET</span>
+        <span class="key-gen-title">Clave Pública RSA</span>
+        <span class="key-gen-badge">Requerida para cifrar</span>
+      </div>
+      <div class="key-gen-desc">
+        Puedes pegar tu propia clave pública RSA (formato XML .NET), usar la clave de producción de Salud Total,
+        o generar un par nuevo para pruebas.
       </div>
 
-      <div class="own-key-section" style="margin-top:18px">
-
-        <div class="field-label">Clave pública</div>
-
-        <textarea
-          id="own-pub-key-input"
+      <!-- OPCIÓN 1: Pegar clave propia -->
+      <div class="own-key-section">
+        <div class="field-label">Pega tu clave pública aquí</div>
+        <textarea id="own-pub-key-input"
           placeholder="<RSAKeyValue><Modulus>...</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>"
-          style="min-height:88px"
+          style="min-height:70px;"
           oninput="onOwnKeyInput()"></textarea>
-
-        <div class="rsa-actions-row">
-          <div class="rsa-actions-left">
-            <button class="btn-sm btn-secondary"
-              id="btn-use-key"
-              onclick="activateOwnKey()">
-              Usar clave introducida
-            </button>
-
-            <button class="btn-sm"
-              id="btn-gen-key"
-              onclick="generateKeyPair()">
-              Generar nuevo par de claves
-            </button>
-          </div>
-
-          <button class="preset-btn"
-            onclick="clearOwnKey()"
-            id="btn-clear-key"
-            style="display:none">
-            ✕ Limpiar
-          </button>
+        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+          <button class="preset-btn" onclick="loadProductionKey()">Cargar clave Salud Total (Res. 2284)</button>
+          <button class="preset-btn" onclick="clearOwnKey()" id="btn-clear-key" style="display:none">✕ Limpiar clave</button>
         </div>
-
       </div>
 
+      <div class="own-key-divider"><span>o genera un par nuevo</span></div>
+
+      <!-- OPCIÓN 2: Generar par nuevo -->
+      <p style="font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.6">
+        Se genera una clave única por sesión. La clave privada aparecerá en un panel flotante para guardarla.
+      </p>
+      <button class="btn-sm" id="btn-gen-key" onclick="generateKeyPair()">Generar nuevo par de claves</button>
       <div class="key-status" id="key-status">
-        <svg class="check-svg" viewBox="0 0 16 16">
-          <polyline points="3,8 7,12 13,4"/>
-        </svg>
-
-        Configuración RSA lista para usar
+        <svg class="check-svg" viewBox="0 0 16 16"><polyline points="3,8 7,12 13,4"/></svg>
+        Par de claves generado y listo
       </div>
 
-      <!-- Clave pública activa -->
-      <div style="margin-top:16px;display:none" id="pub-key-section">
-        <div class="field-label">Clave pública activa</div>
-
-        <textarea
-          id="pub-key"
-          placeholder="<RSAKeyValue>..."
-          readonly
-          style="opacity:.55;min-height:60px"></textarea>
+      <!-- Clave pública activa (readonly, oculto) -->
+      <div style="margin-top:14px;display:none" id="pub-key-section">
+        <div class="field-label">Clave Pública activa</div>
+        <textarea id="pub-key" placeholder="<RSAKeyValue>..." readonly style="opacity:.55;min-height:60px"></textarea>
       </div>
-
     </div>
 
     <div class="field-label fade-up-3">Archivo a encriptar</div>
@@ -1071,18 +903,8 @@ function getRemainingEncryptions(u){
 function registerEncryption(email){
   const users=getUsers();const u=users[email];if(!u)return false;
   const p=PLANS[u.plan];if(!p)return false;
-  if(p.limit===null){
-    u.encryptCount=(u.encryptCount||0)+1;
-    saveUsers(users);
-    return true;
-  }
-
-  if((u.encryptCount||0)>=p.limit){
-    setTimeout(()=>{
-      try{showRenewModal()}catch(e){}
-    },250);
-    return false;
-  }
+  if(p.limit===null){u.encryptCount=(u.encryptCount||0)+1;saveUsers(users);return true;}
+  if((u.encryptCount||0)>=p.limit)return false;
   u.encryptCount=(u.encryptCount||0)+1;saveUsers(users);return true;
 }
 
@@ -1154,36 +976,56 @@ async function submitForgotPassword(){
   const btn=document.getElementById('btn-forgot');
   btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Enviando…';
 
-  // Verificamos si el usuario existe (sin revelar si existe o no por seguridad, pero aquí es local)
   const users=getUsers();
   if(!users[email]){
-    // Por UX informamos, ya que es una app local/conocida
     btn.disabled=false;btn.textContent='Enviar enlace de recuperación';
     showAuthAlert('forgot-alert','No existe una cuenta con ese correo.','error');
     return;
   }
 
-  // Generar token y guardarlo localmente
+  // Generar token y guardarlo localmente (expira en 1 hora)
   const token=generateResetToken();
   saveResetToken(email,token);
-
-  // Construir URL de reset
   const resetUrl=window.location.href.split('?')[0]+'?reset_token='+token;
 
-  // Enviar email vía Apps Script
+  // Intentar enviar por backend (best-effort, 8s timeout)
+  let backendOk=false;
   try{
-    const res=await fetch(APPS_SCRIPT_URL+'?action=send_reset&email='+encodeURIComponent(email)+'&resetUrl='+encodeURIComponent(resetUrl));
+    const controller=new AbortController();
+    const tid=setTimeout(()=>controller.abort(),8000);
+    const res=await fetch(APPS_SCRIPT_URL+'?action=send_reset&email='+encodeURIComponent(email)+'&resetUrl='+encodeURIComponent(resetUrl),{signal:controller.signal});
+    clearTimeout(tid);
     const data=await res.json();
-    btn.disabled=false;btn.textContent='Enviar enlace de recuperación';
-    if(data.ok){
-      showAuthAlert('forgot-alert','¡Listo! Revisa tu correo — el enlace expira en 1 hora.','success');
-    }else{
-      showAuthAlert('forgot-alert','Error enviando el correo: '+(data.error||'intenta de nuevo'),'error');
-    }
-  }catch(err){
-    btn.disabled=false;btn.textContent='Enviar enlace de recuperación';
-    showAuthAlert('forgot-alert','Error de conexión. Intenta de nuevo.','error');
+    backendOk=!!data.ok;
+  }catch(err){backendOk=false;}
+
+  btn.disabled=false;btn.textContent='Enviar enlace de recuperación';
+
+  if(backendOk){
+    showAuthAlert('forgot-alert','¡Listo! Revisa tu correo — el enlace expira en 1 hora.','success');
+    return;
   }
+
+  // ── Fallback: backend no disponible o aún sin deploy ──
+  // Mostramos el enlace directamente para que el usuario lo use en este mismo navegador.
+  // Como el token está en localStorage, funciona mientras no cambie de dispositivo.
+  navigator.clipboard.writeText(resetUrl).catch(()=>{});
+
+  const el=document.getElementById('forgot-alert');
+  el.className='auth-alert visible info';
+  el.innerHTML=`<span>🔑</span><div style="width:100%">
+    <div style="font-weight:500;margin-bottom:5px">Enlace de recuperación generado</div>
+    <div style="font-size:12px;margin-bottom:10px;line-height:1.6">
+      El servidor de correo aún no tiene el nuevo deploy. <strong>Haz clic en el botón de abajo</strong> para restablecer tu contraseña directamente (funciona en este navegador):
+    </div>
+    <a href="${resetUrl}"
+       style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:var(--info-bg);border:1px solid #bad0ea;border-radius:6px;color:var(--info);font-size:12.5px;font-weight:500;text-decoration:none;margin-bottom:8px;transition:background .2s"
+       onmouseover="this.style.background='#d7e4f4'"
+       onmouseout="this.style.background='var(--info-bg)'">
+      🔐 Restablecer contraseña ahora
+    </a>
+    <div style="font-size:11px;color:var(--faint);margin-top:4px">⏱ Válido por 1 hora · Solo en este navegador/dispositivo</div>
+  </div>`;
 }
 
 // ============================================================
@@ -1255,54 +1097,6 @@ function hideAllAuthScreens(){
   document.getElementById('reset-screen').classList.remove('visible');
   document.getElementById('denied-screen').classList.remove('visible');
   document.getElementById('payment-screen').classList.remove('visible');
-}
-
-
-function activateOwnKey(){
-  const input=document.getElementById('own-pub-key-input');
-  const value=input.value.trim();
-
-  if(!value){
-    showAlert('enc-alert','Por favor pega una clave pública RSA válida.','error');
-    return;
-  }
-
-  try{
-    forge.pki.publicKeyFromPem?.(value);
-
-    // Si no es PEM, intentamos XML .NET
-  }catch(e){}
-
-  pubKeyXml=value;
-
-  document.getElementById('pub-key').value=value;
-  document.getElementById('pub-key-section').style.display='block';
-  /* pub-key-section oculto hasta activar manualmente */
-
-  const status=document.getElementById('key-status');
-  status.classList.add('visible');
-  status.innerHTML=`
-    <svg class="check-svg" viewBox="0 0 16 16">
-      <polyline points="3,8 7,12 13,4"/>
-    </svg>
-    Clave pública cargada correctamente
-  `;
-
-  showAlert('enc-alert','Clave pública RSA activada correctamente.','success');
-}
-
-
-function showRenewModal(){
-  document.getElementById('renew-modal').classList.add('visible');
-}
-
-function closeRenewModal(){
-  document.getElementById('renew-modal').classList.remove('visible');
-}
-
-function goToRenewPayment(){
-  closeRenewModal();
-  showPaymentScreen(true);
 }
 
 // ============================================================
@@ -1738,34 +1532,5 @@ function readFileAsBytes(file){
 function uint8ArrayToString(arr){let s='';for(let i=0;i<arr.length;i++)s+=String.fromCharCode(arr[i]);return s;}
 function stringToUint8Array(str){const a=new Uint8Array(str.length);for(let i=0;i<str.length;i++)a[i]=str.charCodeAt(i);return a;}
 </script>
-
-<!-- MODAL: ACTUALIZAR PLAN -->
-<div id="renew-modal" style="display:none">
-  <div class="renew-modal-backdrop"></div>
-
-  <div class="renew-modal-card">
-    <div class="renew-modal-eyebrow">Suscripción</div>
-
-    <div class="renew-modal-title">
-      ¿Deseas actualizar tu plan?
-    </div>
-
-    <div class="renew-modal-desc">
-      Has alcanzado el límite disponible de cifrados de tu suscripción actual.
-      Para continuar utilizando el sistema debes renovar o actualizar tu plan.
-    </div>
-
-    <div class="renew-modal-actions">
-      <button class="renew-btn-secondary" onclick="closeRenewModal()">
-        Ahora no
-      </button>
-
-      <button class="renew-btn-primary" onclick="goToRenewPayment()">
-        Actualizar plan
-      </button>
-    </div>
-  </div>
-</div>
-
 </body>
 </html>
