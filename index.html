@@ -545,6 +545,111 @@ textarea::placeholder{color:var(--faint)}
   vertical-align:middle;margin-right:6px;
 }
 
+
+/* MODAL RENOVAR PLAN */
+#renew-modal{
+  position:fixed;
+  inset:0;
+  z-index:1200;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+}
+
+#renew-modal.visible{
+  display:flex;
+  animation:fadeIn .25s ease both;
+}
+
+.renew-modal-backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(20,20,20,0.35);
+  backdrop-filter:blur(3px);
+}
+
+.renew-modal-card{
+  position:relative;
+  width:100%;
+  max-width:420px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:28px;
+  box-shadow:0 18px 60px rgba(0,0,0,.12);
+  animation:floatIn .35s cubic-bezier(.22,1,.36,1) both;
+}
+
+.renew-modal-eyebrow{
+  font-family:'DM Mono',monospace;
+  font-size:10px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--faint);
+  margin-bottom:10px;
+}
+
+.renew-modal-title{
+  font-size:22px;
+  font-weight:500;
+  color:var(--text);
+  line-height:1.25;
+  margin-bottom:12px;
+}
+
+.renew-modal-desc{
+  font-size:13px;
+  color:var(--muted);
+  line-height:1.7;
+  margin-bottom:22px;
+}
+
+.renew-modal-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.renew-btn-secondary{
+  flex:1;
+  min-width:120px;
+  padding:11px;
+  background:transparent;
+  border:1px solid var(--border-mid);
+  border-radius:var(--r);
+  color:var(--muted);
+  font-family:'DM Sans',sans-serif;
+  font-size:13px;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.renew-btn-secondary:hover{
+  border-color:var(--text);
+  color:var(--text);
+}
+
+.renew-btn-primary{
+  flex:1;
+  min-width:120px;
+  padding:11px;
+  background:var(--text);
+  border:none;
+  border-radius:var(--r);
+  color:#fff;
+  font-family:'DM Sans',sans-serif;
+  font-size:13px;
+  font-weight:500;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.renew-btn-primary:hover{
+  opacity:.85;
+}
+
+
 @media(max-width:520px){
   .auth-card{padding:28px 20px}
   .multi-drop{grid-template-columns:1fr}
@@ -966,8 +1071,18 @@ function getRemainingEncryptions(u){
 function registerEncryption(email){
   const users=getUsers();const u=users[email];if(!u)return false;
   const p=PLANS[u.plan];if(!p)return false;
-  if(p.limit===null){u.encryptCount=(u.encryptCount||0)+1;saveUsers(users);return true;}
-  if((u.encryptCount||0)>=p.limit)return false;
+  if(p.limit===null){
+    u.encryptCount=(u.encryptCount||0)+1;
+    saveUsers(users);
+    return true;
+  }
+
+  if((u.encryptCount||0)>=p.limit){
+    setTimeout(()=>{
+      try{showRenewModal()}catch(e){}
+    },250);
+    return false;
+  }
   u.encryptCount=(u.encryptCount||0)+1;saveUsers(users);return true;
 }
 
@@ -1162,6 +1277,7 @@ function activateOwnKey(){
 
   document.getElementById('pub-key').value=value;
   document.getElementById('pub-key-section').style.display='block';
+  /* pub-key-section oculto hasta activar manualmente */
 
   const status=document.getElementById('key-status');
   status.classList.add('visible');
@@ -1173,6 +1289,20 @@ function activateOwnKey(){
   `;
 
   showAlert('enc-alert','Clave pública RSA activada correctamente.','success');
+}
+
+
+function showRenewModal(){
+  document.getElementById('renew-modal').classList.add('visible');
+}
+
+function closeRenewModal(){
+  document.getElementById('renew-modal').classList.remove('visible');
+}
+
+function goToRenewPayment(){
+  closeRenewModal();
+  showPaymentScreen(true);
 }
 
 // ============================================================
@@ -1608,5 +1738,34 @@ function readFileAsBytes(file){
 function uint8ArrayToString(arr){let s='';for(let i=0;i<arr.length;i++)s+=String.fromCharCode(arr[i]);return s;}
 function stringToUint8Array(str){const a=new Uint8Array(str.length);for(let i=0;i<str.length;i++)a[i]=str.charCodeAt(i);return a;}
 </script>
+
+<!-- MODAL: ACTUALIZAR PLAN -->
+<div id="renew-modal" style="display:none">
+  <div class="renew-modal-backdrop"></div>
+
+  <div class="renew-modal-card">
+    <div class="renew-modal-eyebrow">Suscripción</div>
+
+    <div class="renew-modal-title">
+      ¿Deseas actualizar tu plan?
+    </div>
+
+    <div class="renew-modal-desc">
+      Has alcanzado el límite disponible de cifrados de tu suscripción actual.
+      Para continuar utilizando el sistema debes renovar o actualizar tu plan.
+    </div>
+
+    <div class="renew-modal-actions">
+      <button class="renew-btn-secondary" onclick="closeRenewModal()">
+        Ahora no
+      </button>
+
+      <button class="renew-btn-primary" onclick="goToRenewPayment()">
+        Actualizar plan
+      </button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
